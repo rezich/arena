@@ -18,6 +18,7 @@ namespace Arena {
 		public int MaxHealth;
 		public int Energy;
 		public int MaxEnergy;
+		public double TurnSpeed = 0.3;
 		public double HealthRegen = 0.001;
 		private double healthRegenPart = 0;
 		public double EnergyRegen = 0.0025;
@@ -26,8 +27,11 @@ namespace Arena {
 		public Teams Team;
 
 		public Vector2 Position;
-		public double Speed;
+		public Vector2 LastPosition;
+		public Vector2 IntendedPosition;
+		public double MoveSpeed;
 		public double Direction = 0;
+		public double IntendedDirection = 0;
 
 		public Player(string name, int number, Teams team, Roles role) {
 			Name = name;
@@ -37,8 +41,10 @@ namespace Arena {
 
 			MaxHealth = Arena.Role.List[Role].BaseHealth;
 			MaxEnergy = Arena.Role.List[Role].BaseEnergy;
+			MoveSpeed = Arena.Role.List[Role].MoveSpeed;
 			Health = MaxHealth;
 			Energy = MaxEnergy;
+			Player.List.Add(this);
 		}
 		public void MakeActor() {
 			Actor a = new Actor();
@@ -47,8 +53,17 @@ namespace Arena {
 			a.Direction = Direction;
 			a.Player = this;
 			Actor.List.Add(a);
+			Actor = a;
 		}
 		public void Update(GameTime gameTime) {
+			MoveTowardsIntended();
+			if (Direction != IntendedDirection)
+				Direction = Direction.LerpAngle(IntendedDirection, TurnSpeed);
+			LastPosition = Position;
+			if (Actor != null) {
+				Actor.Position = Position;
+				Actor.Direction = Direction;
+			}
 		}
 		public void Regen() {
 			if (Health < MaxHealth)
@@ -67,6 +82,23 @@ namespace Arena {
 				energyRegenPart = 0;
 				Energy = Math.Min(Energy + 1, MaxEnergy);
 			}
+		}
+		public void JumpTo(Vector2 position) {
+			Position = position;
+			IntendedPosition = position;
+		}
+		public void MoveTowardsIntended() {
+			if (Vector2.Distance(Position, IntendedPosition) > 4) {
+				Vector2 velocity = Vector2.Normalize(IntendedPosition - Position);
+				MoveInDirection(velocity, MoveSpeed);
+				TurnTowardsIntended();
+			}
+		}
+		public void MoveInDirection(Vector2 direction, double speed) {
+			Position += direction * (float)speed;
+		}
+		public void TurnTowardsIntended() {
+			IntendedDirection = Math.Atan2(Position.Y - LastPosition.Y, Position.X - LastPosition.X);
 		}
 	}
 }

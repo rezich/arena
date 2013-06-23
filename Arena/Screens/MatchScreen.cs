@@ -2,17 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Cairo;
 using VGame;
 
 namespace Arena {
 	public class MatchScreen : VGame.GameScreen {
+		Player LocalPlayer;
 		public MatchScreen() {
-			Player.List.Add(new Player("takua108", 17, Teams.Home, Roles.Runner));
-			Player.List[0].Position = new Vector2(108, 108);
+			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
+			LocalPlayer.JumpTo(new Vector2(300, 300));
 
 			foreach (Player p in Player.List)
 				p.MakeActor();
+		}
+		public override void HandleInput(InputState input) {
+			if (input.CurrentMouseState.RightButton == ButtonState.Pressed) {
+				LocalPlayer.IntendedPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y);
+			}
+			base.HandleInput(input);
 		}
 		public override void Update(GameTime gameTime) {
 			foreach (Player p in Player.List)

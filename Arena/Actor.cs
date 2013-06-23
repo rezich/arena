@@ -93,10 +93,10 @@ namespace Arena {
 			g.LineWidth = 2.0;
 			g.Save();
 
-			double rangeRadius = GameSession.ActorScale * 4;
+			double rangeRadius = GameSession.ActorScale * 10;
 			double rangeCircum = 2 * MathHelper.Pi * rangeRadius;
-			double start = gameTime.TotalGameTime.TotalSeconds / MathHelper.TwoPi * 3;
-			double[] dash = new double[] { rangeCircum / 30, rangeCircum / 45 };
+			double start = gameTime.TotalGameTime.TotalSeconds / MathHelper.TwoPi * 1;
+			double[] dash = new double[] { rangeCircum / 80, rangeCircum / 120 };
 			g.SetDash(dash, 0);
 			g.LineWidth = 2;
 			g.Arc(Position.X, Position.Y, rangeRadius, start, start + MathHelper.TwoPi);
