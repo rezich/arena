@@ -25,7 +25,7 @@ namespace Arena {
 		public static Cairo.Color EnemyHealthColor2;
 		public static Cairo.Color EnergyColor1;
 		public static Cairo.Color EnergyColor2;
-		public static double ActorScale = 22;
+		public static double ActorScale = 24;
 		public static Random Random = new Random();
 
 		public static Teams CurrentTeam;
@@ -41,8 +41,8 @@ namespace Arena {
 			HomeColor2 = VGame.Util.MakeColor(92, 123, 142, 1);
 			AwayColor1 = VGame.Util.MakeColor(242, 159, 98, 1);
 			AwayColor2 = VGame.Util.MakeColor(238, 120, 30, 1);
-			HealthColor1 = VGame.Util.MakeColor(16, 128, 16, 0.2);
-			HealthColor2 = VGame.Util.MakeColor(8, 128, 8, 0.25);
+			HealthColor1 = VGame.Util.MakeColor(16, 128, 16, 0.1);
+			HealthColor2 = VGame.Util.MakeColor(8, 128, 8, 0.15);
 			EnemyHealthColor1 = HealthColor1; //VGame.Util.MakeColor(128, 16, 16, 0.2);
 			EnemyHealthColor2 = HealthColor2; //VGame.Util.MakeColor(128, 8, 8, 0.25);
 			EnergyColor1 = VGame.Util.MakeColor(32, 32, 128, 0.2);

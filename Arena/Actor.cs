@@ -21,10 +21,10 @@ namespace Arena {
 		public void Update(GameTime gameTime) {
 
 		}
-		public virtual void Draw(Context g) {
+		public virtual void Draw(GameTime gameTime, Context g) {
 			Shape.Draw(g, Position, Direction, (Player.Team == Teams.Home ? GameSession.HomeColor1 : GameSession.AwayColor1), (Player.Team == Teams.Home ? GameSession.HomeColor2 : GameSession.AwayColor2), GameSession.ActorScale);
 		}
-		public void DrawUIBelow(Context g) {
+		public void DrawUIBelow(GameTime gameTime, Context g) {
 			if (Player.Health < 1)
 				return;
 			double percent = (double)Player.Health / (double)Player.MaxHealth;
@@ -75,7 +75,7 @@ namespace Arena {
 				g.Stroke();
 			}
 		}
-		public void DrawUIAbove(Context g) {
+		public void DrawUIAbove(GameTime gameTime, Context g) {
 			g.SelectFontFace("04b_19", FontSlant.Normal, FontWeight.Bold);
 			double textScale = 0.7;
 			g.SetFontSize(GameSession.ActorScale * textScale);
@@ -92,10 +92,15 @@ namespace Arena {
 			g.Stroke();
 			g.LineWidth = 2.0;
 			g.Save();
-			double[] dash = new double[] { MathHelper.Pi * 3, MathHelper.Pi };
+
+			double rangeRadius = GameSession.ActorScale * 4;
+			double rangeCircum = 2 * MathHelper.Pi * rangeRadius;
+			double start = gameTime.TotalGameTime.TotalSeconds / MathHelper.TwoPi * 3;
+			double[] dash = new double[] { rangeCircum / 30, rangeCircum / 45 };
 			g.SetDash(dash, 0);
-			g.Arc(Position.X, Position.Y, GameSession.ActorScale + 35, 0, MathHelper.TwoPi);
-			g.SetSourceRGBA(0, 0, 0, 0.25);
+			g.LineWidth = 2;
+			g.Arc(Position.X, Position.Y, rangeRadius, start, start + MathHelper.TwoPi);
+			g.SetSourceRGBA(0, 0, 0, 0.1);
 			g.Stroke();
 			g.Restore();
 		}

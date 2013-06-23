@@ -24,7 +24,7 @@ namespace Arena {
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = VGame.Renderer.Context;
 
-			int gridSize = 32;
+			int gridSize = Convert.ToInt32(Arena.GameSession.ActorScale);
 			for (int i = 0; i < (int)Math.Floor((double)Resolution.Width / (double)gridSize); i++) {
 				g.MoveTo(i * gridSize, 0);
 				g.LineTo(i * gridSize, Resolution.Height);
@@ -38,13 +38,13 @@ namespace Arena {
 				g.Stroke();
 			}
 			foreach (Actor a in Actor.List) {
-				a.DrawUIBelow(g);
+				a.DrawUIBelow(gameTime, g);
 			}
 			foreach (Actor a in Actor.List) {
-				a.Draw(g);
+				a.Draw(gameTime, g);
 			}
 			foreach (Actor a in Actor.List) {
-				a.DrawUIAbove(g);
+				a.DrawUIAbove(gameTime, g);
 			}
 
 			((IDisposable)g).Dispose();

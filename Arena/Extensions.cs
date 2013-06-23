@@ -11,7 +11,7 @@ namespace Arena {
 		public static PointD ToPointD(this Vector2 v) {
 			return new PointD(v.X, v.Y);
 		}
-		public static double LerpAngle(this float from, float to, float step) {
+		public static double LerpAngle(this double from, double to, double step) {
 			// Ensure that 0 <= angle < 2pi for both "from" and "to" 
 			while (from < 0)
 				from += MathHelper.TwoPi;
@@ -25,7 +25,7 @@ namespace Arena {
 
 			if (System.Math.Abs(from - to) < MathHelper.Pi) {
 				// The simple case - a straight lerp will do. 
-				return MathHelper.Lerp(from, to, step);
+				return (double)MathHelper.Lerp((float)from, (float)to, (float)step);
 			}
 
 			// If we get here we have the more complex case. 
@@ -35,7 +35,7 @@ namespace Arena {
 			else
 				to += MathHelper.TwoPi;
 
-			float retVal = MathHelper.Lerp(from, to, step);
+			float retVal = MathHelper.Lerp((float)from, (float)to, (float)step);
 
 			// Now ensure the return value is between 0 and 2pi 
 			if (retVal >= MathHelper.TwoPi)
