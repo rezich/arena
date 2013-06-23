@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arena", "Arena\Arena.csproj", "{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VGame", "VGame\VGame.csproj", "{FD10DD4F-74C8-466D-A7A6-A714423E316F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}.Debug|x86.ActiveCfg = Debug|x86
+		{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}.Debug|x86.Build.0 = Debug|x86
+		{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}.Release|x86.ActiveCfg = Release|x86
+		{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}.Release|x86.Build.0 = Release|x86
+		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Arena\Arena.csproj
+	EndGlobalSection
+EndGlobal
