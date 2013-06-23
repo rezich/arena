@@ -22,8 +22,7 @@ namespace VGame {
 			postRenderer.DrawOrder = 3;
 
 			Resolution.Initialize(graphics);
-			if (!Resolution.Set(1280, 720, false))
-				throw new Exception("wtf");
+			Resolution.Set(1280, 720, false);
 			VGame.Renderer.Initialize(graphics.GraphicsDevice, 1280, 720);
 			if (!SpriteBatchHelper.IsInitialized)
 				SpriteBatchHelper.Initialize(graphics.GraphicsDevice);

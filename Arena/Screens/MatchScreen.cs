@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Cairo;
 using VGame;
@@ -6,6 +8,18 @@ using VGame;
 namespace Arena {
 	public class MatchScreen : VGame.GameScreen {
 		public MatchScreen() {
+			Player.List.Add(new Player("takua108", 17, Teams.Home, Roles.Runner));
+			Player.List[0].Position = new Vector2(108, 108);
+
+			foreach (Player p in Player.List)
+				p.MakeActor();
+		}
+		public override void Update(GameTime gameTime) {
+			foreach (Player p in Player.List)
+				p.Update(gameTime);
+			foreach (Actor a in Actor.List)
+				a.Update(gameTime);
+			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = VGame.Renderer.Context;
@@ -23,11 +37,15 @@ namespace Arena {
 				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
 				g.Stroke();
 			}
-
-			g.MoveTo(0, 0);
-			g.LineTo(Resolution.Width, Resolution.Height);
-			g.Color = new Cairo.Color(0, 0, 1);
-			g.Stroke();
+			foreach (Actor a in Actor.List) {
+				a.DrawUIBelow(g);
+			}
+			foreach (Actor a in Actor.List) {
+				a.Draw(g);
+			}
+			foreach (Actor a in Actor.List) {
+				a.DrawUIAbove(g);
+			}
 
 			((IDisposable)g).Dispose();
 		}

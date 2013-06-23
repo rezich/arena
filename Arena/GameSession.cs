@@ -28,7 +28,7 @@ namespace Arena {
 		public static double ActorScale = 22;
 		public static Random Random = new Random();
 
-		public static Actor.Teams CurrentTeam;
+		public static Teams CurrentTeam;
 		
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -47,6 +47,8 @@ namespace Arena {
 			EnemyHealthColor2 = HealthColor2; //VGame.Util.MakeColor(128, 8, 8, 0.25);
 			EnergyColor1 = VGame.Util.MakeColor(32, 32, 128, 0.2);
 			EnergyColor2 = VGame.Util.MakeColor(16, 16, 128, 0.25);
+
+			Role.Initialize();
 
 			screenManager.AddScreen(new MatchScreen(), PlayerIndex.One);
 
