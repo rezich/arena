@@ -25,6 +25,8 @@ namespace Arena {
 		public static Cairo.Color EnemyHealthColor2;
 		public static Cairo.Color EnergyColor1;
 		public static Cairo.Color EnergyColor2;
+		public static Cairo.Color HUDBackground;
+		public static Cairo.Color HUDText;
 		public static double ActorScale = 24;
 		public static Random Random = new Random();
 
@@ -47,6 +49,9 @@ namespace Arena {
 			EnemyHealthColor2 = HealthColor2; //VGame.Util.MakeColor(128, 8, 8, 0.25);
 			EnergyColor1 = VGame.Util.MakeColor(32, 32, 128, 0.2);
 			EnergyColor2 = VGame.Util.MakeColor(16, 16, 128, 0.25);
+			HUDBackground = VGame.Util.MakeColor(48, 48, 48, 1);
+			HUDText = VGame.Util.MakeColor(255, 255, 255, 1);
+			IsMouseVisible = false;
 
 			Role.Initialize();
 

@@ -13,7 +13,13 @@ namespace Arena {
 		[STAThread]
         static void Main() {
 			game = new GameSession();
-			game.Run();
+			try {
+				game.Run();
+			}
+			catch(Exception e) {
+				Console.Write(e.Message);
+				Console.ReadKey();
+			}
 		}
 	}
 }

@@ -69,5 +69,14 @@ namespace Arena.Shapes {
 			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
 		}
 	}
+	public class Cursor : VGame.Shape {
+		public override void Draw(Context g, Vector2 position, double direction, Cairo.Color? fillColor, Cairo.Color? strokeColor, double scale) {
+			g.MoveTo(position.ToPointD());
+			g.LineTo(position.AddLengthDir(scale, MathHelper.PiOver2).ToPointD());
+			g.LineTo(position.AddLengthDir(scale, MathHelper.PiOver4 * 9).ToPointD());
+			g.ClosePath();
+			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
+		}
+	}
 }
 

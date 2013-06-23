@@ -18,7 +18,7 @@ namespace Arena {
 		public int MaxHealth;
 		public int Energy;
 		public int MaxEnergy;
-		public double TurnSpeed = 0.3;
+		public int TurnSpeed = 2;
 		public double HealthRegen = 0.001;
 		private double healthRegenPart = 0;
 		public double EnergyRegen = 0.0025;
@@ -32,6 +32,22 @@ namespace Arena {
 		public double MoveSpeed;
 		public double Direction = 0;
 		public double IntendedDirection = 0;
+
+		public double HealthPercent {
+			get {
+				return (double)Health / (double)MaxHealth;
+			}
+		}
+		public double EnergyPercent {
+			get {
+				return (double)Energy / (double)MaxEnergy;
+			}
+		}
+		public double ExperiencePercent {
+			get {
+				return 0.5;
+			}
+		}
 
 		public Player(string name, int number, Teams team, Roles role) {
 			Name = name;
@@ -58,7 +74,7 @@ namespace Arena {
 		public void Update(GameTime gameTime) {
 			MoveTowardsIntended();
 			if (Direction != IntendedDirection)
-				Direction = Direction.LerpAngle(IntendedDirection, TurnSpeed);
+				Direction = Direction.LerpAngle(IntendedDirection, (double)TurnSpeed / 10 / MathHelper.PiOver2);
 			LastPosition = Position;
 			if (Actor != null) {
 				Actor.Position = Position;
@@ -90,7 +106,7 @@ namespace Arena {
 		public void MoveTowardsIntended() {
 			if (Vector2.Distance(Position, IntendedPosition) > 4) {
 				Vector2 velocity = Vector2.Normalize(IntendedPosition - Position);
-				MoveInDirection(velocity, MoveSpeed);
+				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) MoveInDirection(velocity, MoveSpeed);
 				TurnTowardsIntended();
 			}
 		}
@@ -98,7 +114,7 @@ namespace Arena {
 			Position += direction * (float)speed;
 		}
 		public void TurnTowardsIntended() {
-			IntendedDirection = Math.Atan2(Position.Y - LastPosition.Y, Position.X - LastPosition.X);
+			IntendedDirection = Math.Atan2(IntendedPosition.Y - Position.Y, IntendedPosition.X - Position.X);
 		}
 	}
 }

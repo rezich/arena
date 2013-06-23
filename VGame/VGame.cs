@@ -22,8 +22,10 @@ namespace VGame {
 			postRenderer.DrawOrder = 3;
 
 			Resolution.Initialize(graphics);
-			Resolution.Set(1280, 720, false);
-			VGame.Renderer.Initialize(graphics.GraphicsDevice, 1280, 720);
+			int w = 1920;
+			int h = 1080;
+			Resolution.Set(w, h, true);
+			VGame.Renderer.Initialize(graphics.GraphicsDevice, w, h);
 			if (!SpriteBatchHelper.IsInitialized)
 				SpriteBatchHelper.Initialize(graphics.GraphicsDevice);
 
@@ -100,11 +102,14 @@ namespace VGame {
 			return new Cairo.Color((double)b / 256, (double)g / 256, (double)r / 256, a);
 		}
 		public static void StrokeAndFill(Context g, Cairo.Color? fillColor, Cairo.Color? strokeColor) {
-			if (fillColor.HasValue) {
+			if (fillColor.HasValue && fillColor != null) {
 				g.Color = (Cairo.Color)fillColor;
-				g.FillPreserve();
+				if (strokeColor.HasValue && fillColor != null)
+					g.FillPreserve();
+				else
+					g.Fill();
 			}
-			if (strokeColor.HasValue) {
+			if (strokeColor.HasValue && fillColor != null) {
 				g.Color = (Cairo.Color)strokeColor;
 				g.Stroke();
 			}

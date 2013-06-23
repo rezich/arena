@@ -32,6 +32,26 @@ namespace VGame {
 				return _y;
 			}
 		}
+		public static int Top {
+			get {
+				return _x;
+			}
+		}
+		public static int Right {
+			get {
+				return _x + _width;
+			}
+		}
+		public static int Bottom {
+			get {
+				return _y + _height;
+			}
+		}
+		public static int Left {
+			get {
+				return _y;
+			}
+		}
 		public static bool Fullscreen {
 			get {
 				return _fullscreen;
