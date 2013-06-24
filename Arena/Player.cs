@@ -18,6 +18,8 @@ namespace Arena {
 		public int MaxHealth;
 		public int Energy;
 		public int MaxEnergy;
+		public int Level = 0;
+		public int Experience = 0;
 		public int TurnSpeed = 2;
 		public double HealthRegen = 0.001;
 		private double healthRegenPart = 0;
@@ -48,6 +50,11 @@ namespace Arena {
 		public double ExperiencePercent {
 			get {
 				return 0.5;
+			}
+		}
+		public int ExperienceLeftOver {
+			get {
+				return Experience % 100;
 			}
 		}
 

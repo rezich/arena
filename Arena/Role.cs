@@ -33,10 +33,10 @@ namespace Arena {
 				2,
 				5,
 				new List<System.Type>() {
-					typeof(Arena.Abilities.Placeholder),
-					typeof(Arena.Abilities.Placeholder),
-					typeof(Arena.Abilities.Placeholder),
-					typeof(Arena.Abilities.Placeholder)
+					typeof(Arena.Abilities.Grab),
+					typeof(Arena.Abilities.Hookshot),
+					typeof(Arena.Abilities.Dive),
+					typeof(Arena.Abilities.Grapple)
 				}
 			));
 			List.Add(Roles.Nuker, new Role(
