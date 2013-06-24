@@ -20,6 +20,9 @@ namespace Arena {
 				Console.Write(e.Message);
 				Console.ReadKey();
 			}
+			finally {
+				VGame.Renderer.Dispose();
+			}
 		}
 	}
 }

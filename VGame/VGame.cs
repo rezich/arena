@@ -22,9 +22,9 @@ namespace VGame {
 			postRenderer.DrawOrder = 3;
 
 			Resolution.Initialize(graphics);
-			int w = 1920;
-			int h = 1080;
-			Resolution.Set(w, h, true);
+			int w = 1280;
+			int h = 720;
+			Resolution.Set(w, h, false);
 			VGame.Renderer.Initialize(graphics.GraphicsDevice, w, h);
 			if (!SpriteBatchHelper.IsInitialized)
 				SpriteBatchHelper.Initialize(graphics.GraphicsDevice);
@@ -36,12 +36,22 @@ namespace VGame {
 		protected override void Initialize() {
 			base.Initialize();
 		}
+
+		protected override void Update(GameTime gameTime) {
+			Renderer.ElapsedTime += gameTime.ElapsedGameTime.TotalMilliseconds;
+			if (Renderer.ElapsedTime >= 1000) {
+				Renderer.FPS = Renderer.TotalFrames;
+				Renderer.TotalFrames = 0;
+				Renderer.ElapsedTime = 0;
+			}
+			base.Update(gameTime);
+		}
+
 		protected override void Draw(GameTime gameTime) {
+			Renderer.TotalFrames++;
 			base.Draw(gameTime);
 		}
 		public void DrawVectors(GameTime gameTime) {
-			graphics.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.LightGray);
-
 			screenManager.SpriteBatch.Begin();
 			screenManager.SpriteBatch.Draw(VGame.Renderer.RenderTarget, Resolution.Rectangle, Microsoft.Xna.Framework.Color.White);
 			screenManager.SpriteBatch.End();
@@ -71,30 +81,42 @@ namespace VGame {
 		public static Context Context;
 		public static int Width;
 		public static int Height;
+		public static bool Initialized = false;
+		public static int TotalFrames = 0;
+		public static double ElapsedTime = 0;
+		public static int FPS = 0;
 		public static void Initialize(GraphicsDevice graphicsDevice, int width, int height) {
 			graphics = graphicsDevice;
 			Resize(width, height);
+			Initialized = true;
 		}
 		public static void Resize(int width, int height) {
 			Width = width;
 			Height = height;
-			//if (Surface != null) ((IDisposable)Surface).Dispose();
-			//if (RenderTarget != null) ((IDisposable)RenderTarget).Dispose();
 			Surface = new Cairo.ImageSurface(Cairo.Format.Rgb24, Width, Height);
+			Context = new Cairo.Context(Surface);
+			Context.Antialias = Cairo.Antialias.Subpixel;
 			RenderTarget = new RenderTarget2D(graphics, Width, Height);
 		}
 		public static void BeginDrawing() {
-			Context = new Cairo.Context(Surface);
-			Context.Antialias = Cairo.Antialias.Subpixel;
+			if (!Initialized)
+				throw new Exception("lolwat");
 			Context.Save();
-			Context.SetSourceRGBA(0, 0, 0, 0);
-			Context.Operator = Cairo.Operator.Source;
+			//Context.SetSourceRGBA(0, 0, 0, 0);
+			//Context.Operator = Cairo.Operator.Source;
+			Context.SetSourceRGB(0.83, 0.83, 0.83);
 			Context.Paint();
 			Context.Restore();
 		}
 		public static void EndDrawing() {
-			((IDisposable)Context).Dispose();
+			//((IDisposable)Context).Dispose();
 			RenderTarget.SetData(Surface.Data);
+		}
+		public static void Dispose() {
+			if (!Initialized)
+				return;
+			((IDisposable)Context).Dispose();
+			//((IDisposable)Context.Target).Dispose();
 		}
 	}
 	public static class Util {

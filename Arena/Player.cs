@@ -32,6 +32,7 @@ namespace Arena {
 		public double MoveSpeed;
 		public double Direction = 0;
 		public double IntendedDirection = 0;
+		public bool IsBot = false;
 
 		public double HealthPercent {
 			get {
@@ -65,8 +66,6 @@ namespace Arena {
 		public void MakeActor() {
 			Actor a = new Actor();
 			a.Shape = Arena.Role.MakeShape(Role);
-			a.Position = Position;
-			a.Direction = Direction;
 			a.Player = this;
 			Actor.List.Add(a);
 			Actor = a;
@@ -76,10 +75,6 @@ namespace Arena {
 			if (Direction != IntendedDirection)
 				Direction = Direction.LerpAngle(IntendedDirection, (double)TurnSpeed / 10 / MathHelper.PiOver2);
 			LastPosition = Position;
-			if (Actor != null) {
-				Actor.Position = Position;
-				Actor.Direction = Direction;
-			}
 		}
 		public void Regen() {
 			if (Health < MaxHealth)
@@ -117,5 +112,7 @@ namespace Arena {
 			IntendedDirection = Math.Atan2(IntendedPosition.Y - Position.Y, IntendedPosition.X - Position.X);
 		}
 	}
+	/*class Bot : Player {
+	}*/
 }
 

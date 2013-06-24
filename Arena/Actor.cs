@@ -8,9 +8,19 @@ using Cairo;
 namespace Arena {
 	public class Actor {
 		public static List<Actor> List = new List<Actor>();
-		public Vector2 Position;
-		public double Direction = 0;
+		public Vector2 Position {
+			get {
+				return Player.Position - _viewPosition + _viewOrigin;
+			}
+		}
+		public double Direction {
+			get {
+				return Player.Direction;
+			}
+		}
 		public Player Player;
+		Vector2 _viewPosition;
+		Vector2 _viewOrigin;
 
 		public VGame.IShape Shape;
 		
@@ -18,8 +28,9 @@ namespace Arena {
 		}
 		public void Initialize() {
 		}
-		public void Update(GameTime gameTime) {
-
+		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
+			_viewPosition = viewPosition;
+			_viewOrigin = viewOrigin;
 		}
 		public virtual void Draw(GameTime gameTime, Context g) {
 			Shape.Draw(g, Position, Direction, (Player.Team == Teams.Home ? GameSession.HomeColor1 : GameSession.AwayColor1), (Player.Team == Teams.Home ? GameSession.HomeColor2 : GameSession.AwayColor2), GameSession.ActorScale);
