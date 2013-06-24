@@ -104,7 +104,7 @@ namespace Arena {
 			g.LineWidth = 2.0;
 			g.Save();
 
-			double rangeRadius = GameSession.ActorScale * 10;
+			double rangeRadius = GameSession.ActorScale * Role.List[Player.Role].AttackRange;
 			double rangeCircum = 2 * MathHelper.Pi * rangeRadius;
 			double start = gameTime.TotalGameTime.TotalSeconds / MathHelper.TwoPi * 1;
 			double[] dash = new double[] { rangeCircum / 80, rangeCircum / 120 };

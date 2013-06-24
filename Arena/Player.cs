@@ -33,6 +33,7 @@ namespace Arena {
 		public double Direction = 0;
 		public double IntendedDirection = 0;
 		public bool IsBot = false;
+		public List<Ability> Abilities = new List<Ability>();
 
 		public double HealthPercent {
 			get {
@@ -61,6 +62,12 @@ namespace Arena {
 			MoveSpeed = Arena.Role.List[Role].MoveSpeed;
 			Health = MaxHealth;
 			Energy = MaxEnergy;
+
+			foreach (System.Type t in Arena.Role.List[Role].Abilities) {
+				Ability o = (Ability)Activator.CreateInstance(t);
+				Abilities.Add(o);
+			}
+
 			Player.List.Add(this);
 		}
 		public void MakeActor() {
@@ -99,7 +106,8 @@ namespace Arena {
 			IntendedPosition = position;
 		}
 		public void MoveTowardsIntended() {
-			if (Vector2.Distance(Position, IntendedPosition) > 4) {
+			//if (Vector2.Distance(Position, IntendedPosition) > Arena.Role.List[Role].AttackRange * Arena.GameSession.ActorScale) {
+			if (Vector2.Distance(Position, IntendedPosition) > Arena.GameSession.ActorScale * 0.25) {
 				Vector2 velocity = Vector2.Normalize(IntendedPosition - Position);
 				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) MoveInDirection(velocity, MoveSpeed);
 				TurnTowardsIntended();
@@ -112,7 +120,10 @@ namespace Arena {
 			IntendedDirection = Math.Atan2(IntendedPosition.Y - Position.Y, IntendedPosition.X - Position.X);
 		}
 	}
-	/*class Bot : Player {
-	}*/
+	class Bot : Player {
+		public Bot(Teams team, Roles role) : base("--BOT--", 0, team, role) {
+			Number = Arena.GameSession.Random.Next(1, 49);
+		}
+	}
 }
 

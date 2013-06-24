@@ -25,6 +25,9 @@ namespace Arena {
 			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
 			LocalPlayer.JumpTo(new Vector2(144, 144));
 
+			Bot bot = new Bot(Teams.Away, Roles.Nuker);
+			bot.JumpTo(new Vector2(400, 400));
+
 			foreach (Player p in Player.List)
 				p.MakeActor();
 			viewPosition = new Vector2(0, 0);
@@ -177,9 +180,46 @@ namespace Arena {
 			g.ClosePath();
 			VGame.Util.StrokeAndFill(g, Arena.GameSession.HUDBackground, null);
 
+			// skill 1
+			g.MoveTo(new Vector2(Resolution.Right - margin, (float)(Renderer.Height / 2 - 3 * margin / 2 - minimapSize)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 - 3 * margin / 2 - minimapSize)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 - 3 * margin / 2 - minimapSize * 2)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin), (float)(Renderer.Height / 2 - 3 * margin / 2 - minimapSize * 2)).ToPointD());
+			g.ClosePath();
+			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
+
+			// skill 2
+			g.MoveTo(new Vector2(Resolution.Right - margin, Renderer.Height / 2 - margin / 2).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 - margin / 2)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 - margin / 2 - minimapSize)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin), (float)(Renderer.Height / 2 - margin / 2 - minimapSize)).ToPointD());
+			g.ClosePath();
+			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
+
+			// skill 3
+			g.MoveTo(new Vector2(Resolution.Right - margin, Renderer.Height / 2 + margin / 2).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 + margin / 2)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 + margin / 2 + minimapSize)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin), (float)(Renderer.Height / 2 + margin / 2 + minimapSize)).ToPointD());
+			g.ClosePath();
+			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
+
+			// skill 4
+			g.MoveTo(new Vector2(Resolution.Right - margin, (float)(Renderer.Height / 2 + 3 * margin / 2 + minimapSize)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 + 3 * margin / 2 + minimapSize)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin - minimapSize), (float)(Renderer.Height / 2 + 3 * margin / 2 + minimapSize * 2)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Right - margin), (float)(Renderer.Height / 2 + 3 * margin / 2 + minimapSize * 2)).ToPointD());
+			g.ClosePath();
+			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
+
 			DrawText(g, new Vector2(Resolution.Left + hudWidth + margin, Resolution.Top + margin), Renderer.FPS.ToString(), 20, 0);
 			DrawText(g, new Vector2(Resolution.Left + margin, Resolution.Top + margin), "LEVEL: 2", 14, 0);
 			DrawText(g, new Vector2(Resolution.Left + margin, Resolution.Top + margin + 14), "GOLD: 108", 14, 0);
+
+			DrawText(g, new Vector2(Resolution.Right - hudWidth + margin, Resolution.Top + margin), LocalPlayer.Abilities[0].Name, 14, 0);
+			DrawText(g, new Vector2(Resolution.Right - hudWidth + margin, Resolution.Top + margin + 14), LocalPlayer.Abilities[1].Name, 14, 0);
+			DrawText(g, new Vector2(Resolution.Right - hudWidth + margin, Resolution.Top + margin + 28), LocalPlayer.Abilities[2].Name, 14, 0);
+			DrawText(g, new Vector2(Resolution.Right - hudWidth + margin, Resolution.Top + margin + 42), LocalPlayer.Abilities[3].Name, 14, 0);
 		}
 		protected void DrawText(Cairo.Context g, Vector2 position, string text, double scale, double angle) {
 			g.Save();

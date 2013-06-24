@@ -49,6 +49,7 @@
     <Compile Include="GameSession.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Screens\MatchScreen.cs" />
+    <Compile Include="Ability.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
