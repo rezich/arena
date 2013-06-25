@@ -112,15 +112,18 @@ namespace Arena {
 			DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0), null);
 			if (player.Abilities[ability].Ready) {
 				if (player.Abilities[ability].Level > 0)
-					DrawBox(g, Ability[ability], new Cairo.Color(0, 0.9, 0), null);
+					if (player.Energy >= player.Abilities[ability].EnergyCost)
+						DrawBox(g, Ability[ability], new Cairo.Color(0, 0.9, 0), null);
+					else
+						DrawBox(g, Ability[ability], new Cairo.Color(0.25, 0.5, 0.25), null);
 				else
 					DrawBox(g, Ability[ability], new Cairo.Color(0.1, 0.2, 0.1), null);
 			}
 			else {
-				DrawBox(g, Ability[ability], new Cairo.Color(0, 0.5, 0), null);
+				DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0.9), null);
 				Vector2 timerCenter = Ability[ability][0] + new Vector2((float)AbilitySize / 2);
 				g.MoveTo(timerCenter.ToPointD());
-				double angle = (player.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds / player.Abilities[ability].Cooldown / 25 / MathHelper.TwoPi;
+				double angle = Math.Max(0, MathHelper.TwoPi - (player.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds / player.Abilities[ability].Cooldown / 25 / MathHelper.TwoPi);
 				double adjustedAngle = angle - MathHelper.PiOver2;
 				double flip = angle % MathHelper.PiOver2;
 				if (flip > MathHelper.PiOver4) {
@@ -139,7 +142,10 @@ namespace Arena {
 				g.LineTo(timerCenter.AddLengthDir(AbilitySize / 2, 3 * MathHelper.PiOver2).ToPointD());
 				//g.LineTo(timerCenter.AddLengthDir(AbilitySize / 2, 3 * MathHelper.PiOver2).ToPointD());
 				g.ClosePath();
-				VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0.9), null);
+				if (player.Energy >= player.Abilities[ability].EnergyCost)
+					VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0.5, 0), null);
+				else
+					VGame.Util.StrokeAndFill(g, new Cairo.Color(0.25, 0.4, 0.25), null);
 			}
 			DrawText(g, Ability[ability][0] + new Vector2(Padding, Padding), player.Abilities[ability].Name.ToUpper(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, AbilityNameBackground, 0);
 			DrawText(g, Ability[ability][1] + new Vector2(-Padding, Padding), TemporaryKeyList[ability], 19, TextAlign.Right, TextAlign.Top, MainTextFill, MainTextStroke, AbilityKeyBackground, 0);

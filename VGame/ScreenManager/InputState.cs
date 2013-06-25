@@ -33,11 +33,11 @@ namespace VGame {
 	public class InputState {
 		public const int MaxInputs = 4;
 
-		public readonly KeyboardState[] CurrentKeyboardStates;
+		public KeyboardState CurrentKeyboardState;
 		public readonly GamePadState[] CurrentGamePadStates;
 		public MouseState CurrentMouseState;
 
-		public readonly KeyboardState[] LastKeyboardStates;
+		public  KeyboardState LastKeyboardState;
 		public readonly GamePadState[] LastGamePadStates;
 		public MouseState LastMouseState;
 
@@ -46,10 +46,10 @@ namespace VGame {
 		public readonly bool[] GamePadWasConnected;
 
 		public InputState() {
-			CurrentKeyboardStates = new KeyboardState[MaxInputs];
+			CurrentKeyboardState = new KeyboardState();
 			CurrentGamePadStates = new GamePadState[MaxInputs];
 
-			LastKeyboardStates = new KeyboardState[MaxInputs];
+			LastKeyboardState = new KeyboardState();
 			LastGamePadStates = new GamePadState[MaxInputs];
 
 			CurrentMouseState = new MouseState();
@@ -61,11 +61,11 @@ namespace VGame {
 		public void Update() {
 			LastMouseState = CurrentMouseState;
 			CurrentMouseState = Mouse.GetState();
+			LastKeyboardState = CurrentKeyboardState;
+			CurrentKeyboardState = Keyboard.GetState();
 			for (int i = 0; i < MaxInputs; i++) {
-				LastKeyboardStates[i] = CurrentKeyboardStates[i];
 				LastGamePadStates[i] = CurrentGamePadStates[i];
 
-				CurrentKeyboardStates[i] = Keyboard.GetState((PlayerIndex)i);
 				CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);
 
 				if (CurrentGamePadStates[i].IsConnected) {
@@ -76,22 +76,16 @@ namespace VGame {
 			if (IsGamepadInteracted()) InputMethod = InputMethods.Gamepad;
 		}
 
-		public bool IsNewKeyPress(Keys key, PlayerIndex? controllingPlayer,
-		                          out PlayerIndex playerIndex) {
-			if (controllingPlayer.HasValue) {
-				playerIndex = controllingPlayer.Value;
+		public bool IsNewKeyPress(Keys key) {
+			return (CurrentKeyboardState.IsKeyDown(key) && LastKeyboardState.IsKeyUp(key));
+		}
 
-				int i = (int)playerIndex;
+		public bool IsKeyDown(Keys key) {
+			return CurrentKeyboardState.IsKeyDown(key);
+		}
 
-				return (CurrentKeyboardStates[i].IsKeyDown(key) &&
-				        LastKeyboardStates[i].IsKeyUp(key));
-			}
-			else {
-				return (IsNewKeyPress(key, PlayerIndex.One, out playerIndex) ||
-				        IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
-				        IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
-				        IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
-			}
+		public bool IsKeyUp(Keys key) {
+			return CurrentKeyboardState.IsKeyUp(key);
 		}
 
 		public bool IsNewButtonPress(Buttons button, PlayerIndex? controllingPlayer,
@@ -133,7 +127,7 @@ namespace VGame {
 
 		public bool IsKeyboardInteracted() {
 			for (int i = 0; i < MaxInputs; i++) {
-				if (CurrentKeyboardStates[i] != LastKeyboardStates[i]) return true;
+				if (CurrentKeyboardState != LastKeyboardState) return true;
 			}
 			return false;
 		}
@@ -167,15 +161,14 @@ namespace VGame {
 					) return true;
 			}
 			return false;
-			//return !CurrentKeyboardStates.Equals(LastKeyboardStates);
 		}
 
-		public bool IsInput(Inputs input, PlayerIndex? controllingPlayer) {
+		/*public bool IsInput(Inputs input, PlayerIndex? controllingPlayer) {
 			PlayerIndex playerIndex;
 			return IsInput(input, controllingPlayer, out playerIndex);
-		}
+		}*/
 
-		public bool IsInput(Inputs input, PlayerIndex? controllingPlayer, out PlayerIndex playerIndex) {
+		/*public bool IsInput(Inputs input, PlayerIndex? controllingPlayer, out PlayerIndex playerIndex) {
 			switch (input) {
 				case Inputs.MenuAccept:
 					return IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
@@ -224,7 +217,7 @@ namespace VGame {
 					default:
 					goto case Inputs.MenuAccept;
 			}
-		}
+		}*/
 
 		public Vector2 LeftThumbstick(PlayerIndex? controllingPlayer) {
 			if (controllingPlayer == null) return Vector2.Zero;

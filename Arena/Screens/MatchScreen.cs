@@ -13,19 +13,30 @@ namespace Arena {
 		Shapes.Cursor cursor = new Arena.Shapes.Cursor();
 		Vector2 viewPosition;
 		Vector2 viewOrigin;
+		int edgeScrollSize = 32;
 
 		int viewportWidth {
 			get {
 				return Renderer.Width - HUD.BoxWidth * 2;
 			}
 		}
+		int viewportHeight {
+			get {
+				return Renderer.Height;
+			}
+		}
+		Vector2 cursorWorldPosition {
+			get {
+				return cursorPosition + viewPosition - viewOrigin;
+			}
+		}
 		int viewMoveSpeed = 8;
 
 		public MatchScreen() {
-			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Grappler);
+			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
 			LocalPlayer.JumpTo(new Vector2(144, 144));
 			LocalPlayer.LevelUp(0);
-			LocalPlayer.LevelUp(1);
+			LocalPlayer.LevelUp(0);
 			//LocalPlayer.LevelUp(2);
 			//LocalPlayer.LevelUp(3);
 
@@ -39,36 +50,47 @@ namespace Arena {
 		}
 		public override void HandleInput(InputState input) {
 			cursorPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y);
-			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
-				LocalPlayer.IntendedPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y) + viewPosition - viewOrigin;
-			}
-			PlayerIndex playerIndex;
-			/*if (input.IsNewKeyPress(Keys.Up, null, out playerIndex))
-				LocalPlayer.Health = Math.Min(LocalPlayer.Health + 1, LocalPlayer.MaxHealth);
-			if (input.IsNewKeyPress(Keys.Down, null, out playerIndex))
-				LocalPlayer.Health = Math.Max(LocalPlayer.Health - 1, 0);
-			if (input.IsNewKeyPress(Keys.Right, null, out playerIndex))
-				LocalPlayer.Energy = Math.Min(LocalPlayer.Energy + 1, LocalPlayer.MaxEnergy);
-			if (input.IsNewKeyPress(Keys.Left, null, out playerIndex))
-				LocalPlayer.Energy = Math.Max(LocalPlayer.Energy - 1, 0);*/
-			if (input.CurrentKeyboardStates[(int)PlayerIndex.One].IsKeyDown(Keys.Up))
-				viewPosition.Y -= viewMoveSpeed;
-			if (input.CurrentKeyboardStates[(int)PlayerIndex.One].IsKeyDown(Keys.Left))
+			if (cursorPosition.X < viewOrigin.X + edgeScrollSize)
 				viewPosition.X -= viewMoveSpeed;
-			if (input.CurrentKeyboardStates[(int)PlayerIndex.One].IsKeyDown(Keys.Right))
+			if (cursorPosition.X > viewOrigin.X + viewportWidth - edgeScrollSize)
 				viewPosition.X += viewMoveSpeed;
-			if (input.CurrentKeyboardStates[(int)PlayerIndex.One].IsKeyDown(Keys.Down))
+			if (cursorPosition.Y < viewOrigin.Y + edgeScrollSize)
+				viewPosition.Y -= viewMoveSpeed;
+			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize)
 				viewPosition.Y += viewMoveSpeed;
-			if (input.IsNewKeyPress(Keys.Q, PlayerIndex.One, out playerIndex)) {
+			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
+				Actor clickedActor = null;
+				foreach (Actor a in Actor.List) {
+					if (Vector2.Distance(cursorPosition, a.Position) < Arena.GameSession.ActorScale) {
+						clickedActor = a;
+						break;
+					}
+				}
+				if (clickedActor != null)
+					LocalPlayer.AttackTarget = clickedActor;
+				else {
+					LocalPlayer.AttackTarget = null;
+					LocalPlayer.IntendedPosition = cursorWorldPosition;
+				}
+			}
+			if (input.IsKeyDown(Keys.Up))
+				viewPosition.Y -= viewMoveSpeed;
+			if (input.IsKeyDown(Keys.Left))
+				viewPosition.X -= viewMoveSpeed;
+			if (input.IsKeyDown(Keys.Right))
+				viewPosition.X += viewMoveSpeed;
+			if (input.IsKeyDown(Keys.Down))
+				viewPosition.Y += viewMoveSpeed;
+			if (input.IsNewKeyPress(Keys.Q)) {
 				LocalPlayer.UseAbility(0);
 			}
-			if (input.IsNewKeyPress(Keys.W, PlayerIndex.One, out playerIndex)) {
+			if (input.IsNewKeyPress(Keys.W)) {
 				LocalPlayer.UseAbility(1);
 			}
-			if (input.IsNewKeyPress(Keys.E, PlayerIndex.One, out playerIndex)) {
+			if (input.IsNewKeyPress(Keys.E)) {
 				LocalPlayer.UseAbility(2);
 			}
-			if (input.IsNewKeyPress(Keys.R, PlayerIndex.One, out playerIndex)) {
+			if (input.IsNewKeyPress(Keys.R)) {
 				LocalPlayer.UseAbility(3);
 			}
 			base.HandleInput(input);
@@ -113,7 +135,7 @@ namespace Arena {
 
 			HUD.Draw(gameTime, g, LocalPlayer);
 
-			cursor.Draw(g, cursorPosition, 0, new Cairo.Color(1, 1, 1), new Cairo.Color(0.1, 0.1, 0.1), 22);
+			cursor.Draw(g, cursorPosition, 0, LocalPlayer.AttackTarget == null ? new Cairo.Color(1, 1, 1) : new Cairo.Color(0, 0, 1), new Cairo.Color(0.1, 0.1, 0.1), 22);
 		}
 	}
 }

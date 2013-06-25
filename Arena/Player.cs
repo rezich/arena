@@ -36,6 +36,7 @@ namespace Arena {
 		public double IntendedDirection = 0;
 		public bool IsBot = false;
 		public List<Ability> Abilities = new List<Ability>();
+		public Actor AttackTarget;
 
 		public double HealthPercent {
 			get {
@@ -85,6 +86,7 @@ namespace Arena {
 			Actor = a;
 		}
 		public void Update(GameTime gameTime) {
+			Regen();
 			foreach (Ability a in Abilities)
 				a.Update(gameTime);
 			MoveTowardsIntended();
@@ -115,21 +117,34 @@ namespace Arena {
 			IntendedPosition = position;
 		}
 		public void MoveTowardsIntended() {
-			//if (Vector2.Distance(Position, IntendedPosition) > Arena.Role.List[Role].AttackRange * Arena.GameSession.ActorScale) {
-			if (Vector2.Distance(Position, IntendedPosition) > Arena.GameSession.ActorScale * 0.25) {
-				Vector2 velocity = Vector2.Normalize(IntendedPosition - Position);
+			Vector2 intendedPosition;
+			if (AttackTarget != null) {
+				intendedPosition = AttackTarget.Player.Position;
+				TurnTowards(intendedPosition);
+				if (Vector2.Distance(Position, intendedPosition) <= Arena.Role.List[Role].AttackRange * Arena.GameSession.ActorScale) {
+					if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
+						// AUTOATTACK
+						return;
+					}
+					return;
+				}
+			}
+			else
+				intendedPosition = IntendedPosition;
+			if (Vector2.Distance(Position, intendedPosition) > Arena.GameSession.ActorScale * 0.25) {
+				Vector2 velocity = Vector2.Normalize(intendedPosition - Position);
 				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) MoveInDirection(velocity, MoveSpeed);
-				TurnTowardsIntended();
+				TurnTowards(intendedPosition);
 			}
 		}
 		public void MoveInDirection(Vector2 direction, double speed) {
 			Position += direction * (float)speed;
 		}
-		public void TurnTowardsIntended() {
-			IntendedDirection = Math.Atan2(IntendedPosition.Y - Position.Y, IntendedPosition.X - Position.X);
+		public void TurnTowards(Vector2 position) {
+			IntendedDirection = Math.Atan2(position.Y - Position.Y, position.X - Position.X);
 		}
 		public AbilityActivationType? UseAbility(int ability) {
-			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost) {
+			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready) {
 				Energy -= Abilities[ability].EnergyCost;
 				Abilities[ability].Activate();
 				return Abilities[ability].ActivationType;

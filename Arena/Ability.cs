@@ -157,8 +157,8 @@ namespace Arena.Abilities {
 
 		}
 	}
-	public class Dive : Ability {
-		public Dive() : base("Dive", AbilityActivationType.NoTarget, 4) {
+	public class Tackle : Ability {
+		public Tackle() : base("Tackle", AbilityActivationType.NoTarget, 4) {
 		}
 		public override int EnergyCost {
 			get {
