@@ -4,68 +4,12 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace Arena {
-	public enum Teams {
-		Home,
-		Away
-	}
-	public enum Attitude {
-		Neutral,
-		Friend,
-		Enemy
-	}
-	public class Player {
+	public class Player : UnitController {
 		public static List<Player> List = new List<Player>();
-
 		public string Name;
-		public Roles Role;
-		public Actor Actor;
-		public int Health;
-		public int MaxHealth;
-		public int Energy;
-		public int MaxEnergy;
-		public int Level = 0;
-		public int Experience = 0;
-		public int TurnSpeed = 2;
-		public double HealthRegen = 0.001;
-		private double healthRegenPart = 0;
-		public double EnergyRegen = 0.0025;
-		private double energyRegenPart = 0;
 		public int Number;
-		public Teams Team;
-
-		public Vector2 Position;
-		public Vector2 LastPosition;
-		public Vector2 IntendedPosition;
-		public double MoveSpeed;
-		public double Direction = 0;
-		public double IntendedDirection = 0;
-		public bool IsBot = false;
-		public List<Ability> Abilities = new List<Ability>();
-		public Actor AttackTarget;
-		public TimeSpan NextAutoAttackReady = new TimeSpan();
-		//public bool AutoAttackReady = true;
-		public bool AutoAttacking = false;
-
-		public double HealthPercent {
-			get {
-				return (double)Health / (double)MaxHealth;
-			}
-		}
-		public double EnergyPercent {
-			get {
-				return (double)Energy / (double)MaxEnergy;
-			}
-		}
-		public double ExperiencePercent {
-			get {
-				return 0.5;
-			}
-		}
-		public int ExperienceLeftOver {
-			get {
-				return Experience % 100;
-			}
-		}
+		public Roles Role;
+		public Unit PlayerUnit;
 
 		public Player(string name, int number, Teams team, Roles role) {
 			Name = name;
@@ -73,130 +17,23 @@ namespace Arena {
 			Team = team;
 			Role = role;
 
-			MaxHealth = Arena.Role.List[Role].BaseHealth;
-			MaxEnergy = Arena.Role.List[Role].BaseEnergy;
-			MoveSpeed = Arena.Role.List[Role].MoveSpeed;
-			Health = MaxHealth;
-			Energy = MaxEnergy;
-
-			foreach (System.Type t in Arena.Role.List[Role].Abilities) {
-				Ability o = (Ability)Activator.CreateInstance(t);
-				Abilities.Add(o);
-			}
-
 			Player.List.Add(this);
 		}
-		public void MakeActor() {
-			Actor a = new Actor();
-			a.Shape = Arena.Role.MakeShape(Role);
-			a.Player = this;
-			Actor.List.Add(a);
-			Actor = a;
-		}
-		public void Update(GameTime gameTime) {
-			Regen();
-			foreach (Ability a in Abilities)
-				a.Update(gameTime);
-			MoveTowardsIntended();
-			if (Direction != IntendedDirection)
-				Direction = Direction.LerpAngle(IntendedDirection, (double)TurnSpeed / 10 / MathHelper.PiOver2);
-			LastPosition = Position;
-			if (AutoAttacking) {
-				if (gameTime.TotalGameTime > NextAutoAttackReady) {
-					NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(Arena.Role.List[Role].BaseAttackTime);
-					AttackTarget.Player.Health = Math.Max(AttackTarget.Player.Health - 1, 0);
-				}
+		public Unit MakePlayerUnit(Vector2 position) {
+			Unit u = new Unit(Arena.Role.List[Role].BaseHealth, Arena.Role.List[Role].BaseEnergy, Arena.Role.MakeShape(Role));
+			u.MoveSpeed = Arena.Role.List[Role].MoveSpeed;
+			u.TurnSpeed = Arena.Role.List[Role].TurnSpeed;
+			u.AttackRange = Arena.Role.List[Role].AttackRange;
+			u.BaseAttackTime = Arena.Role.List[Role].BaseAttackTime;
+
+			u.JumpTo(position);
+
+			foreach (System.Type t in Arena.Role.List[Role].Abilities) {
+				u.Abilities.Add((Ability)Activator.CreateInstance(t));
 			}
-		}
-		public void Regen() {
-			if (Health < MaxHealth)
-				healthRegenPart += HealthRegen;
-			else
-				healthRegenPart = 0;
-			if (healthRegenPart >= 1) {
-				healthRegenPart = 0;
-				Health = Math.Min(Health + 1, MaxHealth);
-			}
-			if (Energy < MaxEnergy)
-				energyRegenPart += EnergyRegen;
-			else
-				energyRegenPart = 0;
-			if (energyRegenPart >= 1) {
-				energyRegenPart = 0;
-				Energy = Math.Min(Energy + 1, MaxEnergy);
-			}
-		}
-		public void JumpTo(Vector2 position) {
-			Position = position;
-			IntendedPosition = position;
-		}
-		public void MoveTowardsIntended() {
-			AutoAttacking = false;
-			Vector2 intendedPosition;
-			if (AttackTarget != null) {
-				intendedPosition = AttackTarget.Player.Position;
-				TurnTowards(intendedPosition);
-				if (Vector2.Distance(Position, intendedPosition) <= Arena.Role.List[Role].AttackRange * Arena.GameSession.ActorScale) {
-					if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
-						// AUTOATTACK
-						AutoAttacking = true;
-						return;
-					}
-					return;
-				}
-			}
-			else
-				intendedPosition = IntendedPosition;
-			if (Vector2.Distance(Position, intendedPosition) > MoveSpeed) {
-				Vector2 velocity = Vector2.Normalize(intendedPosition - Position);
-				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
-					Actor foundActor = null;
-					/*foreach (Actor a in Actor.List) {
-						if (a == Actor)
-							continue;
-						if (Vector2.Distance(Position + velocity, a.Player.Position) < Arena.GameSession.ActorScale * 2) {
-							foundActor = a;
-							break;
-						}
-					}*/
-					if (foundActor == null)
-						MoveInDirection(velocity, MoveSpeed);
-					else {
-						/*double angle = Math.Atan2(Position.Y - foundActor.Player.Position.Y, Position.X - foundActor.Player.Position.X);
-						double oldDirection = Direction;
-						double oldIntendedDirection = IntendedDirection;
-						Position = Position.AddLengthDir(Arena.GameSession.ActorScale * 0.8, angle);
-						IntendedPosition = Position.AddLengthDir(Arena.GameSession.ActorScale * 0.8, angle);
-						Direction = oldDirection;
-						IntendedDirection = oldIntendedDirection;*/
-					}
-				}
-				TurnTowards(intendedPosition);
-			}
-			else
-				Position = IntendedPosition;
-		}
-		public void MoveInDirection(Vector2 direction, double speed) {
-			Position += direction * (float)speed;
-		}
-		public void TurnTowards(Vector2 position) {
-			IntendedDirection = Math.Atan2(position.Y - Position.Y, position.X - Position.X);
-		}
-		public AbilityActivationType? UseAbility(int ability) {
-			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready) {
-				Energy -= Abilities[ability].EnergyCost;
-				Abilities[ability].Activate();
-				return Abilities[ability].ActivationType;
-			}
-			return null;
-		}
-		public void LevelUp(int ability) {
-			Abilities[ability].Level += 1;
-		}
-		public Attitude AttitudeTowards(Player player) {
-			if (player.Team != Team)
-				return Attitude.Enemy;
-			return Attitude.Friend;
+			PlayerUnit = u;
+			ControlledUnits.Add(PlayerUnit);
+			return PlayerUnit;
 		}
 	}
 	class Bot : Player {

@@ -53,8 +53,8 @@ namespace Arena {
 			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
 
 			// health foreground
-			g.MoveTo(new Vector2(Resolution.Left + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.HealthPercent)).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.HealthPercent)).ToPointD());
+			g.MoveTo(new Vector2(Resolution.Left + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
 			g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.LineTo(new Vector2(Resolution.Left + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.ClosePath();
@@ -69,8 +69,8 @@ namespace Arena {
 			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
 
 			// energy foreground
-			g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.EnergyPercent)).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.EnergyPercent)).ToPointD());
+			g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
 			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.ClosePath();
@@ -85,8 +85,8 @@ namespace Arena {
 			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
 
 			// experience foreground
-			g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.ExperiencePercent)).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.ExperiencePercent)).ToPointD());
+			g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
+			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
 			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.ClosePath();
@@ -110,9 +110,9 @@ namespace Arena {
 		}
 		private static void DrawAbility(GameTime gameTime, Cairo.Context g, Player player, int ability) {
 			DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0), null);
-			if (player.Abilities[ability].Ready) {
-				if (player.Abilities[ability].Level > 0)
-					if (player.Energy >= player.Abilities[ability].EnergyCost)
+			if (player.CurrentUnit.Abilities[ability].Ready) {
+				if (player.CurrentUnit.Abilities[ability].Level > 0)
+					if (player.CurrentUnit.Energy >= player.CurrentUnit.Abilities[ability].EnergyCost)
 						DrawBox(g, Ability[ability], new Cairo.Color(0, 0.9, 0), null);
 					else
 						DrawBox(g, Ability[ability], new Cairo.Color(0.25, 0.5, 0.25), null);
@@ -123,7 +123,7 @@ namespace Arena {
 				DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0.9), null);
 				Vector2 timerCenter = Ability[ability][0] + new Vector2((float)AbilitySize / 2);
 				g.MoveTo(timerCenter.ToPointD());
-				double angle = Math.Max(0, MathHelper.TwoPi - (player.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds / player.Abilities[ability].Cooldown / 25 / MathHelper.TwoPi);
+				double angle = Math.Max(0, MathHelper.TwoPi - (player.CurrentUnit.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds / player.CurrentUnit.Abilities[ability].Cooldown / 25 / MathHelper.TwoPi);
 				double adjustedAngle = angle - MathHelper.PiOver2;
 				double flip = angle % MathHelper.PiOver2;
 				if (flip > MathHelper.PiOver4) {
@@ -142,30 +142,30 @@ namespace Arena {
 				g.LineTo(timerCenter.AddLengthDir(AbilitySize / 2, 3 * MathHelper.PiOver2).ToPointD());
 				//g.LineTo(timerCenter.AddLengthDir(AbilitySize / 2, 3 * MathHelper.PiOver2).ToPointD());
 				g.ClosePath();
-				if (player.Energy >= player.Abilities[ability].EnergyCost)
+				if (player.CurrentUnit.Energy >= player.CurrentUnit.Abilities[ability].EnergyCost)
 					VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0.5, 0), null);
 				else
 					VGame.Util.StrokeAndFill(g, new Cairo.Color(0.25, 0.4, 0.25), null);
 			}
-			DrawText(g, Ability[ability][0] + new Vector2(Padding, Padding), player.Abilities[ability].Name.ToUpper(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, AbilityNameBackground, 0);
+			DrawText(g, Ability[ability][0] + new Vector2(Padding, Padding), player.CurrentUnit.Abilities[ability].Name.ToUpper(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, AbilityNameBackground, 0);
 			DrawText(g, Ability[ability][1] + new Vector2(-Padding, Padding), TemporaryKeyList[ability], 19, TextAlign.Right, TextAlign.Top, MainTextFill, MainTextStroke, AbilityKeyBackground, 0);
-			DrawText(g, Ability[ability][2] + new Vector2(-Padding, -Padding), player.Abilities[ability].Cooldown.ToString(), 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityCooldownBackground, 0);
-			DrawText(g, Ability[ability][3] + new Vector2(Padding, -Padding), player.Abilities[ability].EnergyCost.ToString(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityEnergyBackground, 0);
-			if (!player.Abilities[ability].Ready) {
-				string str = Math.Round(((double)(player.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString();
+			DrawText(g, Ability[ability][2] + new Vector2(-Padding, -Padding), player.CurrentUnit.Abilities[ability].Cooldown.ToString(), 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityCooldownBackground, 0);
+			DrawText(g, Ability[ability][3] + new Vector2(Padding, -Padding), player.CurrentUnit.Abilities[ability].EnergyCost.ToString(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityEnergyBackground, 0);
+			if (!player.CurrentUnit.Abilities[ability].Ready) {
+				string str = Math.Round(((double)(player.CurrentUnit.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString();
 				if (str.Length < 2 || str.Substring(str.Length - 2, 1) != ".") {
 					str += ".0";
 				}
 				DrawText(g, Ability[ability][0] + new Vector2((float)(AbilitySize / 2), (float)(AbilitySize / 2)), str, 32, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0);
 			}
-			Vector2 levelOrigin = Ability[ability][1] + new Vector2(-Padding - LevelBoxSize, (float)((AbilitySize / 2) - (LevelBoxSize * player.Abilities[ability].Levels) / 2 - (LevelBoxPadding * (player.Abilities[ability].Levels) / 2) + LevelBoxPadding / 2));
-			for (var i = 0; i < player.Abilities[ability].Levels; i++) {
+			Vector2 levelOrigin = Ability[ability][1] + new Vector2(-Padding - LevelBoxSize, (float)((AbilitySize / 2) - (LevelBoxSize * player.CurrentUnit.Abilities[ability].Levels) / 2 - (LevelBoxPadding * (player.CurrentUnit.Abilities[ability].Levels) / 2) + LevelBoxPadding / 2));
+			for (var i = 0; i < player.CurrentUnit.Abilities[ability].Levels; i++) {
 				DrawBox(g, new List<Vector2>() {
 					levelOrigin + new Vector2(0, LevelBoxSize * i + LevelBoxPadding * i),
 					levelOrigin + new Vector2(LevelBoxSize, LevelBoxSize * i + LevelBoxPadding * i),
 					levelOrigin + new Vector2(LevelBoxSize, LevelBoxSize * i + LevelBoxSize + LevelBoxPadding * i),
 					levelOrigin + new Vector2(0, LevelBoxSize * i + LevelBoxSize + LevelBoxPadding * i)
-				}, (player.Abilities[ability].Level >= i + 1 ? new Cairo.Color(1, 1, 1) : new Cairo.Color(0, 0, 0)), new Cairo.Color(1, 1, 1));
+				}, (player.CurrentUnit.Abilities[ability].Level >= i + 1 ? new Cairo.Color(1, 1, 1) : new Cairo.Color(0, 0, 0)), new Cairo.Color(1, 1, 1));
 			}
 		}
 		private static void DrawText(Cairo.Context g, Vector2 position, string text, double scale, TextAlign hAlign, TextAlign vAlign, Cairo.Color? fillColor, Cairo.Color? strokeColor, Cairo.Color? backgroundColor, double angle) {

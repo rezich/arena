@@ -14,6 +14,7 @@ namespace Arena {
 		Vector2 viewPosition;
 		Vector2 viewOrigin;
 		int edgeScrollSize = 32;
+		CreepController NeutralController = new CreepController(Teams.Neutral);
 
 		int viewportWidth {
 			get {
@@ -34,20 +35,10 @@ namespace Arena {
 
 		public MatchScreen() {
 			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Grappler);
-			LocalPlayer.JumpTo(new Vector2(144, 144));
-			LocalPlayer.LevelUp(0);
-			LocalPlayer.LevelUp(1);
-			//LocalPlayer.LevelUp(2);
-			//LocalPlayer.LevelUp(3);
+			LocalPlayer.MakePlayerUnit(new Vector2(144, 144));
+			LocalPlayer.PlayerUnit.LevelUp(0);
+			LocalPlayer.PlayerUnit.LevelUp(1);
 
-			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
-			bot1.JumpTo(new Vector2(400, 400));
-
-			Bot bot2 = new Bot(Teams.Home, Roles.Runner);
-			bot2.JumpTo(new Vector2(200, 400));
-
-			foreach (Player p in Player.List)
-				p.MakeActor();
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 		}
@@ -65,17 +56,17 @@ namespace Arena {
 				Actor clickedActor = null;
 				foreach (Actor a in Actor.List) {
 					if (Vector2.Distance(cursorPosition, a.Position) < Arena.GameSession.ActorScale) {
-						if (LocalPlayer.AttitudeTowards(a.Player) == Attitude.Enemy) {
+						if (LocalPlayer.PlayerUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
 							clickedActor = a;
 							break;
 						}
 					}
 				}
 				if (clickedActor != null)
-					LocalPlayer.AttackTarget = clickedActor;
+					LocalPlayer.CurrentUnit.AttackTarget = clickedActor;
 				else {
-					LocalPlayer.AttackTarget = null;
-					LocalPlayer.IntendedPosition = cursorWorldPosition;
+					LocalPlayer.CurrentUnit.AttackTarget = null;
+					LocalPlayer.CurrentUnit.IntendedPosition = cursorWorldPosition;
 				}
 			}
 			if (input.IsKeyDown(Keys.Up))
@@ -87,22 +78,24 @@ namespace Arena {
 			if (input.IsKeyDown(Keys.Down))
 				viewPosition.Y += viewMoveSpeed;
 			if (input.IsNewKeyPress(Keys.Q)) {
-				LocalPlayer.UseAbility(0);
+				LocalPlayer.CurrentUnit.UseAbility(0);
 			}
 			if (input.IsNewKeyPress(Keys.W)) {
-				LocalPlayer.UseAbility(1);
+				LocalPlayer.CurrentUnit.UseAbility(1);
 			}
 			if (input.IsNewKeyPress(Keys.E)) {
-				LocalPlayer.UseAbility(2);
+				LocalPlayer.CurrentUnit.UseAbility(2);
 			}
 			if (input.IsNewKeyPress(Keys.R)) {
-				LocalPlayer.UseAbility(3);
+				LocalPlayer.CurrentUnit.UseAbility(3);
 			}
 			base.HandleInput(input);
 		}
 		public override void Update(GameTime gameTime) {
-			foreach (Player p in Player.List)
-				p.Update(gameTime);
+			/*foreach (Player p in Player.List)
+				p.Update(gameTime);*/
+			foreach (Unit u in Unit.List)
+				u.Update(gameTime);
 			foreach (Actor a in Actor.List)
 				a.Update(gameTime, viewPosition, viewOrigin);
 			base.Update(gameTime);
@@ -140,21 +133,21 @@ namespace Arena {
 
 			HUD.Draw(gameTime, g, LocalPlayer);
 
-			if (LocalPlayer.AttackTarget == null) {
+			if (LocalPlayer.CurrentUnit.AttackTarget == null && LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
-				LocalPlayer.Actor.Shape.Draw(g, LocalPlayer.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale);
+				LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale);
 				g.Restore();
 			}
 
 			Cairo.Color cursorColor = new Cairo.Color(1, 1, 1);
 			foreach (Actor a in Actor.List) {
-				if (a == LocalPlayer.Actor)
+				if (a == LocalPlayer.CurrentUnit.Actor)
 					continue;
 				if (Vector2.Distance(a.Position, cursorPosition) < Arena.GameSession.ActorScale) {
-					if (LocalPlayer.AttitudeTowards(a.Player) == Attitude.Enemy)
+					if (LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy)
 						cursorColor = new Cairo.Color(0, 0, 1);
-					if (LocalPlayer.AttitudeTowards(a.Player) == Attitude.Friend)
+					if (LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)
 						cursorColor = new Cairo.Color(0, 1, 0);
 				}
 			}

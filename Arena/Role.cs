@@ -18,6 +18,7 @@ namespace Arena {
 				15,
 				15,
 				3,
+				2,
 				8,
 				1.5,
 				new List<System.Type>() {
@@ -31,6 +32,7 @@ namespace Arena {
 				"Grappler",
 				30,
 				15,
+				2,
 				2,
 				5,
 				1.7,
@@ -46,6 +48,7 @@ namespace Arena {
 				10,
 				40,
 				2,
+				2,
 				5,
 				1.7,
 				new List<System.Type>() {
@@ -60,6 +63,7 @@ namespace Arena {
 				40,
 				10,
 				1,
+				2,
 				5,
 				1.7,
 				new List<System.Type>() {
@@ -75,15 +79,17 @@ namespace Arena {
 		public int BaseHealth;
 		public int BaseEnergy;
 		public int MoveSpeed;
+		public double TurnSpeed;
 		public int AttackRange;
 		public double BaseAttackTime;
 		public List<System.Type> Abilities;
 
-		public Role(string name, int baseHealth, int baseEnergy, int moveSpeed, int attackRange, double baseAttackTime, List<System.Type> abilities) {
+		public Role(string name, int baseHealth, int baseEnergy, int moveSpeed, double turnSpeed, int attackRange, double baseAttackTime, List<System.Type> abilities) {
 			Name = name;
 			BaseHealth = baseHealth;
 			BaseEnergy = baseEnergy;
 			MoveSpeed = moveSpeed;
+			TurnSpeed = turnSpeed;
 			AttackRange = attackRange;
 			BaseAttackTime = baseAttackTime;
 			Abilities = abilities;

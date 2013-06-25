@@ -10,8 +10,6 @@ namespace Arena {
 		public List<Player> Players;
 		public Match() {
 		}
-		public void Draw(GraphicsDeviceManager graphics, Cairo.Context g) {
-		}
 	}
 }
 

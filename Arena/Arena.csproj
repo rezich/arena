@@ -51,6 +51,7 @@
     <Compile Include="Screens\MatchScreen.cs" />
     <Compile Include="Ability.cs" />
     <Compile Include="HUD.cs" />
+    <Compile Include="Unit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

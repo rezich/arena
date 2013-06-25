@@ -16,16 +16,16 @@ namespace Arena {
 				if (System.IO.File.Exists(@"04B_19_.TTF"))
 					System.IO.File.Copy("04B_19_.TTF", @"C:\Windows\Fonts\04B_19_.TTF");
 			game = new GameSession();
-			try {
+			//try {
 				game.Run();
-			}
-			catch(Exception e) {
+			//}
+			/*catch(Exception e) {
 				Console.Write(e.Message);
 				Console.ReadKey();
 			}
-			finally {
+			finally {*/
 				VGame.Renderer.Dispose();
-			}
+			//}
 		}
 	}
 }
