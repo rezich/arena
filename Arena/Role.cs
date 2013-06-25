@@ -19,7 +19,7 @@ namespace Arena {
 				15,
 				3,
 				8,
-				50,
+				1.5,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Sprint),
 					typeof(Arena.Abilities.Placeholder),
@@ -33,7 +33,7 @@ namespace Arena {
 				15,
 				2,
 				5,
-				1,
+				1.7,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Grab),
 					typeof(Arena.Abilities.Hookshot),
@@ -47,7 +47,7 @@ namespace Arena {
 				40,
 				2,
 				5,
-				1,
+				1.7,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Placeholder),
 					typeof(Arena.Abilities.Placeholder),
@@ -61,7 +61,7 @@ namespace Arena {
 				10,
 				1,
 				5,
-				1,
+				1.7,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Placeholder),
 					typeof(Arena.Abilities.Placeholder),
@@ -76,16 +76,16 @@ namespace Arena {
 		public int BaseEnergy;
 		public int MoveSpeed;
 		public int AttackRange;
-		public int AttackSpeed;
+		public double BaseAttackTime;
 		public List<System.Type> Abilities;
 
-		public Role(string name, int baseHealth, int baseEnergy, int moveSpeed, int attackRange, int attackSpeed, List<System.Type> abilities) {
+		public Role(string name, int baseHealth, int baseEnergy, int moveSpeed, int attackRange, double baseAttackTime, List<System.Type> abilities) {
 			Name = name;
 			BaseHealth = baseHealth;
 			BaseEnergy = baseEnergy;
 			MoveSpeed = moveSpeed;
 			AttackRange = attackRange;
-			AttackSpeed = attackSpeed;
+			BaseAttackTime = baseAttackTime;
 			Abilities = abilities;
 		}
 		public static Shape MakeShape(Roles role) {

@@ -42,6 +42,9 @@ namespace Arena {
 		public bool IsBot = false;
 		public List<Ability> Abilities = new List<Ability>();
 		public Actor AttackTarget;
+		public TimeSpan NextAutoAttackReady = new TimeSpan();
+		//public bool AutoAttackReady = true;
+		public bool AutoAttacking = false;
 
 		public double HealthPercent {
 			get {
@@ -98,6 +101,12 @@ namespace Arena {
 			if (Direction != IntendedDirection)
 				Direction = Direction.LerpAngle(IntendedDirection, (double)TurnSpeed / 10 / MathHelper.PiOver2);
 			LastPosition = Position;
+			if (AutoAttacking) {
+				if (gameTime.TotalGameTime > NextAutoAttackReady) {
+					NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(Arena.Role.List[Role].BaseAttackTime);
+					AttackTarget.Player.Health = Math.Max(AttackTarget.Player.Health - 1, 0);
+				}
+			}
 		}
 		public void Regen() {
 			if (Health < MaxHealth)
@@ -122,6 +131,7 @@ namespace Arena {
 			IntendedPosition = position;
 		}
 		public void MoveTowardsIntended() {
+			AutoAttacking = false;
 			Vector2 intendedPosition;
 			if (AttackTarget != null) {
 				intendedPosition = AttackTarget.Player.Position;
@@ -129,6 +139,7 @@ namespace Arena {
 				if (Vector2.Distance(Position, intendedPosition) <= Arena.Role.List[Role].AttackRange * Arena.GameSession.ActorScale) {
 					if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
 						// AUTOATTACK
+						AutoAttacking = true;
 						return;
 					}
 					return;
@@ -136,22 +147,34 @@ namespace Arena {
 			}
 			else
 				intendedPosition = IntendedPosition;
-			if (Vector2.Distance(Position, intendedPosition) > Arena.GameSession.ActorScale * 0.25) {
+			if (Vector2.Distance(Position, intendedPosition) > MoveSpeed) {
 				Vector2 velocity = Vector2.Normalize(intendedPosition - Position);
 				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
-					bool foundActor = false;
-					foreach (Actor a in Actor.List) {
+					Actor foundActor = null;
+					/*foreach (Actor a in Actor.List) {
 						if (a == Actor)
 							continue;
-						if (Vector2.Distance(Actor.Position + velocity, a.Position) < Arena.GameSession.ActorScale * 2) {
-							foundActor = true;
+						if (Vector2.Distance(Position + velocity, a.Player.Position) < Arena.GameSession.ActorScale * 2) {
+							foundActor = a;
 							break;
 						}
+					}*/
+					if (foundActor == null)
+						MoveInDirection(velocity, MoveSpeed);
+					else {
+						/*double angle = Math.Atan2(Position.Y - foundActor.Player.Position.Y, Position.X - foundActor.Player.Position.X);
+						double oldDirection = Direction;
+						double oldIntendedDirection = IntendedDirection;
+						Position = Position.AddLengthDir(Arena.GameSession.ActorScale * 0.8, angle);
+						IntendedPosition = Position.AddLengthDir(Arena.GameSession.ActorScale * 0.8, angle);
+						Direction = oldDirection;
+						IntendedDirection = oldIntendedDirection;*/
 					}
-					if (!foundActor) MoveInDirection(velocity, MoveSpeed);
 				}
 				TurnTowards(intendedPosition);
 			}
+			else
+				Position = IntendedPosition;
 		}
 		public void MoveInDirection(Vector2 direction, double speed) {
 			Position += direction * (float)speed;

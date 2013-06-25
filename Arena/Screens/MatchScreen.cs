@@ -33,17 +33,17 @@ namespace Arena {
 		int viewMoveSpeed = 8;
 
 		public MatchScreen() {
-			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
+			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Grappler);
 			LocalPlayer.JumpTo(new Vector2(144, 144));
 			LocalPlayer.LevelUp(0);
-			LocalPlayer.LevelUp(0);
+			LocalPlayer.LevelUp(1);
 			//LocalPlayer.LevelUp(2);
 			//LocalPlayer.LevelUp(3);
 
 			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
 			bot1.JumpTo(new Vector2(400, 400));
 
-			Bot bot2 = new Bot(Teams.Home, Roles.Grappler);
+			Bot bot2 = new Bot(Teams.Home, Roles.Runner);
 			bot2.JumpTo(new Vector2(200, 400));
 
 			foreach (Player p in Player.List)
@@ -140,7 +140,26 @@ namespace Arena {
 
 			HUD.Draw(gameTime, g, LocalPlayer);
 
-			cursor.Draw(g, cursorPosition, 0, LocalPlayer.AttackTarget == null ? new Cairo.Color(1, 1, 1) : new Cairo.Color(0, 0, 1), new Cairo.Color(0.1, 0.1, 0.1), 22);
+			if (LocalPlayer.AttackTarget == null) {
+				g.Save();
+				g.SetDash(new double[] { 4, 4 }, 0);
+				LocalPlayer.Actor.Shape.Draw(g, LocalPlayer.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale);
+				g.Restore();
+			}
+
+			Cairo.Color cursorColor = new Cairo.Color(1, 1, 1);
+			foreach (Actor a in Actor.List) {
+				if (a == LocalPlayer.Actor)
+					continue;
+				if (Vector2.Distance(a.Position, cursorPosition) < Arena.GameSession.ActorScale) {
+					if (LocalPlayer.AttitudeTowards(a.Player) == Attitude.Enemy)
+						cursorColor = new Cairo.Color(0, 0, 1);
+					if (LocalPlayer.AttitudeTowards(a.Player) == Attitude.Friend)
+						cursorColor = new Cairo.Color(0, 1, 0);
+				}
+			}
+
+			cursor.Draw(g, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
 		}
 	}
 }

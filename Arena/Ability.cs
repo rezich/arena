@@ -47,7 +47,7 @@ namespace Arena {
 			}
 			if (justActivated) {
 				justActivated = false;
-				ReadyTime = gameTime.TotalGameTime + new TimeSpan(0, 0, 0, 0, Convert.ToInt32(Cooldown * 1000));
+				ReadyTime = gameTime.TotalGameTime + TimeSpan.FromSeconds(Cooldown);
 				Ready = false;
 			}
 			OnUpdate(gameTime);
