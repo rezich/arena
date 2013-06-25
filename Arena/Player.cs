@@ -85,6 +85,8 @@ namespace Arena {
 			Actor = a;
 		}
 		public void Update(GameTime gameTime) {
+			foreach (Ability a in Abilities)
+				a.Update(gameTime);
 			MoveTowardsIntended();
 			if (Direction != IntendedDirection)
 				Direction = Direction.LerpAngle(IntendedDirection, (double)TurnSpeed / 10 / MathHelper.PiOver2);
@@ -125,6 +127,17 @@ namespace Arena {
 		}
 		public void TurnTowardsIntended() {
 			IntendedDirection = Math.Atan2(IntendedPosition.Y - Position.Y, IntendedPosition.X - Position.X);
+		}
+		public AbilityActivationType? UseAbility(int ability) {
+			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost) {
+				Energy -= Abilities[ability].EnergyCost;
+				Abilities[ability].Activate();
+				return Abilities[ability].ActivationType;
+			}
+			return null;
+		}
+		public void LevelUp(int ability) {
+			Abilities[ability].Level += 1;
 		}
 	}
 	class Bot : Player {

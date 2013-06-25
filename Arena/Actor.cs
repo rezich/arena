@@ -34,6 +34,8 @@ namespace Arena {
 		}
 		public virtual void Draw(GameTime gameTime, Context g) {
 			Shape.Draw(g, Position, Direction, (Player.Team == Teams.Home ? GameSession.HomeColor1 : GameSession.AwayColor1), (Player.Team == Teams.Home ? GameSession.HomeColor2 : GameSession.AwayColor2), GameSession.ActorScale);
+			foreach (Ability a in Player.Abilities)
+				a.Draw(gameTime, g);
 		}
 		public void DrawUIBelow(GameTime gameTime, Context g) {
 			if (Player.Health < 1)

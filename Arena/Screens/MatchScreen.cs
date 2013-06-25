@@ -24,6 +24,10 @@ namespace Arena {
 		public MatchScreen() {
 			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Grappler);
 			LocalPlayer.JumpTo(new Vector2(144, 144));
+			LocalPlayer.LevelUp(0);
+			LocalPlayer.LevelUp(1);
+			//LocalPlayer.LevelUp(2);
+			//LocalPlayer.LevelUp(3);
 
 			Bot bot = new Bot(Teams.Away, Roles.Nuker);
 			bot.JumpTo(new Vector2(400, 400));
@@ -55,6 +59,18 @@ namespace Arena {
 				viewPosition.X += viewMoveSpeed;
 			if (input.CurrentKeyboardStates[(int)PlayerIndex.One].IsKeyDown(Keys.Down))
 				viewPosition.Y += viewMoveSpeed;
+			if (input.IsNewKeyPress(Keys.Q, PlayerIndex.One, out playerIndex)) {
+				LocalPlayer.UseAbility(0);
+			}
+			if (input.IsNewKeyPress(Keys.W, PlayerIndex.One, out playerIndex)) {
+				LocalPlayer.UseAbility(1);
+			}
+			if (input.IsNewKeyPress(Keys.E, PlayerIndex.One, out playerIndex)) {
+				LocalPlayer.UseAbility(2);
+			}
+			if (input.IsNewKeyPress(Keys.R, PlayerIndex.One, out playerIndex)) {
+				LocalPlayer.UseAbility(3);
+			}
 			base.HandleInput(input);
 		}
 		public override void Update(GameTime gameTime) {

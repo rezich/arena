@@ -1,4 +1,6 @@
 using System;
+using Microsoft.Xna.Framework;
+using Cairo;
 
 namespace Arena {
 	public enum AbilityActivationType {
@@ -21,12 +23,42 @@ namespace Arena {
 		public abstract int EnergyCost { get; }
 		public abstract double Cooldown { get; }
 		public int Level;
+		public TimeSpan ReadyTime;
+		private bool justActivated = false;
+		public bool Ready = true;
 		protected Ability(string name, AbilityActivationType activationType, int levels) {
 			Name = name;
 			ActivationType = activationType;
 			Levels = levels;
 			Level = 0;
 		}
+		public void Activate() {
+			if (Level < 1)
+				return;
+			justActivated = true;
+			OnActivate();
+		}
+		protected abstract void OnActivate();
+		public void Update(GameTime gameTime) {
+			if (Level < 1)
+				return;
+			if (gameTime.TotalGameTime >= ReadyTime) {
+				Ready = true;
+			}
+			if (justActivated) {
+				justActivated = false;
+				ReadyTime = gameTime.TotalGameTime + new TimeSpan(0, 0, 0, 0, Convert.ToInt32(Cooldown * 1000));
+				Ready = false;
+			}
+			OnUpdate(gameTime);
+		}
+		protected abstract void OnUpdate(GameTime gameTime);
+		public void Draw(GameTime gameTime, Cairo.Context g) {
+			if (Level < 1)
+				return;
+			OnDraw(gameTime, g);
+		}
+		protected abstract void OnDraw(GameTime gameTime, Cairo.Context g);
 	}
 }
 
@@ -44,6 +76,15 @@ namespace Arena.Abilities {
 				return 0;
 			}
 		}
+		protected override void OnActivate() {
+
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+
+		}
 	}
 	public class Sprint : Ability {
 		public Sprint() : base("Sprint", AbilityActivationType.NoTarget, 4) {
@@ -57,6 +98,15 @@ namespace Arena.Abilities {
 			get {
 				return 10;
 			}
+		}
+		protected override void OnActivate() {
+
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+
 		}
 	}
 
@@ -74,6 +124,15 @@ namespace Arena.Abilities {
 				return 20;
 			}
 		}
+		protected override void OnActivate() {
+
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+
+		}
 	}
 	public class Hookshot : Ability {
 		public Hookshot() : base("Hookshot", AbilityActivationType.TargetDirection, 4) {
@@ -87,6 +146,15 @@ namespace Arena.Abilities {
 			get {
 				return 5;
 			}
+		}
+		protected override void OnActivate() {
+
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+
 		}
 	}
 	public class Dive : Ability {
@@ -102,6 +170,15 @@ namespace Arena.Abilities {
 				return 60;
 			}
 		}
+		protected override void OnActivate() {
+
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+
+		}
 	}
 	public class Grapple: Ability {
 		public Grapple() : base("Grapple", AbilityActivationType.TargetEnemy, 3) {
@@ -115,6 +192,15 @@ namespace Arena.Abilities {
 			get {
 				return 60;
 			}
+		}
+		protected override void OnActivate() {
+
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+
 		}
 	}
 }

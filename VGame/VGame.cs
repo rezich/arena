@@ -131,7 +131,7 @@ namespace VGame {
 				else
 					g.Fill();
 			}
-			if (strokeColor.HasValue && fillColor != null) {
+			if (strokeColor.HasValue && strokeColor != null) {
 				g.Color = (Cairo.Color)strokeColor;
 				g.Stroke();
 			}
