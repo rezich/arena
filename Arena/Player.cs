@@ -8,6 +8,11 @@ namespace Arena {
 		Home,
 		Away
 	}
+	public enum Attitude {
+		Neutral,
+		Friend,
+		Enemy
+	}
 	public class Player {
 		public static List<Player> List = new List<Player>();
 
@@ -133,7 +138,18 @@ namespace Arena {
 				intendedPosition = IntendedPosition;
 			if (Vector2.Distance(Position, intendedPosition) > Arena.GameSession.ActorScale * 0.25) {
 				Vector2 velocity = Vector2.Normalize(intendedPosition - Position);
-				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) MoveInDirection(velocity, MoveSpeed);
+				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
+					bool foundActor = false;
+					foreach (Actor a in Actor.List) {
+						if (a == Actor)
+							continue;
+						if (Vector2.Distance(Actor.Position + velocity, a.Position) < Arena.GameSession.ActorScale * 2) {
+							foundActor = true;
+							break;
+						}
+					}
+					if (!foundActor) MoveInDirection(velocity, MoveSpeed);
+				}
 				TurnTowards(intendedPosition);
 			}
 		}
@@ -153,6 +169,11 @@ namespace Arena {
 		}
 		public void LevelUp(int ability) {
 			Abilities[ability].Level += 1;
+		}
+		public Attitude AttitudeTowards(Player player) {
+			if (player.Team != Team)
+				return Attitude.Enemy;
+			return Attitude.Friend;
 		}
 	}
 	class Bot : Player {

@@ -40,8 +40,11 @@ namespace Arena {
 			//LocalPlayer.LevelUp(2);
 			//LocalPlayer.LevelUp(3);
 
-			Bot bot = new Bot(Teams.Away, Roles.Nuker);
-			bot.JumpTo(new Vector2(400, 400));
+			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
+			bot1.JumpTo(new Vector2(400, 400));
+
+			Bot bot2 = new Bot(Teams.Home, Roles.Grappler);
+			bot2.JumpTo(new Vector2(200, 400));
 
 			foreach (Player p in Player.List)
 				p.MakeActor();
@@ -62,8 +65,10 @@ namespace Arena {
 				Actor clickedActor = null;
 				foreach (Actor a in Actor.List) {
 					if (Vector2.Distance(cursorPosition, a.Position) < Arena.GameSession.ActorScale) {
-						clickedActor = a;
-						break;
+						if (LocalPlayer.AttitudeTowards(a.Player) == Attitude.Enemy) {
+							clickedActor = a;
+							break;
+						}
 					}
 				}
 				if (clickedActor != null)
