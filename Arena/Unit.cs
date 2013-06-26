@@ -22,15 +22,88 @@ namespace Arena {
 		public Teams Team;
 
 
-		public double MoveSpeed;
-		public double TurnSpeed;
-		public int MaxHealth;
-		public int MaxEnergy;
-		public double HealthRegen;
-		public double EnergyRegen;
-		public double BaseAttackTime;
-		public double AttackSpeed;
-		public int AttackRange;
+		public double MoveSpeed {
+			get {
+				return baseMoveSpeed;
+			}
+			set {
+				baseMoveSpeed = value;
+			}
+		}
+		public double TurnSpeed {
+			get {
+				return baseTurnSpeed;
+			}
+			set {
+				baseTurnSpeed = value;
+			}
+		}
+		public int MaxHealth {
+			get {
+				return baseMaxHealth;
+			}
+			set {
+				baseMaxHealth = value;
+			}
+		}
+		public int MaxEnergy {
+			get {
+				return baseMaxEnergy;
+			}
+			set {
+				baseMaxEnergy = value;
+			}
+		}
+		public double HealthRegen {
+			get {
+				return baseHealthRegen;
+			}
+			set {
+				baseHealthRegen = value;
+			}
+		}
+		public double EnergyRegen {
+			get {
+				return baseEnergyRegen;
+			}
+			set {
+				baseEnergyRegen = value;
+			}
+		}
+		public double BaseAttackTime {
+			get {
+				return baseBaseAttackTime;
+			}
+			set {
+				baseBaseAttackTime = value;
+			}
+		}
+		public double AttackSpeed {
+			get {
+				return baseAttackSpeed;
+			}
+			set {
+				baseAttackSpeed = value;
+			}
+		}
+		public int AttackRange {
+			get {
+				return baseAttackRange;
+			}
+			set {
+				baseAttackRange = value;
+			}
+		}
+
+		private double baseMoveSpeed;
+		private double baseTurnSpeed;
+		private int baseMaxHealth;
+		private int baseMaxEnergy;
+		private double baseHealthRegen;
+		private double baseEnergyRegen;
+		private double baseBaseAttackTime;
+		private double baseAttackSpeed = 0;
+		private int baseAttackRange;
 
 		public int Health;
 		public int Energy;
@@ -49,7 +122,6 @@ namespace Arena {
 		public Actor AttackTarget;
 		public TimeSpan NextAutoAttackReady = new TimeSpan();
 		public bool AutoAttacking = false;
-
 
 		public double HealthPercent {
 			get {
@@ -72,7 +144,8 @@ namespace Arena {
 			}
 		}
 
-		public Unit(int maxHealth, int maxEnergy, VGame.IShape shape) {
+		public Unit(UnitController owner, int maxHealth, int maxEnergy, VGame.IShape shape) {
+			Owner = owner;
 			MaxHealth = maxHealth;
 			MaxEnergy = maxEnergy;
 			Health = MaxHealth;
@@ -90,10 +163,14 @@ namespace Arena {
 				Direction = Direction.LerpAngle(IntendedDirection, (double)TurnSpeed / 10 / MathHelper.PiOver2);
 			LastPosition = Position;
 			if (AutoAttacking) {
-				if (gameTime.TotalGameTime > NextAutoAttackReady) {
-					NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime);
-					AttackTarget.Unit.Health = Math.Max(AttackTarget.Unit.Health - 1, 0);
-				}
+				AutoAttack(gameTime);
+			}
+		}
+		public void AutoAttack(GameTime gameTime) {
+			if (gameTime.TotalGameTime > NextAutoAttackReady) {
+				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime);
+				AttackTarget.Unit.Health = Math.Max(AttackTarget.Unit.Health - 1, 0);
+				new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Unit.Position);
 			}
 		}
 		public void Regen() {
@@ -171,11 +248,6 @@ namespace Arena {
 				return Attitude.Enemy;
 			return Attitude.Friend;
 		}
-		/*public void MakeActor(VGame.Shape shape) {
-			Actor a = new Actor(this, shape);
-			Actor.List.Add(a);
-			Actor = a;
-		}*/
 	}
 	public abstract class UnitController {
 		public Unit CurrentUnit {

@@ -78,5 +78,16 @@ namespace Arena.Shapes {
 			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
 		}
 	}
+	public class AutoAttackBeam : VGame.Shape {
+		public double Distance = 100;
+		public override void Draw(Context g, Vector2 position, double direction, Cairo.Color? fillColor, Cairo.Color? strokeColor, double scale) {
+			if (strokeColor.HasValue) {
+				g.MoveTo(position.ToPointD());
+				g.LineTo(position.AddLengthDir(Distance, direction).ToPointD());
+				g.Color = (Cairo.Color)strokeColor;
+				g.Stroke();
+			}
+		}
+	}
 }
 

@@ -6,23 +6,23 @@ using Microsoft.Xna.Framework.Input;
 using Cairo;
 
 namespace Arena {
-	public class Actor {
+	public class Actor : Drawable {
 		public static List<Actor> List = new List<Actor>();
-		public Vector2 Position {
+		public override Vector2 WorldPosition {
 			get {
-				return Unit.Position - _viewPosition + _viewOrigin;
+				return Unit.Position;
+			}
+			set {
 			}
 		}
-		public double Direction {
+		public override double Direction {
 			get {
 				return Unit.Direction;
 			}
+			set {
+			}
 		}
 		public Unit Unit;
-		Vector2 _viewPosition;
-		Vector2 _viewOrigin;
-
-		public VGame.IShape Shape;
 		
 		public Actor(Unit unit, VGame.IShape shape) {
 			Unit = unit;
@@ -31,11 +31,10 @@ namespace Arena {
 		}
 		public void Initialize() {
 		}
-		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
-			_viewPosition = viewPosition;
-			_viewOrigin = viewOrigin;
+		public override void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
+			base.Update(gameTime, viewPosition, viewOrigin);
 		}
-		public virtual void Draw(GameTime gameTime, Context g) {
+		public override void Draw(GameTime gameTime, Context g) {
 			Shape.Draw(g, Position, Direction, (Unit.Team == Teams.Home ? GameSession.HomeColor1 : GameSession.AwayColor1), (Unit.Team == Teams.Home ? GameSession.HomeColor2 : GameSession.AwayColor2), GameSession.ActorScale);
 			foreach (Ability a in Unit.Abilities)
 				a.Draw(gameTime, g);
@@ -123,6 +122,29 @@ namespace Arena {
 			g.Stroke();
 			g.Restore();
 		}
+		public override void Remove() {
+			// TODO
+		}
+	}
+	public abstract class Drawable {
+		public Vector2 Position {
+			get {
+				return WorldPosition - _viewPosition + _viewOrigin;
+			}
+		}
+		public abstract Vector2 WorldPosition { get; set; }
+		public abstract double Direction { get; set; }
+		public VGame.IShape Shape;
+		protected Vector2 _viewPosition;
+		protected Vector2 _viewOrigin;
+		public bool ToBeRemoved;
+
+		public virtual void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
+			_viewPosition = viewPosition;
+			_viewOrigin = viewOrigin;
+		}
+		public abstract void Draw(GameTime gameTime, Context g);
+		public abstract void Remove();
 	}
 }
 

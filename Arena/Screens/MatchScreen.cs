@@ -39,6 +39,9 @@ namespace Arena {
 			LocalPlayer.PlayerUnit.LevelUp(0);
 			LocalPlayer.PlayerUnit.LevelUp(1);
 
+			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
+			bot1.MakePlayerUnit(new Vector2(300, 300));
+
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 		}
@@ -69,6 +72,9 @@ namespace Arena {
 					LocalPlayer.CurrentUnit.IntendedPosition = cursorWorldPosition;
 				}
 			}
+			/*if (input.IsNewMousePress(MouseButtons.Left) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
+				Effect e = new Effect(cursorWorldPosition, EffectPosition.BelowActor, new Shapes.AutoAttackBeam());
+			}*/
 			if (input.IsKeyDown(Keys.Up))
 				viewPosition.Y -= viewMoveSpeed;
 			if (input.IsKeyDown(Keys.Left))
@@ -98,6 +104,9 @@ namespace Arena {
 				u.Update(gameTime);
 			foreach (Actor a in Actor.List)
 				a.Update(gameTime, viewPosition, viewOrigin);
+			foreach (Effect e in Effect.List)
+				e.Update(gameTime, viewPosition, viewOrigin);
+			Effect.Cleanup();
 			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
@@ -121,6 +130,9 @@ namespace Arena {
 				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
 				g.Stroke();
 			}
+			foreach (Effect e in Effect.List)
+				if (e.Height == EffectPosition.BelowActor)
+					e.Draw(gameTime, g);
 			foreach (Actor a in Actor.List) {
 				a.DrawUIBelow(gameTime, g);
 			}
@@ -130,6 +142,9 @@ namespace Arena {
 			foreach (Actor a in Actor.List) {
 				a.DrawUIAbove(gameTime, g);
 			}
+			foreach (Effect e in Effect.List)
+				if (e.Height == EffectPosition.AboveActor)
+					e.Draw(gameTime, g);
 
 			HUD.Draw(gameTime, g, LocalPlayer);
 

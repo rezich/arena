@@ -52,6 +52,7 @@
     <Compile Include="Ability.cs" />
     <Compile Include="HUD.cs" />
     <Compile Include="Unit.cs" />
+    <Compile Include="Effect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

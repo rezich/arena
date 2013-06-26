@@ -17,6 +17,8 @@ namespace Arena {
 				"Runner",
 				15,
 				15,
+				0.001,
+				0.0025,
 				3,
 				2,
 				8,
@@ -32,6 +34,8 @@ namespace Arena {
 				"Grappler",
 				30,
 				15,
+				0.001,
+				0.0025,
 				2,
 				2,
 				5,
@@ -47,6 +51,8 @@ namespace Arena {
 				"Nuker",
 				10,
 				40,
+				0.001,
+				0.0025,
 				2,
 				2,
 				5,
@@ -62,6 +68,8 @@ namespace Arena {
 				"Tank",
 				40,
 				10,
+				0.001,
+				0.0025,
 				1,
 				2,
 				5,
@@ -76,18 +84,22 @@ namespace Arena {
 		}
 
 		public string Name;
-		public int BaseHealth;
-		public int BaseEnergy;
+		public int Health;
+		public int Energy;
+		public double HealthRegen;
+		public double EnergyRegen;
 		public int MoveSpeed;
 		public double TurnSpeed;
 		public int AttackRange;
 		public double BaseAttackTime;
 		public List<System.Type> Abilities;
 
-		public Role(string name, int baseHealth, int baseEnergy, int moveSpeed, double turnSpeed, int attackRange, double baseAttackTime, List<System.Type> abilities) {
+		public Role(string name, int health, int energy, double healthRegen, double energyRegen, int moveSpeed, double turnSpeed, int attackRange, double baseAttackTime, List<System.Type> abilities) {
 			Name = name;
-			BaseHealth = baseHealth;
-			BaseEnergy = baseEnergy;
+			Health = health;
+			Energy = energy;
+			HealthRegen = healthRegen;
+			EnergyRegen = energyRegen;
 			MoveSpeed = moveSpeed;
 			TurnSpeed = turnSpeed;
 			AttackRange = attackRange;

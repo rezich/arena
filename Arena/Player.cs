@@ -20,11 +20,14 @@ namespace Arena {
 			Player.List.Add(this);
 		}
 		public Unit MakePlayerUnit(Vector2 position) {
-			Unit u = new Unit(Arena.Role.List[Role].BaseHealth, Arena.Role.List[Role].BaseEnergy, Arena.Role.MakeShape(Role));
+			Unit u = new Unit(this, Arena.Role.List[Role].Health, Arena.Role.List[Role].Energy, Arena.Role.MakeShape(Role));
+			u.Team = Team;
 			u.MoveSpeed = Arena.Role.List[Role].MoveSpeed;
 			u.TurnSpeed = Arena.Role.List[Role].TurnSpeed;
 			u.AttackRange = Arena.Role.List[Role].AttackRange;
 			u.BaseAttackTime = Arena.Role.List[Role].BaseAttackTime;
+			u.HealthRegen = Arena.Role.List[Role].HealthRegen;
+			u.EnergyRegen = Arena.Role.List[Role].EnergyRegen;
 
 			u.JumpTo(position);
 
