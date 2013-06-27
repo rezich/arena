@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arena", "Arena\Arena.csproj", "{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArenaClient", "ArenaClient\ArenaClient.csproj", "{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VGame", "VGame\VGame.csproj", "{FD10DD4F-74C8-466D-A7A6-A714423E316F}"
 EndProject
@@ -28,6 +28,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Arena\Arena.csproj
+		StartupItem = Arena\ArenaClient.csproj
 	EndGlobalSection
 EndGlobal
