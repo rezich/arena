@@ -12,7 +12,7 @@ namespace Arena {
 		MoveSpeed,
 		TurnSpeed,
 		AttackSpeed,
-		Damage,
+		AttackDamage,
 		HealthRegen,
 		EnergyRegen,
 		BaseAttackTime,

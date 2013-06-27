@@ -94,6 +94,14 @@ namespace Arena {
 				baseAttackRange = value;
 			}
 		}
+		public int AttackDamage {
+			get {
+				return baseAttackDamage + (int)BuffTotal(BuffType.AttackDamage);
+			}
+			set {
+				baseAttackDamage = value;
+			}
+		}
 
 		private double baseMoveSpeed;
 		private double baseTurnSpeed;
@@ -104,6 +112,7 @@ namespace Arena {
 		private double baseBaseAttackTime;
 		private double baseAttackSpeed = 0;
 		private int baseAttackRange;
+		private int baseAttackDamage;
 
 		public int Health;
 		public int Energy;
@@ -174,9 +183,9 @@ namespace Arena {
 			}
 		}
 		public void AutoAttack(GameTime gameTime) {
-			if (gameTime.TotalGameTime > NextAutoAttackReady) {
-				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime);
-				AttackTarget.Unit.Health = Math.Max(AttackTarget.Unit.Health - 1, 0);
+			if (gameTime.TotalGameTime > NextAutoAttackReady && !(Owner is Bot)) {
+				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime / ((double)1 + ((double)AttackSpeed / 10)));
+				AttackTarget.Unit.Health = Math.Max(AttackTarget.Unit.Health - AttackDamage, 0);
 				new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Unit.Position);
 			}
 		}
@@ -240,15 +249,18 @@ namespace Arena {
 			IntendedDirection = Math.Atan2(position.Y - Position.Y, position.X - Position.X);
 		}
 		public AbilityActivationType? UseAbility(GameTime gameTime, int ability) {
-			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready) {
+			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready && Abilities[ability].ActivationType != AbilityActivationType.Passive) {
 				Energy -= Abilities[ability].EnergyCost;
 				Abilities[ability].Activate(gameTime);
 				return Abilities[ability].ActivationType;
 			}
 			return null;
 		}
-		public void LevelUp(int ability) {
+		public void LevelUp(GameTime gameTime, int ability) {
+			if (Abilities[ability].Level == 0)
+				Abilities[ability].ReadyTime = gameTime.TotalGameTime - TimeSpan.FromSeconds(1);
 			Abilities[ability].Level += 1;
+			if (Abilities[ability].ActivationType == AbilityActivationType.Passive) Abilities[ability].Activate(gameTime);
 		}
 		public Attitude AttitudeTowards(UnitController unitController) {
 			if (unitController.Team != Team)

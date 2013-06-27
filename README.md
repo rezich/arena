@@ -4,6 +4,12 @@ arena
 arena is an awesome, vectory, minimalist MOBA-in-progress.
 
 
+Overview
+--------
+
+arena is a game wherein two teams of five players each compete to destroy the others' base.
+
+
 Installation notes
 ------------------
 

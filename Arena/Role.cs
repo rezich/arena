@@ -22,11 +22,12 @@ namespace Arena {
 				3,
 				2,
 				8,
+				1,
 				1.5,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Sprint),
 					typeof(Arena.Abilities.Placeholder),
-					typeof(Arena.Abilities.Placeholder),
+					typeof(Arena.Abilities.AgilityAura),
 					typeof(Arena.Abilities.Placeholder)
 				}
 			));
@@ -39,6 +40,7 @@ namespace Arena {
 				2,
 				2,
 				5,
+				1,
 				1.7,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Grab),
@@ -56,6 +58,7 @@ namespace Arena {
 				2,
 				2,
 				5,
+				0,
 				1.7,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Placeholder),
@@ -73,6 +76,7 @@ namespace Arena {
 				1,
 				2,
 				5,
+				1,
 				1.7,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Placeholder),
@@ -91,10 +95,11 @@ namespace Arena {
 		public int MoveSpeed;
 		public double TurnSpeed;
 		public int AttackRange;
+		public int AttackDamage;
 		public double BaseAttackTime;
 		public List<System.Type> Abilities;
 
-		public Role(string name, int health, int energy, double healthRegen, double energyRegen, int moveSpeed, double turnSpeed, int attackRange, double baseAttackTime, List<System.Type> abilities) {
+		public Role(string name, int health, int energy, double healthRegen, double energyRegen, int moveSpeed, double turnSpeed, int attackRange, int attackDamage, double baseAttackTime, List<System.Type> abilities) {
 			Name = name;
 			Health = health;
 			Energy = energy;
@@ -103,6 +108,7 @@ namespace Arena {
 			MoveSpeed = moveSpeed;
 			TurnSpeed = turnSpeed;
 			AttackRange = attackRange;
+			AttackDamage = attackDamage;
 			BaseAttackTime = baseAttackTime;
 			Abilities = abilities;
 		}

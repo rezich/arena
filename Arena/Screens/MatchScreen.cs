@@ -21,12 +21,12 @@ namespace Arena {
 
 		int viewportWidth {
 			get {
-				return Renderer.Width - HUD.BoxWidth * 2;
+				return Resolution.Width - HUD.BoxWidth * 2;
 			}
 		}
 		int viewportHeight {
 			get {
-				return Renderer.Height;
+				return Resolution.Height;
 			}
 		}
 		Vector2 cursorWorldPosition {
@@ -34,13 +34,11 @@ namespace Arena {
 				return cursorPosition + viewPosition - viewOrigin;
 			}
 		}
-		int viewMoveSpeed = 8;
+		int viewMoveSpeed = 16;
 
 		public MatchScreen() {
 			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
 			LocalPlayer.MakePlayerUnit(new Vector2(144, 144));
-			LocalPlayer.PlayerUnit.LevelUp(0);
-			//LocalPlayer.PlayerUnit.LevelUp(1);
 
 			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
 			bot1.MakePlayerUnit(new Vector2(300, 300));
@@ -88,16 +86,28 @@ namespace Arena {
 			if (input.IsKeyDown(Keys.Down))
 				viewPosition.Y += viewMoveSpeed;
 			if (input.IsNewKeyPress(Keys.Q)) {
-				LocalPlayer.CurrentUnit.UseAbility(gameTime, 0);
+				if (input.IsKeyDown(Keys.LeftShift))
+					LocalPlayer.CurrentUnit.LevelUp(gameTime, 0);
+				else
+					LocalPlayer.CurrentUnit.UseAbility(gameTime, 0);
 			}
 			if (input.IsNewKeyPress(Keys.W)) {
-				LocalPlayer.CurrentUnit.UseAbility(gameTime, 1);
+				if (input.IsKeyDown(Keys.LeftShift))
+					LocalPlayer.CurrentUnit.LevelUp(gameTime, 1);
+				else
+					LocalPlayer.CurrentUnit.UseAbility(gameTime, 1);
 			}
 			if (input.IsNewKeyPress(Keys.E)) {
-				LocalPlayer.CurrentUnit.UseAbility(gameTime, 2);
+				if (input.IsKeyDown(Keys.LeftShift))
+					LocalPlayer.CurrentUnit.LevelUp(gameTime, 2);
+				else
+					LocalPlayer.CurrentUnit.UseAbility(gameTime, 2);
 			}
 			if (input.IsNewKeyPress(Keys.R)) {
-				LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
+				if (input.IsKeyDown(Keys.LeftShift))
+					LocalPlayer.CurrentUnit.LevelUp(gameTime, 3);
+				else
+					LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
 			}
 			if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);

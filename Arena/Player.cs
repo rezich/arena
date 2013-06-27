@@ -25,6 +25,7 @@ namespace Arena {
 			u.MoveSpeed = Arena.Role.List[Role].MoveSpeed;
 			u.TurnSpeed = Arena.Role.List[Role].TurnSpeed;
 			u.AttackRange = Arena.Role.List[Role].AttackRange;
+			u.AttackDamage = Arena.Role.List[Role].AttackDamage;
 			u.BaseAttackTime = Arena.Role.List[Role].BaseAttackTime;
 			u.HealthRegen = Arena.Role.List[Role].HealthRegen;
 			u.EnergyRegen = Arena.Role.List[Role].EnergyRegen;

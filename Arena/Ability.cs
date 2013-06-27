@@ -114,6 +114,36 @@ namespace Arena.Abilities {
 
 		}
 	}
+	public class AgilityAura: Ability {
+		Buff aura;
+		public AgilityAura(Unit unit) : base(unit, "Agility Aura", AbilityActivationType.Passive, 4) {
+		}
+		public override int EnergyCost {
+			get {
+				return 0;
+			}
+		}
+		public override double Cooldown {
+			get {
+				return 0;
+			}
+		}
+		protected override void OnActivate(GameTime gameTime) {
+			if (Unit.Buffs.Contains(aura) && aura != null)
+				Unit.Buffs.Remove(aura);
+			aura = new Buff("Agility Aura", BuffAlignment.Positive, new List<Tuple<BuffType, double>>() {
+				new Tuple<BuffType, double>(BuffType.MoveSpeed, 2 * Level),
+				new Tuple<BuffType, double>(BuffType.TurnSpeed, 2 * Level),
+				new Tuple<BuffType, double>(BuffType.AttackSpeed, 2 * Level)
+			}, null, false);
+			Unit.Buffs.Add(aura);
+		}
+		protected override void OnUpdate(GameTime gameTime) {
+
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+		}
+	}
 
 	// GRAPPLER
 	public class Grab : Ability {
