@@ -119,7 +119,7 @@ namespace VGame {
 					// If this is the first active screen we came across,
 					// give it a chance to handle input.
 					if (!otherScreenHasFocus) {
-						screen.HandleInput(input);
+						screen.HandleInput(gameTime, input);
 
 						otherScreenHasFocus = true;
 					}

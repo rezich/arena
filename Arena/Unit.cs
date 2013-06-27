@@ -24,7 +24,7 @@ namespace Arena {
 
 		public double MoveSpeed {
 			get {
-				return baseMoveSpeed;
+				return baseMoveSpeed + BuffTotal(BuffType.MoveSpeed);
 			}
 			set {
 				baseMoveSpeed = value;
@@ -123,6 +123,8 @@ namespace Arena {
 		public TimeSpan NextAutoAttackReady = new TimeSpan();
 		public bool AutoAttacking = false;
 
+		public List<Buff> Buffs = new List<Buff>();
+
 		public double HealthPercent {
 			get {
 				return (double)Health / (double)MaxHealth;
@@ -155,6 +157,10 @@ namespace Arena {
 		}
 
 		public void Update(GameTime gameTime) {
+			for (var i = 0; i < Buffs.Count; i++)
+				if (gameTime.TotalGameTime >= Buffs[i].ExpirationTime)
+					Buffs.RemoveAt(i);
+
 			Regen();
 			foreach (Ability a in Abilities)
 				a.Update(gameTime);
@@ -232,10 +238,10 @@ namespace Arena {
 		public void TurnTowards(Vector2 position) {
 			IntendedDirection = Math.Atan2(position.Y - Position.Y, position.X - Position.X);
 		}
-		public AbilityActivationType? UseAbility(int ability) {
+		public AbilityActivationType? UseAbility(GameTime gameTime, int ability) {
 			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready) {
 				Energy -= Abilities[ability].EnergyCost;
-				Abilities[ability].Activate();
+				Abilities[ability].Activate(gameTime);
 				return Abilities[ability].ActivationType;
 			}
 			return null;
@@ -247,6 +253,12 @@ namespace Arena {
 			if (unitController.Team != Team)
 				return Attitude.Enemy;
 			return Attitude.Friend;
+		}
+		public double BuffTotal(BuffType type) {
+			double returnValue = 0;
+			foreach (Buff b in Buffs)
+				returnValue += b.ValueOf(type);
+			return returnValue;
 		}
 	}
 	public abstract class UnitController {

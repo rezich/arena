@@ -107,6 +107,10 @@ namespace Arena {
 			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0);
 			//DrawText(g, new Vector2(Resolution.Left + Margin, Resolution.Top + Margin), "LEVEL: 2", 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0);
 			//DrawText(g, new Vector2(Resolution.Left + Margin, Resolution.Top + Margin + 14), "GOLD: 108", 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0);
+			//DrawText(g, new Vector2(BoxWidth + Margin, Margin + 30), "BUFFS: " + player.CurrentUnit.Buffs.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0);
+			for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
+				DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name, 20, TextAlign.Left, TextAlign.Bottom, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 1, 0) : new Cairo.Color(0, 0, 1)), MainTextStroke, null, 0);
+			}
 		}
 		private static void DrawAbility(GameTime gameTime, Cairo.Context g, Player player, int ability) {
 			DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0), null);

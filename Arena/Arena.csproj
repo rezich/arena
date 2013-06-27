@@ -53,6 +53,7 @@
     <Compile Include="HUD.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Effect.cs" />
+    <Compile Include="Buff.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

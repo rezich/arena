@@ -24,7 +24,7 @@ namespace VGame {
 		public virtual void Initialize() { }
 		public virtual void LoadContent() { }
 		public virtual void UnloadContent() { }
-		public virtual void HandleInput(InputState input) { }
+		public virtual void HandleInput(GameTime gameTime, InputState input) { }
 		public virtual void Draw(GameTime gameTime) { }
 		public virtual void Update(GameTime gameTime) {
 			if (isExiting) {

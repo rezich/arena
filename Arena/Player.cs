@@ -32,7 +32,7 @@ namespace Arena {
 			u.JumpTo(position);
 
 			foreach (System.Type t in Arena.Role.List[Role].Abilities) {
-				u.Abilities.Add((Ability)Activator.CreateInstance(t));
+				u.Abilities.Add((Ability)Activator.CreateInstance(t, u));
 			}
 			PlayerUnit = u;
 			ControlledUnits.Add(PlayerUnit);

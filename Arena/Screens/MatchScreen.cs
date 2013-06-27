@@ -37,7 +37,7 @@ namespace Arena {
 			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
 			LocalPlayer.MakePlayerUnit(new Vector2(144, 144));
 			LocalPlayer.PlayerUnit.LevelUp(0);
-			LocalPlayer.PlayerUnit.LevelUp(1);
+			//LocalPlayer.PlayerUnit.LevelUp(1);
 
 			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
 			bot1.MakePlayerUnit(new Vector2(300, 300));
@@ -45,7 +45,7 @@ namespace Arena {
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 		}
-		public override void HandleInput(InputState input) {
+		public override void HandleInput(GameTime gameTime, InputState input) {
 			cursorPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y);
 			if (cursorPosition.X < viewOrigin.X + edgeScrollSize)
 				viewPosition.X -= viewMoveSpeed;
@@ -84,21 +84,21 @@ namespace Arena {
 			if (input.IsKeyDown(Keys.Down))
 				viewPosition.Y += viewMoveSpeed;
 			if (input.IsNewKeyPress(Keys.Q)) {
-				LocalPlayer.CurrentUnit.UseAbility(0);
+				LocalPlayer.CurrentUnit.UseAbility(gameTime, 0);
 			}
 			if (input.IsNewKeyPress(Keys.W)) {
-				LocalPlayer.CurrentUnit.UseAbility(1);
+				LocalPlayer.CurrentUnit.UseAbility(gameTime, 1);
 			}
 			if (input.IsNewKeyPress(Keys.E)) {
-				LocalPlayer.CurrentUnit.UseAbility(2);
+				LocalPlayer.CurrentUnit.UseAbility(gameTime, 2);
 			}
 			if (input.IsNewKeyPress(Keys.R)) {
-				LocalPlayer.CurrentUnit.UseAbility(3);
+				LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
 			}
 			if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 			}
-			base.HandleInput(input);
+			base.HandleInput(gameTime, input);
 		}
 		public override void Update(GameTime gameTime) {
 			foreach (Player p in Player.List)

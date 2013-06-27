@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Cairo;
 
@@ -24,21 +26,23 @@ namespace Arena {
 		public abstract double Cooldown { get; }
 		public int Level;
 		public TimeSpan ReadyTime;
+		public Unit Unit;
 		private bool justActivated = false;
 		public bool Ready = true;
-		protected Ability(string name, AbilityActivationType activationType, int levels) {
+		protected Ability(Unit unit, string name, AbilityActivationType activationType, int levels) {
+			Unit = unit;
 			Name = name;
 			ActivationType = activationType;
 			Levels = levels;
 			Level = 0;
 		}
-		public void Activate() {
+		public void Activate(GameTime gameTime) {
 			if (Level < 1)
 				return;
 			justActivated = true;
-			OnActivate();
+			OnActivate(gameTime);
 		}
-		protected abstract void OnActivate();
+		protected abstract void OnActivate(GameTime gameTime);
 		public void Update(GameTime gameTime) {
 			if (Level < 1)
 				return;
@@ -64,7 +68,7 @@ namespace Arena {
 
 namespace Arena.Abilities {
 	public class Placeholder : Ability {
-		public Placeholder() : base("PLACEHOLDER", AbilityActivationType.Passive, 4) {
+		public Placeholder(Unit unit) : base(unit, "PLACEHOLDER", AbilityActivationType.Passive, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -76,8 +80,7 @@ namespace Arena.Abilities {
 				return 0;
 			}
 		}
-		protected override void OnActivate() {
-
+		protected override void OnActivate(GameTime gameTime) {
 		}
 		protected override void OnUpdate(GameTime gameTime) {
 
@@ -86,8 +89,10 @@ namespace Arena.Abilities {
 
 		}
 	}
+
+	// RUNNER
 	public class Sprint : Ability {
-		public Sprint() : base("Sprint", AbilityActivationType.NoTarget, 4) {
+		public Sprint(Unit unit) : base(unit, "Sprint", AbilityActivationType.NoTarget, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -99,8 +104,8 @@ namespace Arena.Abilities {
 				return 10;
 			}
 		}
-		protected override void OnActivate() {
-
+		protected override void OnActivate(GameTime gameTime) {
+			Unit.Buffs.Add(new Buff("Sprint", BuffAlignment.Positive, BuffType.MoveSpeed, 5, gameTime.TotalGameTime + TimeSpan.FromSeconds(5)));
 		}
 		protected override void OnUpdate(GameTime gameTime) {
 
@@ -112,7 +117,7 @@ namespace Arena.Abilities {
 
 	// GRAPPLER
 	public class Grab : Ability {
-		public Grab() : base("Grab", AbilityActivationType.TargetDirection, 4) {
+		public Grab(Unit unit) : base(unit, "Grab", AbilityActivationType.TargetDirection, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -124,7 +129,7 @@ namespace Arena.Abilities {
 				return 20;
 			}
 		}
-		protected override void OnActivate() {
+		protected override void OnActivate(GameTime gameTime) {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
@@ -135,7 +140,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Hookshot : Ability {
-		public Hookshot() : base("Hookshot", AbilityActivationType.TargetDirection, 4) {
+		public Hookshot(Unit unit) : base(unit, "Hookshot", AbilityActivationType.TargetDirection, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -147,7 +152,7 @@ namespace Arena.Abilities {
 				return 5;
 			}
 		}
-		protected override void OnActivate() {
+		protected override void OnActivate(GameTime gameTime) {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
@@ -158,7 +163,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Tackle : Ability {
-		public Tackle() : base("Tackle", AbilityActivationType.NoTarget, 4) {
+		public Tackle(Unit unit) : base(unit, "Tackle", AbilityActivationType.NoTarget, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -170,7 +175,7 @@ namespace Arena.Abilities {
 				return 60;
 			}
 		}
-		protected override void OnActivate() {
+		protected override void OnActivate(GameTime gameTime) {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
@@ -181,7 +186,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Grapple: Ability {
-		public Grapple() : base("Grapple", AbilityActivationType.TargetEnemy, 3) {
+		public Grapple(Unit unit) : base(unit, "Grapple", AbilityActivationType.TargetEnemy, 3) {
 		}
 		public override int EnergyCost {
 			get {
@@ -193,7 +198,7 @@ namespace Arena.Abilities {
 				return 60;
 			}
 		}
-		protected override void OnActivate() {
+		protected override void OnActivate(GameTime gameTime) {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
