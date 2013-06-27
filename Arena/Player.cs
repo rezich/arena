@@ -38,10 +38,19 @@ namespace Arena {
 			ControlledUnits.Add(PlayerUnit);
 			return PlayerUnit;
 		}
+		public override void Update(GameTime gameTime) {
+		}
 	}
 	class Bot : Player {
 		public Bot(Teams team, Roles role) : base("--BOT--", 0, team, role) {
 			Number = Arena.GameSession.Random.Next(1, 49);
+		}
+		public override void Update(GameTime gameTime) {
+			foreach (Unit u in Unit.List) {
+				if (CurrentUnit.AttitudeTowards(u.Owner) == Attitude.Enemy) {
+					CurrentUnit.AttackTarget = u.Actor;
+				}
+			}
 		}
 	}
 }

@@ -266,6 +266,7 @@ namespace Arena {
 		protected int currentUnit;
 		public List<Unit> ControlledUnits = new List<Unit>();
 		public Teams Team;
+		public abstract void Update(GameTime gameTime);
 	}
 	public class CreepController : UnitController {
 		public CreepController(Teams team) {
@@ -273,6 +274,8 @@ namespace Arena {
 		}
 		public void SpawnCreep(Vector2 position) {
 
+		}
+		public override void Update(GameTime gameTime) {
 		}
 	}
 }

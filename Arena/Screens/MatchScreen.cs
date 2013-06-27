@@ -34,7 +34,7 @@ namespace Arena {
 		int viewMoveSpeed = 8;
 
 		public MatchScreen() {
-			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Grappler);
+			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
 			LocalPlayer.MakePlayerUnit(new Vector2(144, 144));
 			LocalPlayer.PlayerUnit.LevelUp(0);
 			LocalPlayer.PlayerUnit.LevelUp(1);
@@ -95,11 +95,14 @@ namespace Arena {
 			if (input.IsNewKeyPress(Keys.R)) {
 				LocalPlayer.CurrentUnit.UseAbility(3);
 			}
+			if (input.IsNewKeyPress(Keys.Space)) {
+				viewPosition = LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
+			}
 			base.HandleInput(input);
 		}
 		public override void Update(GameTime gameTime) {
-			/*foreach (Player p in Player.List)
-				p.Update(gameTime);*/
+			foreach (Player p in Player.List)
+				p.Update(gameTime);
 			foreach (Unit u in Unit.List)
 				u.Update(gameTime);
 			foreach (Actor a in Actor.List)
