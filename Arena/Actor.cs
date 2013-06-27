@@ -7,7 +7,6 @@ using Cairo;
 
 namespace Arena {
 	public class Actor : Drawable {
-		public static List<Actor> List = new List<Actor>();
 		public override Vector2 WorldPosition {
 			get {
 				return Unit.Position;
@@ -27,7 +26,6 @@ namespace Arena {
 		public Actor(Unit unit, VGame.IShape shape) {
 			Unit = unit;
 			Shape = shape;
-			List.Add(this);
 		}
 		public void Initialize() {
 		}

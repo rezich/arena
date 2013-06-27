@@ -46,9 +46,6 @@ namespace ArenaClient {
 
 			Client.Local.AddPlayer("takua108", 17, Teams.Home, Roles.Runner);
 
-			/*Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
-			bot1.MakePlayerUnit(new Vector2(300, 300));*/
-
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 			Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)(Resolution.Width / 2), (int)(Resolution.Height / 2));
@@ -63,24 +60,23 @@ namespace ArenaClient {
 				viewPosition.Y -= viewMoveSpeed;
 			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
 				viewPosition.Y += viewMoveSpeed;
-			/*if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
+			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
-				Actor clickedActor = null;
-				foreach (Actor a in Actor.List) {
+				/*Actor clickedActor = null;
+				foreach (Actor a in Client.Local.Actors) {
 					if (Vector2.Distance(cursorPosition, a.Position) < Arena.Config.ActorScale) {
-						if (LocalPlayer.PlayerUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
+						if (a.Unit.Owner != Client.Local.LocalPlayer && Client.Local.LocalPlayer.PlayerUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
 							clickedActor = a;
 							break;
 						}
 					}
 				}
 				if (clickedActor != null)
-					LocalPlayer.CurrentUnit.AttackTarget = clickedActor;
-				else {
-					LocalPlayer.CurrentUnit.AttackTarget = null;
-					LocalPlayer.CurrentUnit.IntendedPosition = cursorWorldPosition;
-				}
-			}*/
+					Client.Local.SendAttackOrder(clickedActor);
+				else */
+					Client.Local.SendMoveOrder(cursorWorldPosition);
+
+			}
 			if (input.IsKeyDown(Keys.Up))
 				viewPosition.Y -= viewMoveSpeed;
 			if (input.IsKeyDown(Keys.Left))
@@ -124,19 +120,9 @@ namespace ArenaClient {
 		public override void Update(GameTime gameTime) {
 			if (isLocalGame)
 				Server.Local.Update(gameTime);
+			Client.Local.Update(gameTime, viewPosition, viewOrigin);
 
 			markerAnimationPercent = Math.Min(Math.Max(((double)(markerAnimationDone.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)markerAnimationDuration.TotalMilliseconds), 0), 1);
-			/*
-			foreach (Player p in Player.List)
-				p.Update(gameTime);
-			foreach (Unit u in Unit.List)
-				u.Update(gameTime);
-			foreach (Actor a in Actor.List)
-				a.Update(gameTime, viewPosition, viewOrigin);
-			foreach (Effect e in Effect.List)
-				e.Update(gameTime, viewPosition, viewOrigin);
-			Effect.Cleanup();
-			*/
 			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
@@ -160,6 +146,7 @@ namespace ArenaClient {
 				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
 				g.Stroke();
 			}
+			Client.Local.Draw(gameTime, g);
 			/*foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.BelowActor)
 					e.Draw(gameTime, g, LocalPlayer);
@@ -179,18 +166,17 @@ namespace ArenaClient {
 
 			HUD.Draw(gameTime, g, Client.Local.LocalPlayer);
 
-			/*if (LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
+			if (Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
-				if (LocalPlayer.CurrentUnit.AttackTarget == null)
-					LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
-				g.MoveTo(LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
-				g.LineTo(LocalPlayer.CurrentUnit.AttackTarget == null ? (LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin).ToPointD() : LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
+				if (Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null)
+					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
+				g.MoveTo(Client.Local.LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
+				g.LineTo(Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null ? (Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin).ToPointD() : Client.Local.LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
 				g.Color = new Cairo.Color(0.1, 0.1, 0.1, 0.1);
 				g.Stroke();
 				g.Restore();
 			}
-*/
 
 			Cairo.Color cursorColor = new Cairo.Color(1, 1, 1);
 			/*

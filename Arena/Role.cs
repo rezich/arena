@@ -125,5 +125,17 @@ namespace Arena {
 			}
 			return null;
 		}
+		public static void SetUpUnit(ref Unit unit, Roles role) {
+			unit.MoveSpeed = Arena.Role.List[role].MoveSpeed;
+			unit.TurnSpeed = Arena.Role.List[role].TurnSpeed;
+			unit.AttackRange = Arena.Role.List[role].AttackRange;
+			unit.AttackDamage = Arena.Role.List[role].AttackDamage;
+			unit.BaseAttackTime = Arena.Role.List[role].BaseAttackTime;
+			unit.HealthRegen = Arena.Role.List[role].HealthRegen;
+			unit.EnergyRegen = Arena.Role.List[role].EnergyRegen;
+			foreach (System.Type t in Arena.Role.List[role].Abilities) {
+				unit.Abilities.Add((Ability)Activator.CreateInstance(t, unit));
+			}
+		}
 	}
 }

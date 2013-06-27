@@ -16,7 +16,7 @@ namespace Arena {
 			Team = team;
 			Role = role;
 		}
-		public Unit MakePlayerUnit(Vector2 position) {
+		/*public Unit MakePlayerUnit(Vector2 position) {
 			Unit u = new Unit(this, Arena.Role.List[Role].Health, Arena.Role.List[Role].Energy, Arena.Role.MakeShape(Role));
 			u.Team = Team;
 			u.MoveSpeed = Arena.Role.List[Role].MoveSpeed;
@@ -35,7 +35,7 @@ namespace Arena {
 			PlayerUnit = u;
 			ControlledUnits.Add(PlayerUnit);
 			return PlayerUnit;
-		}
+		}*/
 		public override void Update(GameTime gameTime) {
 		}
 	}
@@ -44,11 +44,11 @@ namespace Arena {
 			Number = Arena.Config.Random.Next(1, 49);
 		}
 		public override void Update(GameTime gameTime) {
-			foreach (Unit u in Unit.List) {
+			/*foreach (Unit u in Unit.List) {
 				if (CurrentUnit.AttitudeTowards(u.Owner) == Attitude.Enemy) {
 					CurrentUnit.AttackTarget = u.Actor;
 				}
-			}
+			}*/
 		}
 	}
 }

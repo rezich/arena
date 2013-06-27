@@ -16,7 +16,6 @@ namespace Arena {
 		Enemy
 	}
 	public class Unit {
-		public static List<Unit> List = new List<Unit>();
 		public UnitController Owner;
 		public Actor Actor;
 		public Teams Team;
@@ -155,14 +154,13 @@ namespace Arena {
 			}
 		}
 
-		public Unit(UnitController owner, int maxHealth, int maxEnergy, VGame.IShape shape) {
+		public Unit(UnitController owner, int maxHealth, int maxEnergy) {
 			Owner = owner;
 			MaxHealth = maxHealth;
 			MaxEnergy = maxEnergy;
 			Health = MaxHealth;
 			Energy = MaxEnergy;
-			Actor = new Actor(this, shape);
-			Unit.List.Add(this);
+			//Actor = new Actor(this, shape);
 		}
 
 		public void Update(GameTime gameTime) {
@@ -231,11 +229,11 @@ namespace Arena {
 			if (Vector2.Distance(Position, intendedPosition) > MoveSpeed) {
 				Vector2 velocity = Vector2.Normalize(intendedPosition - Position);
 				if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
-					Actor foundActor = null;
-					if (foundActor == null)
+					//Actor foundActor = null;
+					//if (foundActor == null)
 						MoveInDirection(velocity, MoveSpeed);
-					else {
-					}
+					//else {
+					//}
 				}
 				TurnTowards(intendedPosition);
 			}
