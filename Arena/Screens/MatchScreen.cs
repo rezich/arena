@@ -170,10 +170,15 @@ namespace Arena {
 
 			HUD.Draw(gameTime, g, LocalPlayer);
 
-			if (LocalPlayer.CurrentUnit.AttackTarget == null && LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
+			if (LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
-				LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale * (1 + 1 * markerAnimationPercent));
+				if (LocalPlayer.CurrentUnit.AttackTarget == null)
+					LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale * (1 + 1 * markerAnimationPercent));
+				g.MoveTo(LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
+				g.LineTo(LocalPlayer.CurrentUnit.AttackTarget == null ? (LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin).ToPointD() : LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
+				g.Color = new Cairo.Color(0.1, 0.1, 0.1, 0.1);
+				g.Stroke();
 				g.Restore();
 			}
 

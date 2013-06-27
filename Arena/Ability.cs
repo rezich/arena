@@ -172,7 +172,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Hookshot : Ability {
-		public Hookshot(Unit unit) : base(unit, "Hookshot", "Fire a hook that grabs pillars and pulls you to them, dealing damage to enemies along the way.", AbilityActivationType.TargetDirection, 4) {
+		public Hookshot(Unit unit) : base(unit, "Hookshot", "Fire a hook that grabs onto pillars and pulls you to them, dealing damage to enemies along the way.", AbilityActivationType.TargetDirection, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -195,7 +195,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Tackle : Ability {
-		public Tackle(Unit unit) : base(unit, "Tackle", "Fire a hook in the direction you're facing, and, if it hits an enemy, pull you to them.", AbilityActivationType.NoTarget, 4) {
+		public Tackle(Unit unit) : base(unit, "Tackle", "Fire a hook in the direction you're facing, and, if it hits an enemy, pulls you to them.", AbilityActivationType.NoTarget, 4) {
 		}
 		public override int EnergyCost {
 			get {
