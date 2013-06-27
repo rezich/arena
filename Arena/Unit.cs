@@ -110,7 +110,7 @@ namespace Arena {
 		private double baseHealthRegen;
 		private double baseEnergyRegen;
 		private double baseBaseAttackTime;
-		private double baseAttackSpeed = 0;
+		private double baseAttackSpeed = 1;
 		private int baseAttackRange;
 		private int baseAttackDamage;
 
@@ -184,7 +184,7 @@ namespace Arena {
 		}
 		public void AutoAttack(GameTime gameTime) {
 			if (gameTime.TotalGameTime > NextAutoAttackReady && !(Owner is Bot)) {
-				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime / ((double)1 + ((double)AttackSpeed / 10)));
+				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime / AttackSpeed);
 				AttackTarget.Unit.Health = Math.Max(AttackTarget.Unit.Health - AttackDamage, 0);
 				new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Unit.Position);
 			}

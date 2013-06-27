@@ -20,6 +20,7 @@ namespace Arena {
 	}
 	public abstract class Ability {
 		public readonly string Name;
+		public readonly string Description;
 		public readonly AbilityActivationType ActivationType;
 		public readonly int Levels;
 		public abstract int EnergyCost { get; }
@@ -29,9 +30,10 @@ namespace Arena {
 		public Unit Unit;
 		private bool justActivated = false;
 		public bool Ready = true;
-		protected Ability(Unit unit, string name, AbilityActivationType activationType, int levels) {
+		protected Ability(Unit unit, string name, string description, AbilityActivationType activationType, int levels) {
 			Unit = unit;
 			Name = name;
+			Description = description;
 			ActivationType = activationType;
 			Levels = levels;
 			Level = 0;
@@ -68,7 +70,7 @@ namespace Arena {
 
 namespace Arena.Abilities {
 	public class Placeholder : Ability {
-		public Placeholder(Unit unit) : base(unit, "PLACEHOLDER", AbilityActivationType.Passive, 4) {
+		public Placeholder(Unit unit) : base(unit, "PLACEHOLDER", "Just a placeholder ability used until we balance the game out.", AbilityActivationType.Passive, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -92,7 +94,7 @@ namespace Arena.Abilities {
 
 	// RUNNER
 	public class Sprint : Ability {
-		public Sprint(Unit unit) : base(unit, "Sprint", AbilityActivationType.NoTarget, 4) {
+		public Sprint(Unit unit) : base(unit, "Sprint", "Temporarily gain a move speed bonus.", AbilityActivationType.NoTarget, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -116,7 +118,7 @@ namespace Arena.Abilities {
 	}
 	public class AgilityAura: Ability {
 		Buff aura;
-		public AgilityAura(Unit unit) : base(unit, "Agility Aura", AbilityActivationType.Passive, 4) {
+		public AgilityAura(Unit unit) : base(unit, "Agility Aura", "Passively gain move speed, turn speed, and attack speed.", AbilityActivationType.Passive, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -134,7 +136,7 @@ namespace Arena.Abilities {
 			aura = new Buff("Agility Aura", BuffAlignment.Positive, new List<Tuple<BuffType, double>>() {
 				new Tuple<BuffType, double>(BuffType.MoveSpeed, 2 * Level),
 				new Tuple<BuffType, double>(BuffType.TurnSpeed, 2 * Level),
-				new Tuple<BuffType, double>(BuffType.AttackSpeed, 2 * Level)
+				new Tuple<BuffType, double>(BuffType.AttackSpeed, 0.5 * Level)
 			}, null, false);
 			Unit.Buffs.Add(aura);
 		}
@@ -147,7 +149,7 @@ namespace Arena.Abilities {
 
 	// GRAPPLER
 	public class Grab : Ability {
-		public Grab(Unit unit) : base(unit, "Grab", AbilityActivationType.TargetDirection, 4) {
+		public Grab(Unit unit) : base(unit, "Grab", "Reach out with a hook to grab an enemy and pull him in.", AbilityActivationType.TargetDirection, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -170,7 +172,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Hookshot : Ability {
-		public Hookshot(Unit unit) : base(unit, "Hookshot", AbilityActivationType.TargetDirection, 4) {
+		public Hookshot(Unit unit) : base(unit, "Hookshot", "Fire a hook that grabs pillars and pulls you to them, dealing damage to enemies along the way.", AbilityActivationType.TargetDirection, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -193,7 +195,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Tackle : Ability {
-		public Tackle(Unit unit) : base(unit, "Tackle", AbilityActivationType.NoTarget, 4) {
+		public Tackle(Unit unit) : base(unit, "Tackle", "Fire a hook in the direction you're facing, and, if it hits an enemy, pull you to them.", AbilityActivationType.NoTarget, 4) {
 		}
 		public override int EnergyCost {
 			get {
@@ -216,7 +218,7 @@ namespace Arena.Abilities {
 		}
 	}
 	public class Grapple: Ability {
-		public Grapple(Unit unit) : base(unit, "Grapple", AbilityActivationType.TargetEnemy, 3) {
+		public Grapple(Unit unit) : base(unit, "Grapple", "Disable target enemy unit and yourself.", AbilityActivationType.TargetEnemy, 3) {
 		}
 		public override int EnergyCost {
 			get {
