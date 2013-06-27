@@ -105,7 +105,7 @@ namespace Arena.Abilities {
 			}
 		}
 		protected override void OnActivate(GameTime gameTime) {
-			Unit.Buffs.Add(new Buff("Sprint", BuffAlignment.Positive, BuffType.MoveSpeed, 5, gameTime.TotalGameTime + TimeSpan.FromSeconds(5)));
+			Unit.Buffs.Add(new Buff("Sprint", BuffAlignment.Positive, BuffType.MoveSpeed, 5, gameTime.TotalGameTime + TimeSpan.FromSeconds(5), false));
 		}
 		protected override void OnUpdate(GameTime gameTime) {
 

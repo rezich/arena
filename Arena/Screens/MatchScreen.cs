@@ -15,6 +15,9 @@ namespace Arena {
 		Vector2 viewOrigin;
 		int edgeScrollSize = 32;
 		CreepController NeutralController = new CreepController(Teams.Neutral);
+		double markerAnimationPercent = 0;
+		TimeSpan markerAnimationDuration = TimeSpan.FromSeconds(0.25);
+		TimeSpan markerAnimationDone = TimeSpan.Zero;
 
 		int viewportWidth {
 			get {
@@ -47,15 +50,16 @@ namespace Arena {
 		}
 		public override void HandleInput(GameTime gameTime, InputState input) {
 			cursorPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y);
-			if (cursorPosition.X < viewOrigin.X + edgeScrollSize)
+			if (cursorPosition.X < viewOrigin.X + edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
 				viewPosition.X -= viewMoveSpeed;
-			if (cursorPosition.X > viewOrigin.X + viewportWidth - edgeScrollSize)
+			if (cursorPosition.X > viewOrigin.X + viewportWidth - edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
 				viewPosition.X += viewMoveSpeed;
-			if (cursorPosition.Y < viewOrigin.Y + edgeScrollSize)
+			if (cursorPosition.Y < viewOrigin.Y + edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
 				viewPosition.Y -= viewMoveSpeed;
-			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize)
+			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
 				viewPosition.Y += viewMoveSpeed;
 			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
+				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
 				foreach (Actor a in Actor.List) {
 					if (Vector2.Distance(cursorPosition, a.Position) < Arena.GameSession.ActorScale) {
@@ -98,9 +102,14 @@ namespace Arena {
 			if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 			}
+			if (input.IsNewKeyPress(Keys.F1)) {
+				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
+			}
 			base.HandleInput(gameTime, input);
 		}
 		public override void Update(GameTime gameTime) {
+			markerAnimationPercent = Math.Min(Math.Max(((double)(markerAnimationDone.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)markerAnimationDuration.TotalMilliseconds), 0), 1);
+
 			foreach (Player p in Player.List)
 				p.Update(gameTime);
 			foreach (Unit u in Unit.List)
@@ -154,7 +163,7 @@ namespace Arena {
 			if (LocalPlayer.CurrentUnit.AttackTarget == null && LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
-				LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale);
+				LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale * (1 + 1 * markerAnimationPercent));
 				g.Restore();
 			}
 

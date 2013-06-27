@@ -109,7 +109,10 @@ namespace Arena {
 			//DrawText(g, new Vector2(Resolution.Left + Margin, Resolution.Top + Margin + 14), "GOLD: 108", 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0);
 			//DrawText(g, new Vector2(BoxWidth + Margin, Margin + 30), "BUFFS: " + player.CurrentUnit.Buffs.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0);
 			for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
-				DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name, 20, TextAlign.Left, TextAlign.Bottom, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 1, 0) : new Cairo.Color(0, 0, 1)), MainTextStroke, null, 0);
+				if (!player.CurrentUnit.Buffs[i].Hidden) {
+					string str = Math.Round(((double)(player.CurrentUnit.Buffs[i].ExpirationTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal();
+					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name + "  " + str, 20, TextAlign.Left, TextAlign.Bottom, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 1, 0) : new Cairo.Color(0, 0, 1)), MainTextStroke, null, 0);
+				}
 			}
 		}
 		private static void DrawAbility(GameTime gameTime, Cairo.Context g, Player player, int ability) {
@@ -156,10 +159,7 @@ namespace Arena {
 			DrawText(g, Ability[ability][2] + new Vector2(-Padding, -Padding), player.CurrentUnit.Abilities[ability].Cooldown.ToString(), 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityCooldownBackground, 0);
 			DrawText(g, Ability[ability][3] + new Vector2(Padding, -Padding), player.CurrentUnit.Abilities[ability].EnergyCost.ToString(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityEnergyBackground, 0);
 			if (!player.CurrentUnit.Abilities[ability].Ready) {
-				string str = Math.Round(((double)(player.CurrentUnit.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString();
-				if (str.Length < 2 || str.Substring(str.Length - 2, 1) != ".") {
-					str += ".0";
-				}
+				string str = Math.Round(((double)(player.CurrentUnit.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal();
 				DrawText(g, Ability[ability][0] + new Vector2((float)(AbilitySize / 2), (float)(AbilitySize / 2)), str, 32, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0);
 			}
 			Vector2 levelOrigin = Ability[ability][1] + new Vector2(-Padding - LevelBoxSize, (float)((AbilitySize / 2) - (LevelBoxSize * player.CurrentUnit.Abilities[ability].Levels) / 2 - (LevelBoxPadding * (player.CurrentUnit.Abilities[ability].Levels) / 2) + LevelBoxPadding / 2));

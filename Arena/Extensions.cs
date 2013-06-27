@@ -42,6 +42,12 @@ namespace Arena {
 				retVal -= MathHelper.TwoPi;
 			return retVal;
 		}
+		public static string MakeDecimal(this string str) {
+			if (str.Length < 2 || str.Substring(str.Length - 2, 1) != ".") {
+				str += ".0";
+			}
+			return str;
+		}
 	}
 	public class Tuple<T1, T2> {
 		public T1 Item1 { get; set; }

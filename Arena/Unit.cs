@@ -32,7 +32,7 @@ namespace Arena {
 		}
 		public double TurnSpeed {
 			get {
-				return baseTurnSpeed;
+				return baseTurnSpeed + BuffTotal(BuffType.TurnSpeed);
 			}
 			set {
 				baseTurnSpeed = value;
@@ -40,7 +40,7 @@ namespace Arena {
 		}
 		public int MaxHealth {
 			get {
-				return baseMaxHealth;
+				return baseMaxHealth + (int)BuffTotal(BuffType.MaxHealth);
 			}
 			set {
 				baseMaxHealth = value;
@@ -48,7 +48,7 @@ namespace Arena {
 		}
 		public int MaxEnergy {
 			get {
-				return baseMaxEnergy;
+				return baseMaxEnergy + (int)BuffTotal(BuffType.MaxEnergy);
 			}
 			set {
 				baseMaxEnergy = value;
@@ -56,7 +56,7 @@ namespace Arena {
 		}
 		public double HealthRegen {
 			get {
-				return baseHealthRegen;
+				return baseHealthRegen + BuffTotal(BuffType.HealthRegen);
 			}
 			set {
 				baseHealthRegen = value;
@@ -64,7 +64,7 @@ namespace Arena {
 		}
 		public double EnergyRegen {
 			get {
-				return baseEnergyRegen;
+				return baseEnergyRegen + BuffTotal(BuffType.EnergyRegen);
 			}
 			set {
 				baseEnergyRegen = value;
@@ -72,7 +72,7 @@ namespace Arena {
 		}
 		public double BaseAttackTime {
 			get {
-				return baseBaseAttackTime;
+				return baseBaseAttackTime + BuffTotal(BuffType.BaseAttackTime);
 			}
 			set {
 				baseBaseAttackTime = value;
@@ -80,7 +80,7 @@ namespace Arena {
 		}
 		public double AttackSpeed {
 			get {
-				return baseAttackSpeed;
+				return baseAttackSpeed + BuffTotal(BuffType.AttackSpeed);
 			}
 			set {
 				baseAttackSpeed = value;
@@ -88,7 +88,7 @@ namespace Arena {
 		}
 		public int AttackRange {
 			get {
-				return baseAttackRange;
+				return baseAttackRange + (int)BuffTotal(BuffType.AttackRange);
 			}
 			set {
 				baseAttackRange = value;
@@ -158,8 +158,9 @@ namespace Arena {
 
 		public void Update(GameTime gameTime) {
 			for (var i = 0; i < Buffs.Count; i++)
-				if (gameTime.TotalGameTime >= Buffs[i].ExpirationTime)
-					Buffs.RemoveAt(i);
+				if (!Buffs[i].Permanent)
+					if (gameTime.TotalGameTime >= Buffs[i].ExpirationTime)
+						Buffs.RemoveAt(i);
 
 			Regen();
 			foreach (Ability a in Abilities)
