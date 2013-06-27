@@ -54,8 +54,8 @@ namespace Arena {
 			if (gameTime.TotalGameTime >= ExpirationTime)
 				ToBeRemoved = true;
 		}
-		public override void Draw(GameTime gameTime, Context g) {
-			Shape.Draw(g, Position, Direction, FillColor, StrokeColor, GameSession.ActorScale);
+		public override void Draw(GameTime gameTime, Context g, Player localPlayer) {
+			Shape.Draw(g, Position, Direction, FillColor, StrokeColor, Arena.Config.ActorScale);
 		}
 		public override void Remove() {
 			List.Remove(this);

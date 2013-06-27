@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using VGame;
 using Cairo;
+using Arena;
 
-namespace Arena {
+namespace ArenaClient {
 	public enum TextAlign {
 		Left,
 		Center,
@@ -42,7 +43,7 @@ namespace Arena {
 		public static void Draw(GameTime gameTime, Cairo.Context g, Player player) {
 
 			// LEFT
-			DrawBox(g, LeftBox, Arena.GameSession.HUDBackground, null);
+			DrawBox(g, LeftBox, Arena.Config.HUDBackground, null);
 
 			// health background
 			g.MoveTo(new Vector2(Resolution.Left + Margin, Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
@@ -97,7 +98,7 @@ namespace Arena {
 			DrawText(g, MinimapBackground[0] + new Vector2((float)(MinimapSize / 2), (float)(MinimapSize / 2)), "MINIMAP", 14, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0, null);
 
 			// RIGHT
-			DrawBox(g, RightBox, Arena.GameSession.HUDBackground, null);
+			DrawBox(g, RightBox, Arena.Config.HUDBackground, null);
 
 			DrawAbility(gameTime, g, player, 0);
 			DrawAbility(gameTime, g, player, 1);

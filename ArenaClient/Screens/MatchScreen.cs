@@ -5,16 +5,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Cairo;
 using VGame;
+using Arena;
 
-namespace Arena {
+namespace ArenaClient {
 	public class MatchScreen : VGame.GameScreen {
 		Player LocalPlayer;
 		Vector2 cursorPosition;
-		Shapes.Cursor cursor = new Arena.Shapes.Cursor();
+		Arena.Shapes.Cursor cursor = new Arena.Shapes.Cursor();
 		Vector2 viewPosition;
 		Vector2 viewOrigin;
 		int edgeScrollSize = 32;
-		CreepController NeutralController = new CreepController(Teams.Neutral);
+		//CreepController NeutralController = new CreepController(Teams.Neutral);
 		double markerAnimationPercent = 0;
 		TimeSpan markerAnimationDuration = TimeSpan.FromSeconds(0.25);
 		TimeSpan markerAnimationDone = TimeSpan.Zero;
@@ -60,7 +61,7 @@ namespace Arena {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
 				foreach (Actor a in Actor.List) {
-					if (Vector2.Distance(cursorPosition, a.Position) < Arena.GameSession.ActorScale) {
+					if (Vector2.Distance(cursorPosition, a.Position) < Arena.Config.ActorScale) {
 						if (LocalPlayer.PlayerUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
 							clickedActor = a;
 							break;
@@ -135,8 +136,8 @@ namespace Arena {
 			Cairo.Context g = VGame.Renderer.Context;
 
 			viewOrigin = new Vector2(Renderer.Width / 10, 0);
-			Vector2 gridOffset = new Vector2((float)(viewPosition.X % Arena.GameSession.ActorScale), (float)(viewPosition.Y % Arena.GameSession.ActorScale));
-			int gridSize = Convert.ToInt32(Arena.GameSession.ActorScale);
+			Vector2 gridOffset = new Vector2((float)(viewPosition.X % Arena.Config.ActorScale), (float)(viewPosition.Y % Arena.Config.ActorScale));
+			int gridSize = Convert.ToInt32(Arena.Config.ActorScale);
 			int gridWidth = viewportWidth + 2 * gridSize;
 			int gridHeight = Resolution.Height + 2 * gridSize;
 
@@ -154,19 +155,19 @@ namespace Arena {
 			}
 			foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.BelowActor)
-					e.Draw(gameTime, g);
+					e.Draw(gameTime, g, LocalPlayer);
 			foreach (Actor a in Actor.List) {
-				a.DrawUIBelow(gameTime, g);
+				a.DrawUIBelow(gameTime, g, LocalPlayer);
 			}
 			foreach (Actor a in Actor.List) {
-				a.Draw(gameTime, g);
+				a.Draw(gameTime, g, LocalPlayer);
 			}
 			foreach (Actor a in Actor.List) {
-				a.DrawUIAbove(gameTime, g);
+				a.DrawUIAbove(gameTime, g, LocalPlayer);
 			}
 			foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.AboveActor)
-					e.Draw(gameTime, g);
+					e.Draw(gameTime, g, LocalPlayer);
 
 			HUD.Draw(gameTime, g, LocalPlayer);
 
@@ -174,7 +175,7 @@ namespace Arena {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (LocalPlayer.CurrentUnit.AttackTarget == null)
-					LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.GameSession.ActorScale * (1 + 1 * markerAnimationPercent));
+					LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
 				g.MoveTo(LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
 				g.LineTo(LocalPlayer.CurrentUnit.AttackTarget == null ? (LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin).ToPointD() : LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
 				g.Color = new Cairo.Color(0.1, 0.1, 0.1, 0.1);
@@ -186,7 +187,7 @@ namespace Arena {
 			foreach (Actor a in Actor.List) {
 				if (a == LocalPlayer.CurrentUnit.Actor)
 					continue;
-				if (Vector2.Distance(a.Position, cursorPosition) < Arena.GameSession.ActorScale) {
+				if (Vector2.Distance(a.Position, cursorPosition) < Arena.Config.ActorScale) {
 					if (LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy)
 						cursorColor = new Cairo.Color(0, 0, 1);
 					if (LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)

@@ -34,16 +34,16 @@ namespace Arena {
 		public override void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
 			base.Update(gameTime, viewPosition, viewOrigin);
 		}
-		public override void Draw(GameTime gameTime, Context g) {
-			Shape.Draw(g, Position, Direction, (Unit.Team == Teams.Home ? GameSession.HomeColor1 : GameSession.AwayColor1), (Unit.Team == Teams.Home ? GameSession.HomeColor2 : GameSession.AwayColor2), GameSession.ActorScale);
+		public override void Draw(GameTime gameTime, Context g, Player localPlayer) {
+			Shape.Draw(g, Position, Direction, (Unit.Team == Teams.Home ? Arena.Config.HomeColor1 : Arena.Config.AwayColor1), (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), Arena.Config.ActorScale);
 			foreach (Ability a in Unit.Abilities)
 				a.Draw(gameTime, g);
 		}
-		public void DrawUIBelow(GameTime gameTime, Context g) {
+		public void DrawUIBelow(GameTime gameTime, Context g, Player localPlayer) {
 			if (Unit.Health < 1)
 				return;
 			double percent = (double)Unit.Health / (double)Unit.MaxHealth;
-			double size = GameSession.ActorScale + 10;
+			double size = Arena.Config.ActorScale + 10;
 			Vector2 start = Position + new Vector2(0, (float)-size);
 			Vector2 end = Position + new Vector2((float)(Math.Cos(MathHelper.PiOver2) * size), (float)(Math.Sin(MathHelper.PiOver2) * size));
 			g.MoveTo(start.X, start.Y);
@@ -52,20 +52,20 @@ namespace Arena {
 				g.LineTo(Position.X, Position.Y);
 				g.LineTo(start.X, start.Y);
 			}
-			g.Color = (Unit.Team == GameSession.CurrentTeam ? GameSession.HealthColor1 : GameSession.EnemyHealthColor1);
+			g.Color = (Unit.Team == localPlayer.Team ? Arena.Config.HealthColor1 : Arena.Config.EnemyHealthColor1);
 			g.FillPreserve();
-			g.Color = (Unit.Team == GameSession.CurrentTeam ? GameSession.HealthColor2 : GameSession.EnemyHealthColor2);
+			g.Color = (Unit.Team == localPlayer.Team ? Arena.Config.HealthColor2 : Arena.Config.EnemyHealthColor2);
 
 			double unit = MathHelper.TwoPi / Unit.MaxHealth;
 			for (int i = 0; i < Unit.Health; i++) {
 				Vector2 dest = Position + new Vector2((float)(Math.Cos(3 * MathHelper.PiOver2 - unit * i) * size), (float)(Math.Sin(3 * MathHelper.PiOver2 - unit * i) * size));
 				g.MoveTo(Position.X, Position.Y);
 				g.LineTo(dest.X, dest.Y);
-				g.Color = (Unit.Team == GameSession.CurrentTeam ? GameSession.HealthColor2 : GameSession.EnemyHealthColor2);
+				g.Color = (Unit.Team == localPlayer.Team ? Arena.Config.HealthColor2 : Arena.Config.EnemyHealthColor2);
 				g.Stroke();
 			}
 
-			if (Unit.Energy < 1 || Unit.Team != GameSession.CurrentTeam)
+			if (Unit.Energy < 1 || Unit.Team != localPlayer.Team)
 				return;
 			double ePercent = (double)Unit.Energy / (double)Unit.MaxEnergy;
 			g.MoveTo(Position.X, Position.Y - size);
@@ -75,9 +75,9 @@ namespace Arena {
 			g.LineTo(Position.X + Math.Cos(energy) * (energySize + size), Position.Y + Math.Sin(energy) * (size + energySize));
 			g.Arc(Position.X, Position.Y, size + energySize, energy, 3 * MathHelper.PiOver2);
 			g.ClosePath();
-			g.Color = GameSession.EnergyColor1;
+			g.Color = Arena.Config.EnergyColor1;
 			g.FillPreserve();
-			g.Color = GameSession.EnergyColor2;
+			g.Color = Arena.Config.EnergyColor2;
 			g.Stroke();
 
 			unit = MathHelper.TwoPi / Unit.MaxEnergy;
@@ -86,16 +86,16 @@ namespace Arena {
 				Vector2 dest = Position + new Vector2((float)(Math.Cos(3 * MathHelper.PiOver2 - unit * i) * (size + energySize)), (float)(Math.Sin(3 * MathHelper.PiOver2 - unit * i) * (size + energySize)));
 				g.MoveTo(src.X, src.Y);
 				g.LineTo(dest.X, dest.Y);
-				g.Color = GameSession.EnergyColor2;
+				g.Color = Arena.Config.EnergyColor2;
 				g.Stroke();
 			}
 		}
-		public void DrawUIAbove(GameTime gameTime, Context g) {
+		public void DrawUIAbove(GameTime gameTime, Context g, Player localPlayer) {
 			g.SelectFontFace("04b_19", FontSlant.Normal, FontWeight.Bold);
 			double textScale = 0.7;
 
 			if (Unit.Owner is Player) {
-				g.SetFontSize(GameSession.ActorScale * textScale);
+				g.SetFontSize(Arena.Config.ActorScale * textScale);
 				string str = ((Player)Unit.Owner).Number.ToString();
 				TextExtents ext = g.TextExtents(str);
 				Vector2 textPos = new Vector2((float)(Position.X - ext.Width / 2 - ext.XBearing), (float)(Position.Y - ext.Height / 2 - ext.YBearing));
@@ -103,7 +103,7 @@ namespace Arena {
 				g.SetSourceRGBA(1, 1, 1, 1);
 				g.ShowText(str);
 				g.MoveTo(textPos.ToPointD());
-				g.Color = (Unit.Team == Teams.Home ? GameSession.HomeColor2 : GameSession.AwayColor2);
+				g.Color = (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2);
 				g.LineWidth = 1;
 				g.TextPath(str);
 				g.Stroke();
@@ -111,7 +111,7 @@ namespace Arena {
 			}
 			g.Save();
 
-			double rangeRadius = GameSession.ActorScale * Unit.AttackRange;
+			double rangeRadius = Arena.Config.ActorScale * Unit.AttackRange;
 			double rangeCircum = 2 * MathHelper.Pi * rangeRadius;
 			double start = gameTime.TotalGameTime.TotalSeconds / MathHelper.TwoPi * 1;
 			double[] dash = new double[] { rangeCircum / 80, rangeCircum / 120 };
@@ -143,7 +143,7 @@ namespace Arena {
 			_viewPosition = viewPosition;
 			_viewOrigin = viewOrigin;
 		}
-		public abstract void Draw(GameTime gameTime, Context g);
+		public abstract void Draw(GameTime gameTime, Context g, Player localPlayer);
 		public abstract void Remove();
 	}
 }

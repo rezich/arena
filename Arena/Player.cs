@@ -42,9 +42,9 @@ namespace Arena {
 		public override void Update(GameTime gameTime) {
 		}
 	}
-	class Bot : Player {
+	public class Bot : Player {
 		public Bot(Teams team, Roles role) : base("--BOT--", 0, team, role) {
-			Number = Arena.GameSession.Random.Next(1, 49);
+			Number = Arena.Config.Random.Next(1, 49);
 		}
 		public override void Update(GameTime gameTime) {
 			foreach (Unit u in Unit.List) {
