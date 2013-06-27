@@ -9,13 +9,11 @@ using Arena;
 
 namespace ArenaClient {
 	public class MatchScreen : VGame.GameScreen {
-		Player LocalPlayer;
 		Vector2 cursorPosition;
 		Arena.Shapes.Cursor cursor = new Arena.Shapes.Cursor();
 		Vector2 viewPosition;
 		Vector2 viewOrigin;
 		int edgeScrollSize = 32;
-		//CreepController NeutralController = new CreepController(Teams.Neutral);
 		double markerAnimationPercent = 0;
 		TimeSpan markerAnimationDuration = TimeSpan.FromSeconds(0.25);
 		TimeSpan markerAnimationDone = TimeSpan.Zero;
@@ -37,15 +35,23 @@ namespace ArenaClient {
 		}
 		int viewMoveSpeed = 16;
 
-		public MatchScreen() {
-			LocalPlayer = new Player("takua108", 17, Teams.Home, Roles.Runner);
-			LocalPlayer.MakePlayerUnit(new Vector2(144, 144));
+		bool isLocalGame = true;
 
-			Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
-			bot1.MakePlayerUnit(new Vector2(300, 300));
+		public MatchScreen() {
+			Client.Local = new Client();
+			if (isLocalGame) {
+				Server.Local = new Server();
+			}
+			Client.Local.Connect();
+
+			Client.Local.AddPlayer("takua108", 17, Teams.Home, Roles.Runner);
+
+			/*Bot bot1 = new Bot(Teams.Away, Roles.Nuker);
+			bot1.MakePlayerUnit(new Vector2(300, 300));*/
 
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
+			Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)(Resolution.Width / 2), (int)(Resolution.Height / 2));
 		}
 		public override void HandleInput(GameTime gameTime, InputState input) {
 			cursorPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y);
@@ -57,7 +63,7 @@ namespace ArenaClient {
 				viewPosition.Y -= viewMoveSpeed;
 			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
 				viewPosition.Y += viewMoveSpeed;
-			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
+			/*if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
 				foreach (Actor a in Actor.List) {
@@ -74,9 +80,6 @@ namespace ArenaClient {
 					LocalPlayer.CurrentUnit.AttackTarget = null;
 					LocalPlayer.CurrentUnit.IntendedPosition = cursorWorldPosition;
 				}
-			}
-			/*if (input.IsNewMousePress(MouseButtons.Left) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
-				Effect e = new Effect(cursorWorldPosition, EffectPosition.BelowActor, new Shapes.AutoAttackBeam());
 			}*/
 			if (input.IsKeyDown(Keys.Up))
 				viewPosition.Y -= viewMoveSpeed;
@@ -86,7 +89,7 @@ namespace ArenaClient {
 				viewPosition.X += viewMoveSpeed;
 			if (input.IsKeyDown(Keys.Down))
 				viewPosition.Y += viewMoveSpeed;
-			if (input.IsNewKeyPress(Keys.Q)) {
+			/*if (input.IsNewKeyPress(Keys.Q)) {
 				if (input.IsKeyDown(Keys.LeftShift))
 					LocalPlayer.CurrentUnit.LevelUp(gameTime, 0);
 				else
@@ -109,18 +112,21 @@ namespace ArenaClient {
 					LocalPlayer.CurrentUnit.LevelUp(gameTime, 3);
 				else
 					LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
-			}
-			if (input.IsNewKeyPress(Keys.Space)) {
+			}*/
+			/*if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
-			}
+			}*/
 			if (input.IsNewKeyPress(Keys.F1)) {
 				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
 			}
 			base.HandleInput(gameTime, input);
 		}
 		public override void Update(GameTime gameTime) {
-			markerAnimationPercent = Math.Min(Math.Max(((double)(markerAnimationDone.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)markerAnimationDuration.TotalMilliseconds), 0), 1);
+			if (isLocalGame)
+				Server.Local.Update(gameTime);
 
+			markerAnimationPercent = Math.Min(Math.Max(((double)(markerAnimationDone.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)markerAnimationDuration.TotalMilliseconds), 0), 1);
+			/*
 			foreach (Player p in Player.List)
 				p.Update(gameTime);
 			foreach (Unit u in Unit.List)
@@ -130,6 +136,7 @@ namespace ArenaClient {
 			foreach (Effect e in Effect.List)
 				e.Update(gameTime, viewPosition, viewOrigin);
 			Effect.Cleanup();
+			*/
 			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
@@ -153,7 +160,7 @@ namespace ArenaClient {
 				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
 				g.Stroke();
 			}
-			foreach (Effect e in Effect.List)
+			/*foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.BelowActor)
 					e.Draw(gameTime, g, LocalPlayer);
 			foreach (Actor a in Actor.List) {
@@ -168,10 +175,11 @@ namespace ArenaClient {
 			foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.AboveActor)
 					e.Draw(gameTime, g, LocalPlayer);
+					*/
 
-			HUD.Draw(gameTime, g, LocalPlayer);
+			HUD.Draw(gameTime, g, Client.Local.LocalPlayer);
 
-			if (LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
+			/*if (LocalPlayer.CurrentUnit.Position != LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (LocalPlayer.CurrentUnit.AttackTarget == null)
@@ -182,8 +190,10 @@ namespace ArenaClient {
 				g.Stroke();
 				g.Restore();
 			}
+*/
 
 			Cairo.Color cursorColor = new Cairo.Color(1, 1, 1);
+			/*
 			foreach (Actor a in Actor.List) {
 				if (a == LocalPlayer.CurrentUnit.Actor)
 					continue;
@@ -194,6 +204,7 @@ namespace ArenaClient {
 						cursorColor = new Cairo.Color(0, 1, 0);
 				}
 			}
+			*/
 
 			cursor.Draw(g, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
 		}

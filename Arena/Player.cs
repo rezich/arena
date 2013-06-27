@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 
 namespace Arena {
 	public class Player : UnitController {
-		public static List<Player> List = new List<Player>();
 		public string Name;
 		public int Number;
 		public Roles Role;
@@ -16,8 +15,6 @@ namespace Arena {
 			Number = number;
 			Team = team;
 			Role = role;
-
-			Player.List.Add(this);
 		}
 		public Unit MakePlayerUnit(Vector2 position) {
 			Unit u = new Unit(this, Arena.Role.List[Role].Health, Arena.Role.List[Role].Energy, Arena.Role.MakeShape(Role));
