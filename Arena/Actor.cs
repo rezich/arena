@@ -120,9 +120,6 @@ namespace Arena {
 			g.Stroke();
 			g.Restore();
 		}
-		public override void Remove() {
-			// TODO
-		}
 	}
 	public abstract class Drawable {
 		public Vector2 Position {
@@ -142,7 +139,6 @@ namespace Arena {
 			_viewOrigin = viewOrigin;
 		}
 		public abstract void Draw(GameTime gameTime, Context g, Player localPlayer);
-		public abstract void Remove();
 	}
 }
 

@@ -127,7 +127,7 @@ namespace Arena {
 		public double Direction = 0;
 		public double IntendedDirection = 0;
 		public List<Ability> Abilities = new List<Ability>();
-		public Actor AttackTarget;
+		public Unit AttackTarget;
 		public TimeSpan NextAutoAttackReady = new TimeSpan();
 		public bool AutoAttacking = false;
 
@@ -160,7 +160,6 @@ namespace Arena {
 			MaxEnergy = maxEnergy;
 			Health = MaxHealth;
 			Energy = MaxEnergy;
-			//Actor = new Actor(this, shape);
 		}
 
 		public void Update(GameTime gameTime) {
@@ -183,8 +182,8 @@ namespace Arena {
 		public void AutoAttack(GameTime gameTime) {
 			if (gameTime.TotalGameTime > NextAutoAttackReady && !(Owner is Bot)) {
 				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime / AttackSpeed);
-				AttackTarget.Unit.Health = Math.Max(AttackTarget.Unit.Health - AttackDamage, 0);
-				new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Unit.Position);
+				AttackTarget.Health = Math.Max(AttackTarget.Health - AttackDamage, 0);
+				Client.Local.MakeEffect(new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Position));
 			}
 		}
 		public void Regen() {
@@ -213,7 +212,7 @@ namespace Arena {
 			AutoAttacking = false;
 			Vector2 intendedPosition;
 			if (AttackTarget != null) {
-				intendedPosition = AttackTarget.Unit.Position;
+				intendedPosition = AttackTarget.Position;
 				TurnTowards(intendedPosition);
 				if (Vector2.Distance(Position, intendedPosition) <= AttackRange * Arena.Config.ActorScale) {
 					if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
@@ -288,6 +287,7 @@ namespace Arena {
 		}
 		protected int currentUnit;
 		public List<Unit> ControlledUnits = new List<Unit>();
+		public abstract string Name { get; }
 		public Teams Team;
 		public abstract void Update(GameTime gameTime);
 	}
@@ -297,6 +297,11 @@ namespace Arena {
 		}
 		public void SpawnCreep(Vector2 position) {
 
+		}
+		public override string Name {
+			get {
+				return "CREEP CONTROLLER";
+			}
 		}
 		public override void Update(GameTime gameTime) {
 		}

@@ -10,7 +10,6 @@ namespace Arena {
 		AboveActor
 	}
 	public abstract class Effect : Drawable {
-		public static List<Effect> List = new List<Effect>();
 		protected Vector2 _position;
 		protected double _direction;
 		public EffectPosition Height;
@@ -42,7 +41,6 @@ namespace Arena {
 			Height = height;
 			Shape = shape;
 			ExpirationTime = gameTime.TotalGameTime + Duration;
-			List.Add(this);
 		}
 
 		public abstract void OnUpdate(GameTime gameTime);
@@ -57,14 +55,14 @@ namespace Arena {
 		public override void Draw(GameTime gameTime, Context g, Player localPlayer) {
 			Shape.Draw(g, Position, Direction, FillColor, StrokeColor, Arena.Config.ActorScale);
 		}
-		public override void Remove() {
-			List.Remove(this);
+		public void Remove(ref List<Effect> list) {
+			list.Remove(this);
 		}
 
-		public static void Cleanup() {
-			for (int i = 0; i < List.Count; i++) {
-				if (List[i].ToBeRemoved)
-					List[i].Remove();
+		public static void Cleanup(ref List<Effect> list) {
+			for (int i = 0; i < list.Count; i++) {
+				if (list[i].ToBeRemoved)
+					list[i].Remove(ref list);
 			}
 		}
 	}

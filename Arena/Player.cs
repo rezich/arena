@@ -1,17 +1,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Arena {
 	public class Player : UnitController {
-		public string Name;
+		public override string Name {
+			get {
+				return _name;
+			}
+		}
+		protected string _name;
 		public int Number;
 		public Roles Role;
 		public Unit PlayerUnit;
 
 		public Player(string name, int number, Teams team, Roles role) {
-			Name = name;
+			_name = name;
 			Number = number;
 			Team = team;
 			Role = role;
@@ -44,11 +50,15 @@ namespace Arena {
 			Number = Arena.Config.Random.Next(1, 49);
 		}
 		public override void Update(GameTime gameTime) {
-			/*foreach (Unit u in Unit.List) {
-				if (CurrentUnit.AttitudeTowards(u.Owner) == Attitude.Enemy) {
-					CurrentUnit.AttackTarget = u.Actor;
+			foreach (KeyValuePair<int, Unit> kvp in Server.Local.Units) {
+				if (CurrentUnit.AttitudeTowards(kvp.Value.Owner) == Attitude.Enemy) {
+					SendAttackOrder(kvp.Value);
 				}
-			}*/
+			}
+		}
+		protected void SendAttackOrder(Unit u) {
+			if (CurrentUnit.AttackTarget != u)
+				Server.Local.RecieveAttackOrder(Server.Local.Units.FirstOrDefault(x => x.Value == CurrentUnit).Key, Server.Local.Units.FirstOrDefault(x => x.Value == u).Key);
 		}
 	}
 }

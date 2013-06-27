@@ -46,6 +46,8 @@ namespace ArenaClient {
 
 			Client.Local.AddPlayer("takua108", 17, Teams.Home, Roles.Runner);
 
+			Server.Local.AddBot(Teams.Away, Roles.Nuker);
+
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 			Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)(Resolution.Width / 2), (int)(Resolution.Height / 2));
@@ -62,18 +64,18 @@ namespace ArenaClient {
 				viewPosition.Y += viewMoveSpeed;
 			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
-				/*Actor clickedActor = null;
+				Actor clickedActor = null;
 				foreach (Actor a in Client.Local.Actors) {
 					if (Vector2.Distance(cursorPosition, a.Position) < Arena.Config.ActorScale) {
-						if (a.Unit.Owner != Client.Local.LocalPlayer && Client.Local.LocalPlayer.PlayerUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
+						if (a.Unit.Owner != Client.Local.LocalPlayer && Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
 							clickedActor = a;
 							break;
 						}
 					}
 				}
 				if (clickedActor != null)
-					Client.Local.SendAttackOrder(clickedActor);
-				else */
+					Client.Local.SendAttackOrder(clickedActor.Unit);
+				else
 					Client.Local.SendMoveOrder(cursorWorldPosition);
 
 			}
@@ -85,33 +87,33 @@ namespace ArenaClient {
 				viewPosition.X += viewMoveSpeed;
 			if (input.IsKeyDown(Keys.Down))
 				viewPosition.Y += viewMoveSpeed;
-			/*if (input.IsNewKeyPress(Keys.Q)) {
+			if (input.IsNewKeyPress(Keys.Q)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					LocalPlayer.CurrentUnit.LevelUp(gameTime, 0);
+					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 0);
 				else
-					LocalPlayer.CurrentUnit.UseAbility(gameTime, 0);
+					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 0);
 			}
 			if (input.IsNewKeyPress(Keys.W)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					LocalPlayer.CurrentUnit.LevelUp(gameTime, 1);
+					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 1);
 				else
-					LocalPlayer.CurrentUnit.UseAbility(gameTime, 1);
+					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 1);
 			}
 			if (input.IsNewKeyPress(Keys.E)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					LocalPlayer.CurrentUnit.LevelUp(gameTime, 2);
+					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 2);
 				else
-					LocalPlayer.CurrentUnit.UseAbility(gameTime, 2);
+					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 2);
 			}
 			if (input.IsNewKeyPress(Keys.R)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					LocalPlayer.CurrentUnit.LevelUp(gameTime, 3);
+					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 3);
 				else
-					LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
-			}*/
-			/*if (input.IsNewKeyPress(Keys.Space)) {
-				viewPosition = LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
-			}*/
+					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
+			}
+			if (input.IsNewKeyPress(Keys.Space)) {
+				viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
+			}
 			if (input.IsNewKeyPress(Keys.F1)) {
 				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
 			}
