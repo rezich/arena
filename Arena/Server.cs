@@ -8,6 +8,15 @@ namespace Arena {
 	public class Server {
 		public static Server Local;
 		public readonly bool IsLocalServer;
+		protected bool isDrawing = false;
+		public bool IsDrawing {
+			get {
+				return IsLocalServer && isDrawing;
+			}
+			set {
+				isDrawing = value;
+			}
+		}
 
 		public Dictionary<int, Player> Players = new Dictionary<int, Player>();
 		protected int playerIndex = 0;
@@ -97,8 +106,12 @@ namespace Arena {
 				kvp.Value.Update(gameTime);
 		}
 		public void Draw(GameTime gameTime, Cairo.Context g, Vector2 viewPosition, Vector2 viewOrigin) {
-			foreach (KeyValuePair<int, Unit> kvp in Units)
-				GenericShape.Draw(g, kvp.Value.Position - viewPosition + viewOrigin, kvp.Value.Direction, new Cairo.Color(0, 0, 0.5, 0.5), null, Config.ActorScale);
+			foreach (KeyValuePair<int, Unit> kvp in Units) {
+				g.Save();
+				g.SetDash(new double[] { 4, 4 }, 0);
+				GenericShape.Draw(g, kvp.Value.Position - viewPosition + viewOrigin, kvp.Value.Direction, null, new Cairo.Color(0, 0, 0.5, 0.5), Config.ActorScale);
+				g.Restore();
+			}
 		}
 
 		protected class RemoteClient {

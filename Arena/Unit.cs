@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -131,7 +132,17 @@ namespace Arena {
 		public TimeSpan NextAutoAttackReady = new TimeSpan();
 		public bool AutoAttacking = false;
 
-		public List<Buff> Buffs = new List<Buff>();
+		public List<Buff> Buffs {
+			get {
+				if (newBuffs.Count == 0)
+					return buffs;
+				List<Buff> total = new List<Buff>(buffs);
+				total.AddRange(newBuffs);
+				return total;
+			}
+		}
+		protected List<Buff> buffs = new List<Buff>();
+		protected List<Buff> newBuffs = new List<Buff>();
 
 		public double HealthPercent {
 			get {
@@ -163,10 +174,15 @@ namespace Arena {
 		}
 
 		public void Update(GameTime gameTime) {
-			for (var i = 0; i < Buffs.Count; i++)
-				if (!Buffs[i].Permanent)
-					if (gameTime.TotalGameTime >= Buffs[i].ExpirationTime)
-						Buffs.RemoveAt(i);
+			for (var i = 0; i < newBuffs.Count; i++) {
+				newBuffs[i].ExpirationTime += gameTime.TotalGameTime;
+				buffs.Add(newBuffs[i]);
+			}
+			newBuffs.Clear();
+			for (var i = 0; i < buffs.Count; i++)
+				if (!buffs[i].Permanent)
+					if (gameTime.TotalGameTime >= buffs[i].ExpirationTime)
+						buffs.RemoveAt(i);
 
 			Regen();
 			foreach (Ability a in Abilities)
@@ -248,25 +264,6 @@ namespace Arena {
 		public bool CanUseAbility(int ability) {
 			return (Abilities.Count >= ability + 1 && Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready && Abilities[ability].ActivationType != AbilityActivationType.Passive);
 		}
-		/*public AbilityActivationType? BeginUseAbility(GameTime gameTime, int ability) {
-			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready) {
-				Energy -= Abilities[ability].EnergyCost;
-				Abilities[ability].Activate(gameTime);
-				return Abilities[ability].ActivationType;
-			}
-			return null;
-		}
-		public void FinishUseAbilityNoTarget(GameTime gameTime, int ability) {
-
-		}
-		public void UseAbility(GameTime gameTime, int ability) {
-			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready && Abilities[ability].ActivationType != AbilityActivationType.Passive) {
-				Energy -= Abilities[ability].EnergyCost;
-				Abilities[ability].Activate(gameTime);
-				//return Abilities[ability].ActivationType;
-			}
-			//return null;
-		}*/
 		public void UseAbility(int ability, float? val1, float? val2) {
 			Abilities[ability].Activate(val1, val2);
 		}
@@ -279,6 +276,9 @@ namespace Arena {
 			Abilities[ability].Level += 1;
 			if (Abilities[ability].ActivationType == AbilityActivationType.Passive)
 				UseAbility(ability, null, null);
+		}
+		public void AddBuff(Buff buff) {
+			newBuffs.Add(buff);
 		}
 		public Attitude AttitudeTowards(UnitController unitController) {
 			if (unitController.Team != Team)

@@ -121,6 +121,10 @@ namespace ArenaClient {
 			if (input.IsNewKeyPress(Keys.F1)) {
 				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
 			}
+			if (input.IsNewKeyPress(Keys.F2)) {
+				if (Client.Local.IsLocalServer)
+					Server.Local.IsDrawing = !Server.Local.IsDrawing;
+			}
 			base.HandleInput(gameTime, input);
 		}
 		public override void Update(GameTime gameTime) {
@@ -153,7 +157,7 @@ namespace ArenaClient {
 				g.Stroke();
 			}
 			Client.Local.Draw(gameTime, g);
-			if (Client.Local.IsLocalServer)
+			if (Client.Local.IsLocalServer && Server.Local.IsDrawing)
 				Server.Local.Draw(gameTime, g, viewPosition, viewOrigin);
 			/*foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.BelowActor)

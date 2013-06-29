@@ -32,6 +32,7 @@ Controls
 - S - stop moving*
 - Esc - quit
 - F1 - unlock cursor
+- F2 - toggle showing red outlines of where stuff is on the server (local server only)
 - Space - center camera on currently-selected unit
 
 \* not implemented
