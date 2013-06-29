@@ -13,6 +13,7 @@ namespace VGame {
 		GraphicsDeviceManager graphics;
 
 		public VectorGameSession() {
+			Window.AllowUserResizing = true;
 			graphics = new GraphicsDeviceManager(this);
 			preRenderer = new PreRenderer(this);
 			preRenderer.DrawOrder = 1;
@@ -21,6 +22,11 @@ namespace VGame {
 			postRenderer = new PostRenderer(this);
 			postRenderer.DrawOrder = 3;
 
+			Components.Add(preRenderer);
+			Components.Add(screenManager);
+			Components.Add(postRenderer);
+		}
+		protected override void Initialize() {
 			Resolution.Initialize(graphics);
 			int w = 1280;
 			int h = 720;
@@ -28,16 +34,11 @@ namespace VGame {
 			VGame.Renderer.Initialize(graphics.GraphicsDevice, w, h);
 			if (!SpriteBatchHelper.IsInitialized)
 				SpriteBatchHelper.Initialize(graphics.GraphicsDevice);
-
-			Components.Add(preRenderer);
-			Components.Add(screenManager);
-			Components.Add(postRenderer);
-		}
-		protected override void Initialize() {
 			base.Initialize();
 		}
 
 		protected override void Update(GameTime gameTime) {
+			Window.AllowUserResizing = false;
 			Renderer.ElapsedTime += gameTime.ElapsedGameTime.TotalMilliseconds;
 			if (Renderer.ElapsedTime >= 1000) {
 				Renderer.FPS = Renderer.TotalFrames;

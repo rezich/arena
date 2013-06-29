@@ -30,6 +30,8 @@ namespace Arena {
 		}
 
 		public void Tick() {
+			if (IsLocalServer)
+				return;
 			if (client.ConnectionStatus == NetConnectionStatus.Connected && !IsConnected) {
 				Console.WriteLine("Connected successfully.");
 				IsConnected = true;
@@ -62,6 +64,7 @@ namespace Arena {
 		public void Connect() {
 			if (IsLocalServer) {
 				IsConnected = true;
+				Server.Local.AddPlayer(Arena.Config.PlayerName, Arena.Config.PlayerNumber, Teams.Home, Roles.Runner);
 			}
 			else {
 				Console.Write("Connecting... ");

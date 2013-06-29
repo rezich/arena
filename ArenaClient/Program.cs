@@ -28,22 +28,25 @@ namespace ArenaClient {
 				else
 					validNumber = int.TryParse(readLine, out Arena.Config.PlayerNumber);
 			}
-			Console.Write("Server IP: ");
+			Console.Write("Server IP (leave blank for single-player): ");
 			readLine = Console.ReadLine();
-			Arena.Config.ServerAddress = (readLine == "" ? "localhost" : readLine);
+			if (readLine == "")
+				Arena.Config.LocalServer = true;
+			else
+				Arena.Config.ServerAddress = readLine;
 			game = new GameSession();
-			try {
+			//try {
 				game.Run();
-			}
-			catch(Exception e) {
+			//}
+			/*catch(Exception e) {
 				Console.Write(e.Message);
 				System.IO.File.WriteAllText("log.txt", e.StackTrace);
 				System.Threading.Thread.Sleep(2000);
 				Console.ReadKey();
 			}
-			finally {
+			finally {*/
 				VGame.Renderer.Dispose();
-			}
+			//}
 		}
 	}
 }

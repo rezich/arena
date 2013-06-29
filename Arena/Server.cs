@@ -10,7 +10,8 @@ namespace Arena {
 		Connect,
 		NewPlayer,
 		MakePlayerUnit,
-		MoveOrder
+		MoveOrder,
+		AttackOrder
 	}
 	public class Server {
 		protected NetServer server;
@@ -20,15 +21,6 @@ namespace Arena {
 
 		public static Server Local;
 		public readonly bool IsLocalServer;
-		protected bool isDrawing = false;
-		public bool IsDrawing {
-			get {
-				return IsLocalServer && isDrawing;
-			}
-			set {
-				isDrawing = value;
-			}
-		}
 
 		public Dictionary<int, Player> Players = new Dictionary<int, Player>();
 		protected int playerIndex = 0;
@@ -75,7 +67,7 @@ namespace Arena {
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
 			Console.WriteLine("Adding new player: " + name);
 			Player player = new Player(name, number, team, role);
-			RemoteClient rc = new RemoteClient(playerIndex, incoming.SenderConnection);
+			RemoteClient rc = new RemoteClient(playerIndex, IsLocalServer ? null : incoming.SenderConnection);
 			RemoteClients.Add(playerIndex, rc);
 			Players.Add(playerIndex, player);
 			foreach (RemoteClient r in AllClients())

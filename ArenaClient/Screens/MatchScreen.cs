@@ -121,10 +121,6 @@ namespace ArenaClient {
 			if (input.IsNewKeyPress(Keys.F1)) {
 				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
 			}
-			if (input.IsNewKeyPress(Keys.F2)) {
-				if (Client.Local.IsLocalServer)
-					Server.Local.IsDrawing = !Server.Local.IsDrawing;
-			}
 			base.HandleInput(gameTime, input);
 		}
 		public override void Update(GameTime gameTime) {

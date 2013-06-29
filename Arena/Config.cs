@@ -16,6 +16,7 @@ namespace Arena {
 		public static string PlayerName = "UNNAMED";
 		public static int PlayerNumber = 0;
 		public static string ServerAddress = "localhost";
+		public static bool LocalServer = false;
 
 		public static void Initialize() {
 			HomeColor1 = VGame.Util.MakeColor(152, 174, 188, 1);
