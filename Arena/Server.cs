@@ -35,7 +35,6 @@ namespace Arena {
 		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
 		protected int unitIndex = 0;
 		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
-		protected Shapes.Runner GenericShape = new Arena.Shapes.Runner();
 
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
@@ -161,14 +160,6 @@ namespace Arena {
 				kvp.Value.Update(gameTime);
 			foreach (KeyValuePair<int, Unit> kvp in Units)
 				kvp.Value.Update(gameTime);
-		}
-		public void Draw(GameTime gameTime, Cairo.Context g, Vector2 viewPosition, Vector2 viewOrigin) {
-			foreach (KeyValuePair<int, Unit> kvp in Units) {
-				g.Save();
-				g.SetDash(new double[] { 4, 4 }, 0);
-				GenericShape.Draw(g, kvp.Value.Position - viewPosition + viewOrigin, kvp.Value.Direction, null, new Cairo.Color(0, 0, 0.5, 0.5), Config.ActorScale);
-				g.Restore();
-			}
 		}
 
 		protected class RemoteClient {

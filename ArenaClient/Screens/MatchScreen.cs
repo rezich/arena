@@ -159,8 +159,6 @@ namespace ArenaClient {
 				g.Stroke();
 			}
 			Client.Local.Draw(gameTime, g);
-			if (Client.Local.IsLocalServer && Server.Local.IsDrawing)
-				Server.Local.Draw(gameTime, g, viewPosition, viewOrigin);
 			/*foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.BelowActor)
 					e.Draw(gameTime, g, LocalPlayer);
