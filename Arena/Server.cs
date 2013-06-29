@@ -11,7 +11,10 @@ namespace Arena {
 		NewPlayer,
 		MakePlayerUnit,
 		MoveOrder,
-		AttackOrder
+		AttackOrder,
+		Damage,
+		LevelUp,
+		UseAbility
 	}
 	public class Server {
 		protected NetServer server;
@@ -58,6 +61,20 @@ namespace Arena {
 								break;
 							case PacketType.AttackOrder:
 								ReceiveAttackOrder(incoming.ReadInt32(), incoming.ReadInt32());
+								break;
+							case PacketType.LevelUp:
+								ReceiveLevelUp(incoming.ReadInt32(), (int)incoming.ReadByte());
+								break;
+							case PacketType.UseAbility:
+								int unitIndex = incoming.ReadInt32();
+								int ability = (int)incoming.ReadByte();
+								float? val1 = null;
+								float? val2 = null;
+								/*if (incoming.PositionInBytes < incoming.LengthBytes)
+									val1 = (float?)incoming.ReadFloat();
+								if (incoming.PositionInBytes < incoming.LengthBytes)
+									val2 = (float?)incoming.ReadFloat();*/
+								ReceiveUseAbility(unitIndex, ability, val1, val2);
 								break;
 						}
 						break;
@@ -124,6 +141,7 @@ namespace Arena {
 				r.SendMoveOrder(Units[unitIndex], u.IntendedPosition);
 		}
 		public void ReceiveLevelUp(int unitIndex, int ability) {
+			Console.WriteLine("[S] Receiving level up for player " + Units[unitIndex].Owner.Name);
 			//foreach (RemoteClient r in AllClientsButOne(GetPlayerID((Player)Units[unitIndex].Owner)))
 			if (Units[unitIndex].CanLevelUp(ability)) {
 				Units[unitIndex].LevelUp(ability);
@@ -132,6 +150,7 @@ namespace Arena {
 			}
 		}
 		public void ReceiveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
+			Console.WriteLine("[S] Receiving ability use for player " + Units[unitIndex].Owner.Name + ", ability " + ability);
 			Units[unitIndex].UseAbility(ability, val1, val2);
 			foreach (RemoteClient r in AllClients())
 				r.SendUseAbility(Units[unitIndex], ability, val1, val2);
@@ -228,10 +247,28 @@ namespace Arena {
 				if (Server.Local.IsLocalServer) {
 					Client.Local.ReceiveLevelUp(Server.Local.GetUnitID(unit), ability);
 				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.LevelUp);
+					outMsg.Write(Server.Local.GetUnitID(unit));
+					outMsg.Write((byte)ability);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
 			}
 			public void SendUseAbility(Unit unit, int ability, float? val1, float? val2) {
 				if (Server.Local.IsLocalServer) {
 					Client.Local.ReceiveUseAbility(Server.Local.GetUnitID(unit), ability, val1, val2);
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.UseAbility);
+					outMsg.Write(Server.Local.GetUnitID(unit));
+					outMsg.Write((byte)ability);
+					if (val1.HasValue)
+						outMsg.Write((float)val1);
+					if (val2.HasValue)
+						outMsg.Write((float)val2);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 		}

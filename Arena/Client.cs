@@ -56,6 +56,20 @@ namespace Arena {
 						case PacketType.AttackOrder:
 							ReceiveAttackOrder(incoming.ReadInt32(), incoming.ReadInt32());
 							break;
+						case PacketType.LevelUp:
+							ReceiveLevelUp(incoming.ReadInt32(), (int)incoming.ReadByte());
+							break;
+						case PacketType.UseAbility:
+							int unitIndex = incoming.ReadInt32();
+							int ability = (int)incoming.ReadByte();
+							float? val1 = null;
+							float? val2 = null;
+							/*if (incoming.PositionInBytes < incoming.LengthBytes)
+								val1 = (float?)incoming.ReadFloat();
+							if (incoming.PositionInBytes < incoming.LengthBytes)
+								val2 = (float?)incoming.ReadFloat();*/
+							ReceiveUseAbility(unitIndex, ability, val1, val2);
+							break;
 					}
 				}
 			}
@@ -168,13 +182,22 @@ namespace Arena {
 			Effects.Add(effect);
 		}
 		public void LevelUp(GameTime gameTime, int ability) {
+			Console.WriteLine("[C] Sending level up for player " + LocalPlayer.Name);
 			if (LocalPlayer.CurrentUnit.CanLevelUp(ability)) {
 				if (IsLocalServer) {
 					Server.Local.ReceiveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
 				}
+				else {
+					NetOutgoingMessage outMsg = client.CreateMessage();
+					outMsg.Write((byte)PacketType.LevelUp);
+					outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+					outMsg.Write((byte)ability);
+					client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				}
 			}
 		}
 		public void ReceiveLevelUp(int unitIndex, int ability) {
+			Console.WriteLine("[C] Receiving level up for " + Units[unitIndex].Owner.Name);
 			Units[unitIndex].LevelUp(ability);
 		}
 		public void BeginUsingAbility(GameTime gameTime, int ability) {
@@ -189,8 +212,16 @@ namespace Arena {
 			if (!CurrentAbility.HasValue)
 				return;
 			if (LocalPlayer.CurrentUnit.CanUseAbility((int)CurrentAbility)) {
+				Console.WriteLine("[C] Sending ability use for " + LocalPlayer.Name);
 				if (IsLocalServer) {
 					Server.Local.ReceiveUseAbility(GetUnitID(LocalPlayer.CurrentUnit), (int)CurrentAbility, null, null);
+				}
+				else {
+					NetOutgoingMessage outMsg = client.CreateMessage();
+					outMsg.Write((byte)PacketType.UseAbility);
+					outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+					outMsg.Write((byte)CurrentAbility);
+					client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 			CurrentAbility = null;
@@ -199,6 +230,7 @@ namespace Arena {
 			CurrentAbility = null;
 		}
 		public void ReceiveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
+			Console.WriteLine("[C] Receiving ability use for " + Units[unitIndex].Owner.Name + ", ability " + ability);
 			Units[unitIndex].UseAbility(ability, val1, val2);
 		}
 

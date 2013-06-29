@@ -38,15 +38,6 @@ namespace ArenaClient {
 		bool isLocalGame = false;
 
 		public MatchScreen() {
-			/*Client.Local = new Client();
-			if (isLocalGame) {
-				Server.Local = new Server(true);
-			}
-			Client.Local.Connect();
-
-			Client.Local.AddPlayer("takua108", 17, Teams.Home, Roles.Runner);
-
-			Server.Local.AddBot(Teams.Away, Roles.Nuker);*/
 
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
