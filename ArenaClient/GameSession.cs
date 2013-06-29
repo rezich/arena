@@ -29,7 +29,8 @@ namespace ArenaClient {
 			Role.Initialize();
 			Arena.Config.Initialize();
 
-			screenManager.AddScreen(new MatchScreen(), PlayerIndex.One);
+			//screenManager.AddScreen(new MatchScreen(), PlayerIndex.One);
+			screenManager.AddScreen(new ConnectionScreen(), PlayerIndex.One);
 
 			base.Initialize();
 		}

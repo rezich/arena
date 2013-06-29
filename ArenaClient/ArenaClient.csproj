@@ -47,6 +47,7 @@
     <Compile Include="GameSession.cs" />
     <Compile Include="Screens\MatchScreen.cs" />
     <Compile Include="HUD.cs" />
+    <Compile Include="Screens\ConnectionScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

@@ -8,7 +8,7 @@ using Lidgren.Network;
 namespace Arena {
 	public class Client {
 		public static Client Local;
-		public Player LocalPlayer;
+		public Player LocalPlayer = null;
 		public bool IsConnected = false;
 		public bool IsLocalServer = false;
 
@@ -25,8 +25,6 @@ namespace Arena {
 			IsLocalServer = isLocalServer;
 			NetPeerConfiguration config = new NetPeerConfiguration(Arena.Config.ApplicationID);
 			client = new NetClient(config);
-			Connect();
-			Local = this;
 		}
 
 		public void Tick() {
@@ -75,11 +73,13 @@ namespace Arena {
 			}
 		}
 		public void RecieveNewPlayer(int index, string name, int number, Teams team, Roles role) {
+			Console.WriteLine("Recieving new player: " + name);
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
 			Players.Add(index, new Player(name, number, team, role));
 			if (Players.Count == 1)
 				LocalPlayer = Players[index];
+			Console.WriteLine("I now have " + Players.Count + " players.");
 		}
 		public void RecieveNewPlayerUnit(int unitIndex, int playerIndex, float x, float y, double direction) {
 			Player player = Players[playerIndex];

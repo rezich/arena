@@ -62,13 +62,14 @@ namespace Arena {
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
 			Console.WriteLine("Adding new player: " + name);
-			//Console.WriteLine("We now have a total of "
 			Player player = new Player(name, number, team, role);
-			RemoteClients.Add(server.Connections.Count - 1, new RemoteClient(server.Connections.Count - 1, playerIndex));
+			RemoteClient rc = new RemoteClient(playerIndex, incoming.SenderConnection);
+			RemoteClients.Add(playerIndex, rc);
+			foreach (KeyValuePair<int, Player> kvp in Players)
+				rc.SendNewPlayer(kvp.Key);
 			Players.Add(playerIndex, player);
 			foreach (RemoteClient r in AllClients())
-				Console.WriteLine("hi");
-				//r.SendNewPlayer(playerIndex);
+				r.SendNewPlayer(playerIndex);
 			//MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
 			playerIndex++;
 		}
@@ -150,11 +151,11 @@ namespace Arena {
 		}
 
 		protected class RemoteClient {
-			public int ID;
 			public int PlayerID;
-			public RemoteClient(int id, int playerID) {
-				ID = id;
+			public NetConnection Connection;
+			public RemoteClient(int playerID, NetConnection connection) {
 				PlayerID = playerID;
+				Connection = connection;
 			}
 			public void SendAttackOrder(Unit attacker, Unit victim) {
 				if (Server.Local.IsLocalServer) {
@@ -185,7 +186,8 @@ namespace Arena {
 					outMsg.Write(Server.Local.Players[index].Number);
 					outMsg.Write((byte)Server.Local.Players[index].Team);
 					outMsg.Write((byte)Server.Local.Players[index].Role);
-					Server.Local.server.SendMessage(outMsg, Server.Local.server.Connections[ID], NetDeliveryMethod.ReliableOrdered, 0);
+					//Server.Local.server.SendMessage(outMsg, Server.Local.server., NetDeliveryMethod.ReliableOrdered, 0);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 			public void SendLevelUp(Unit unit, int ability) {

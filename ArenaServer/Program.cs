@@ -35,12 +35,12 @@ namespace ArenaServer {
 			TicksSinceLastUpdate = Stopwatch.GetTimestamp();
 
 			Console.WriteLine("done.");
-			try {
+			//try {
 				MainLoop();
-			}
-			catch(Exception e) {
-				System.IO.File.WriteAllText("log.txt", e.StackTrace);
-			}
+			//}
+			//catch(Exception e) {
+			//	System.IO.File.WriteAllText("log.txt", e.StackTrace);
+			//}
 		}
 
 		static void Update(GameTime gameTime) {

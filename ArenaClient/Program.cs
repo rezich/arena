@@ -14,17 +14,18 @@ namespace ArenaClient {
 		//[STAThread]
         static void Main() {
 			game = new GameSession();
-			//try {
+			try {
 				game.Run();
-			/*}
+			}
 			catch(Exception e) {
 				Console.Write(e.Message);
+				System.IO.File.WriteAllText("log.txt", e.StackTrace);
 				System.Threading.Thread.Sleep(2000);
 				Console.ReadKey();
 			}
-			finally {*/
+			finally {
 				VGame.Renderer.Dispose();
-			//}
+			}
 		}
 	}
 }

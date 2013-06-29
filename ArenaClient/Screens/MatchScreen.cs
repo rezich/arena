@@ -48,9 +48,6 @@ namespace ArenaClient {
 
 			Server.Local.AddBot(Teams.Away, Roles.Nuker);*/
 
-			Client.Local = new Client(false);
-			//Client.Local.Connect();
-
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 			Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)(Resolution.Width / 2), (int)(Resolution.Height / 2));
