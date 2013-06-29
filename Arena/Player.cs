@@ -38,7 +38,7 @@ namespace Arena {
 		}
 		protected void SendAttackOrder(Unit u) {
 			if (CurrentUnit.AttackTarget != u)
-				Server.Local.RecieveAttackOrder(Server.Local.Units.FirstOrDefault(x => x.Value == CurrentUnit).Key, Server.Local.Units.FirstOrDefault(x => x.Value == u).Key);
+				Server.Local.ReceiveAttackOrder(Server.Local.Units.FirstOrDefault(x => x.Value == CurrentUnit).Key, Server.Local.Units.FirstOrDefault(x => x.Value == u).Key);
 		}
 	}
 }

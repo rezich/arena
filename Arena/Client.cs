@@ -33,11 +33,11 @@ namespace Arena {
 			if (IsLocalServer)
 				return;
 			if (client.ConnectionStatus == NetConnectionStatus.Connected && !IsConnected) {
-				Console.WriteLine("Connected successfully.");
+				Console.WriteLine("[C] Connected successfully.");
 				IsConnected = true;
 			}
 			if (IsConnected && client.ConnectionStatus == NetConnectionStatus.Disconnected) {
-				Console.WriteLine("Disconnected from server.");
+				Console.WriteLine("[C] Disconnected from server.");
 				IsConnected = false;
 			}
 			NetIncomingMessage incoming;
@@ -45,13 +45,13 @@ namespace Arena {
 				if (incoming.MessageType == NetIncomingMessageType.Data) {
 					switch ((PacketType)incoming.ReadByte()) {
 						case PacketType.NewPlayer:
-							RecieveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+							ReceiveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
 							break;
 						case PacketType.MakePlayerUnit:
-							RecieveNewPlayerUnit(incoming.ReadInt32(), (int)incoming.ReadByte(), incoming.ReadFloat(), incoming.ReadFloat(), (double)incoming.ReadFloat());
+							ReceiveNewPlayerUnit(incoming.ReadInt32(), (int)incoming.ReadByte(), incoming.ReadFloat(), incoming.ReadFloat(), (double)incoming.ReadFloat());
 							break;
 						case PacketType.MoveOrder:
-							RecieveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
+							ReceiveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 							break;
 					}
 				}
@@ -65,9 +65,10 @@ namespace Arena {
 			if (IsLocalServer) {
 				IsConnected = true;
 				Server.Local.AddPlayer(Arena.Config.PlayerName, Arena.Config.PlayerNumber, Teams.Home, Roles.Runner);
+				Console.WriteLine("[C] Connected to local single-player server.");
 			}
 			else {
-				Console.Write("Connecting... ");
+				Console.WriteLine("[C] Connecting to server... ");
 				NetOutgoingMessage outMsg = client.CreateMessage();
 				client.Start();
 				outMsg.Write((byte)PacketType.Connect);
@@ -91,19 +92,19 @@ namespace Arena {
 				Server.Local.AddPlayer(name, number, team, role);
 			}
 		}
-		public void RecieveNewPlayer(int index, string name, int number, Teams team, Roles role) {
-			Console.WriteLine("Recieving new player: " + name);
+		public void ReceiveNewPlayer(int index, string name, int number, Teams team, Roles role) {
+			Console.WriteLine("[C] Recieving new player: " + name);
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
 			Players.Add(index, new Player(name, number, team, role));
 			if (Players.Count == 1) {
-				Console.WriteLine("I didn't have any other players, so this new player is the local player.");
+				Console.WriteLine("[C] I didn't have any other players, so this new player is the local player.");
 				LocalPlayer = Players[index];
 			}
-			Console.WriteLine("I now have " + Players.Count + " players.");
+			Console.WriteLine("[C] I now have " + Players.Count + " players.");
 		}
-		public void RecieveNewPlayerUnit(int unitIndex, int playerIndex, float x, float y, double direction) {
-			Console.WriteLine("Recieving new player unit for " + Players[playerIndex].Name + " at (" + x + ", " + y + ")");
+		public void ReceiveNewPlayerUnit(int unitIndex, int playerIndex, float x, float y, double direction) {
+			Console.WriteLine("[C] Recieving new player unit for " + Players[playerIndex].Name + " at (" + x + ", " + y + ")");
 			Player player = Players[playerIndex];
 			Unit u = new Unit(player, Role.List[player.Role].Health, Role.List[player.Role].Energy);
 			u.Owner = player;
@@ -125,15 +126,15 @@ namespace Arena {
 		public void SendAttackOrder(Unit unit) {
 			LocalPlayer.CurrentUnit.AttackTarget = unit;
 			if (IsLocalServer) {
-				Server.Local.RecieveAttackOrder(Units.FirstOrDefault(x => x.Value == LocalPlayer.CurrentUnit).Key, Units.FirstOrDefault(x => x.Value == unit).Key);
+				Server.Local.ReceiveAttackOrder(Units.FirstOrDefault(x => x.Value == LocalPlayer.CurrentUnit).Key, Units.FirstOrDefault(x => x.Value == unit).Key);
 			}
 		}
 		public void SendMoveOrder(Vector2 position) {
-			Console.WriteLine("Sending move order for unit " + GetUnitID(LocalPlayer.CurrentUnit) + " to (" + position.X + ", " + position.Y + ")");
+			Console.WriteLine("[C] Sending move order for unit " + GetUnitID(LocalPlayer.CurrentUnit) + " to (" + position.X + ", " + position.Y + ")");
 			LocalPlayer.CurrentUnit.AttackTarget = null;
 			LocalPlayer.CurrentUnit.IntendedPosition = position;
 			if (IsLocalServer) {
-				Server.Local.RecieveMoveOrder(GetUnitID(LocalPlayer.CurrentUnit), position.X, position.Y);
+				Server.Local.ReceiveMoveOrder(GetUnitID(LocalPlayer.CurrentUnit), position.X, position.Y);
 			}
 			else {
 				NetOutgoingMessage outMsg = client.CreateMessage();
@@ -144,10 +145,10 @@ namespace Arena {
 				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
-		public void RecieveAttackOrder(int attackerIndex, int victimIndex) {
+		public void ReceiveAttackOrder(int attackerIndex, int victimIndex) {
 			Units[attackerIndex].AttackTarget = Units[victimIndex];
 		}
-		public void RecieveMoveOrder(int unitIndex, float x, float y) {
+		public void ReceiveMoveOrder(int unitIndex, float x, float y) {
 			Units[unitIndex].IntendedPosition = new Vector2(x, y);
 		}
 		public void MakeEffect(Effect effect) {
@@ -156,11 +157,11 @@ namespace Arena {
 		public void LevelUp(GameTime gameTime, int ability) {
 			if (LocalPlayer.CurrentUnit.CanLevelUp(ability)) {
 				if (IsLocalServer) {
-					Server.Local.RecieveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
+					Server.Local.ReceiveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
 				}
 			}
 		}
-		public void RecieveLevelUp(int unitIndex, int ability) {
+		public void ReceiveLevelUp(int unitIndex, int ability) {
 			Units[unitIndex].LevelUp(ability);
 		}
 		public void BeginUsingAbility(GameTime gameTime, int ability) {
@@ -176,7 +177,7 @@ namespace Arena {
 				return;
 			if (LocalPlayer.CurrentUnit.CanUseAbility((int)CurrentAbility)) {
 				if (IsLocalServer) {
-					Server.Local.RecieveUseAbility(GetUnitID(LocalPlayer.CurrentUnit), (int)CurrentAbility, null, null);
+					Server.Local.ReceiveUseAbility(GetUnitID(LocalPlayer.CurrentUnit), (int)CurrentAbility, null, null);
 				}
 			}
 			CurrentAbility = null;
@@ -184,7 +185,7 @@ namespace Arena {
 		public void CancelUsingAbility() {
 			CurrentAbility = null;
 		}
-		public void RecieveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
+		public void ReceiveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
 			Units[unitIndex].UseAbility(ability, val1, val2);
 		}
 

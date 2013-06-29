@@ -53,10 +53,10 @@ namespace Arena {
 					case NetIncomingMessageType.Data:
 						switch ((PacketType)incoming.ReadByte()) {
 							case PacketType.MakePlayerUnit:
-								Console.WriteLine("PRETTY SURE THIS SHOULDN'T HAPPEN");
+								Console.WriteLine("[S] PRETTY SURE THIS SHOULDN'T HAPPEN");
 								break;
 							case PacketType.MoveOrder:
-								RecieveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
+								ReceiveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 								break;
 						}
 						break;
@@ -65,7 +65,7 @@ namespace Arena {
 		}
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
-			Console.WriteLine("Adding new player: " + name);
+			Console.WriteLine("[S] Adding new player: " + name);
 			Player player = new Player(name, number, team, role);
 			RemoteClient rc = new RemoteClient(playerIndex, IsLocalServer ? null : incoming.SenderConnection);
 			RemoteClients.Add(playerIndex, rc);
@@ -89,7 +89,7 @@ namespace Arena {
 			MakePlayerUnit(bot, new Vector2(150, 150 * playerIndex));
 		}
 		public Unit MakePlayerUnit(Player player, Vector2 position) {
-			Console.WriteLine("Making new player unit for " + player.Name + " at (" + position.X + ", " + position.Y + ")");
+			Console.WriteLine("[S] Making new player unit for " + player.Name + " at (" + position.X + ", " + position.Y + ")");
 			Unit u = new Unit(player, Role.List[player.Role].Health, Role.List[player.Role].Energy);
 			u.Owner = player;
 			u.Team = player.Team;
@@ -103,14 +103,14 @@ namespace Arena {
 				r.SendNewPlayerUnit(unitIndex, GetPlayerID(player));
 			return u;
 		}
-		public void RecieveAttackOrder(int attackerIndex, int victimIndex) {
-			Console.WriteLine("Receiving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
+		public void ReceiveAttackOrder(int attackerIndex, int victimIndex) {
+			Console.WriteLine("[S] Receiving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
 			Units[attackerIndex].AttackTarget = Units[victimIndex];
 			foreach (RemoteClient r in AllClientsButOne(GetPlayerID(Units[attackerIndex].Owner)))
 				r.SendAttackOrder(Units[attackerIndex], Units[victimIndex]);
 		}
-		public void RecieveMoveOrder(int unitIndex, float x, float y) {
-			Console.WriteLine("Receiving move order for unit " + unitIndex + " to (" + x + ", " + y + ")");
+		public void ReceiveMoveOrder(int unitIndex, float x, float y) {
+			Console.WriteLine("[S] Receiving move order for unit " + unitIndex + " to (" + x + ", " + y + ")");
 			Unit u = Units[unitIndex];
 			u.AttackTarget = null;
 			u.IntendedPosition = new Vector2(x, y);
@@ -118,7 +118,7 @@ namespace Arena {
 			//foreach (RemoteClient r in RemoteClients.Values)
 				r.SendMoveOrder(Units[unitIndex], u.IntendedPosition);
 		}
-		public void RecieveLevelUp(int unitIndex, int ability) {
+		public void ReceiveLevelUp(int unitIndex, int ability) {
 			//foreach (RemoteClient r in AllClientsButOne(GetPlayerID((Player)Units[unitIndex].Owner)))
 			if (Units[unitIndex].CanLevelUp(ability)) {
 				Units[unitIndex].LevelUp(ability);
@@ -126,7 +126,7 @@ namespace Arena {
 					r.SendLevelUp(Units[unitIndex], ability);
 			}
 		}
-		public void RecieveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
+		public void ReceiveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
 			Units[unitIndex].UseAbility(ability, val1, val2);
 			foreach (RemoteClient r in AllClients())
 				r.SendUseAbility(Units[unitIndex], ability, val1, val2);
@@ -163,12 +163,12 @@ namespace Arena {
 			}
 			public void SendAttackOrder(Unit attacker, Unit victim) {
 				if (Server.Local.IsLocalServer) {
-					Client.Local.RecieveAttackOrder(Server.Local.GetUnitID(attacker), Server.Local.GetUnitID(victim));
+					Client.Local.ReceiveAttackOrder(Server.Local.GetUnitID(attacker), Server.Local.GetUnitID(victim));
 				}
 			}
 			public void SendMoveOrder(Unit unit, Vector2 position) {
 				if (Server.Local.IsLocalServer) {
-					Client.Local.RecieveMoveOrder(Server.Local.GetUnitID(unit), position.X, position.Y);
+					Client.Local.ReceiveMoveOrder(Server.Local.GetUnitID(unit), position.X, position.Y);
 				}
 				else {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
@@ -182,7 +182,7 @@ namespace Arena {
 			public void SendNewPlayerUnit(int unitIndex, int playerIndex) {
 				if (Server.Local.IsLocalServer) {
 					Unit u = Server.Local.Units[unitIndex];
-					Client.Local.RecieveNewPlayerUnit(unitIndex, playerIndex, u.Position.X, u.Position.Y, u.Direction);
+					Client.Local.ReceiveNewPlayerUnit(unitIndex, playerIndex, u.Position.X, u.Position.Y, u.Direction);
 				}
 				else {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
@@ -198,7 +198,7 @@ namespace Arena {
 			public void SendNewPlayer(int index) {
 				if (Server.Local.IsLocalServer) {
 					Player p = Server.Local.Players[index];
-					Client.Local.RecieveNewPlayer(index, p.Name, p.Number, p.Team, p.Role);
+					Client.Local.ReceiveNewPlayer(index, p.Name, p.Number, p.Team, p.Role);
 				}
 				else {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
@@ -214,12 +214,12 @@ namespace Arena {
 			}
 			public void SendLevelUp(Unit unit, int ability) {
 				if (Server.Local.IsLocalServer) {
-					Client.Local.RecieveLevelUp(Server.Local.GetUnitID(unit), ability);
+					Client.Local.ReceiveLevelUp(Server.Local.GetUnitID(unit), ability);
 				}
 			}
 			public void SendUseAbility(Unit unit, int ability, float? val1, float? val2) {
 				if (Server.Local.IsLocalServer) {
-					Client.Local.RecieveUseAbility(Server.Local.GetUnitID(unit), ability, val1, val2);
+					Client.Local.ReceiveUseAbility(Server.Local.GetUnitID(unit), ability, val1, val2);
 				}
 			}
 		}
