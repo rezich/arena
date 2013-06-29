@@ -26,7 +26,7 @@ namespace ArenaServer {
 		
 		static void Main() {
 
-			Console.Write("Initializing server...");
+			Console.Write("Initializing server... ");
 
 			Role.Initialize();
 			Arena.Config.Initialize();

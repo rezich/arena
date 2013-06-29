@@ -16,6 +16,9 @@ namespace ArenaClient {
 
 		public override void Update(GameTime gameTime) {
 			Client.Local.Update(gameTime, Vector2.Zero, Vector2.Zero);
+			if (Client.Local.IsConnected) {
+				ScreenManager.ReplaceScreen(new MatchScreen(), PlayerIndex.One);
+			}
 			base.Update(gameTime);
 		}
 

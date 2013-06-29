@@ -13,6 +13,24 @@ namespace ArenaClient {
         /// </summary>
 		//[STAThread]
         static void Main() {
+			string readLine;
+			Console.Write("Enter name: ");
+			readLine = Console.ReadLine();
+			Arena.Config.PlayerName = (readLine == "" ? "UNNAMED" : readLine);
+			bool validNumber = false;
+			while (!validNumber) {
+				Console.Write("Enter number: ");
+				readLine = Console.ReadLine();
+				if (readLine == "") {
+					Arena.Config.PlayerNumber = 0;
+					validNumber = true;
+				}
+				else
+					validNumber = int.TryParse(readLine, out Arena.Config.PlayerNumber);
+			}
+			Console.Write("Server IP: ");
+			readLine = Console.ReadLine();
+			Arena.Config.ServerAddress = (readLine == "" ? "localhost" : readLine);
 			game = new GameSession();
 			try {
 				game.Run();

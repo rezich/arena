@@ -65,11 +65,12 @@ namespace Arena {
 			Player player = new Player(name, number, team, role);
 			RemoteClient rc = new RemoteClient(playerIndex, incoming.SenderConnection);
 			RemoteClients.Add(playerIndex, rc);
-			foreach (KeyValuePair<int, Player> kvp in Players)
-				rc.SendNewPlayer(kvp.Key);
 			Players.Add(playerIndex, player);
 			foreach (RemoteClient r in AllClients())
 				r.SendNewPlayer(playerIndex);
+			foreach (KeyValuePair<int, Player> kvp in Players)
+				if (kvp.Key != playerIndex)
+					rc.SendNewPlayer(kvp.Key);
 			//MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
 			playerIndex++;
 		}

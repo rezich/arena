@@ -28,6 +28,14 @@ namespace Arena {
 		}
 
 		public void Tick() {
+			if (client.ConnectionStatus == NetConnectionStatus.Connected && !IsConnected) {
+				Console.WriteLine("Connected successfully.");
+				IsConnected = true;
+			}
+			if (IsConnected && client.ConnectionStatus == NetConnectionStatus.Disconnected) {
+				Console.WriteLine("Disconnected from server.");
+				IsConnected = false;
+			}
 			NetIncomingMessage incoming;
 			while ((incoming = client.ReadMessage()) != null) {
 				if (incoming.MessageType == NetIncomingMessageType.Data) {
@@ -41,23 +49,21 @@ namespace Arena {
 		/// <summary>
 		/// Connect to local server.
 		/// </summary>
-		public bool Connect() {
+		public void Connect() {
 			if (IsLocalServer) {
 				IsConnected = true;
 			}
 			else {
-				Console.WriteLine("Connecting");
+				Console.Write("Connecting... ");
 				NetOutgoingMessage outMsg = client.CreateMessage();
 				client.Start();
 				outMsg.Write((byte)PacketTypes.Connect);
-				outMsg.Write("takua108");
-				outMsg.Write((byte)17);
+				outMsg.Write(Arena.Config.PlayerName);
+				outMsg.Write((byte)Arena.Config.PlayerNumber);
 				outMsg.Write((byte)Teams.Home);
 				outMsg.Write((byte)Roles.Runner);
-				client.Connect("localhost", Arena.Config.Port, outMsg);
-				IsConnected = true;
+				client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, outMsg);
 			}
-			return IsConnected;
 		}
 
 		public int GetPlayerID(UnitController player) {
@@ -77,8 +83,10 @@ namespace Arena {
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
 			Players.Add(index, new Player(name, number, team, role));
-			if (Players.Count == 1)
+			if (Players.Count == 1) {
+				Console.WriteLine("I didn't have any other players, so this new player is the local player.");
 				LocalPlayer = Players[index];
+			}
 			Console.WriteLine("I now have " + Players.Count + " players.");
 		}
 		public void RecieveNewPlayerUnit(int unitIndex, int playerIndex, float x, float y, double direction) {

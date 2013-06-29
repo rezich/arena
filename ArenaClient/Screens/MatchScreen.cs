@@ -178,7 +178,7 @@ namespace ArenaClient {
 
 			HUD.Draw(gameTime, g, Client.Local.LocalPlayer);
 
-			if (Client.Local.LocalPlayer != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition) {
+			if (Client.Local.LocalPlayer.CurrentUnit != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null)
