@@ -128,6 +128,13 @@ namespace Arena {
 			if (IsLocalServer) {
 				Server.Local.ReceiveAttackOrder(Units.FirstOrDefault(x => x.Value == LocalPlayer.CurrentUnit).Key, Units.FirstOrDefault(x => x.Value == unit).Key);
 			}
+			else {
+				NetOutgoingMessage outMsg = client.CreateMessage();
+				outMsg.Write((byte)PacketType.AttackOrder);
+				outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+				outMsg.Write(GetUnitID(unit));
+				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
 		}
 		public void SendMoveOrder(Vector2 position) {
 			Console.WriteLine("[C] Sending move order for unit " + GetUnitID(LocalPlayer.CurrentUnit) + " to (" + position.X + ", " + position.Y + ")");

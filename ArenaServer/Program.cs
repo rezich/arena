@@ -24,7 +24,7 @@ namespace ArenaServer {
 		
 		static void Main() {
 
-			Console.Write("Initializing server... ");
+			Console.WriteLine("Initializing server... ");
 
 			Role.Initialize();
 			Arena.Config.Initialize();
@@ -32,7 +32,6 @@ namespace ArenaServer {
 			Stopwatch.Start();
 			TicksSinceLastUpdate = Stopwatch.GetTimestamp();
 
-			Console.WriteLine("done.");
 			//try {
 				MainLoop();
 			//}

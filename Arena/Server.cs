@@ -38,6 +38,7 @@ namespace Arena {
 				server = new NetServer(config);
 				server.Start();
 			}
+			AddBot(Teams.Away, Roles.Nuker);
 			Local = this;
 		}
 
@@ -58,6 +59,9 @@ namespace Arena {
 							case PacketType.MoveOrder:
 								ReceiveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 								break;
+							case PacketType.AttackOrder:
+								ReceiveAttackOrder(incoming.ReadInt32(), incoming.ReadInt32());
+								break;
 						}
 						break;
 				}
@@ -65,28 +69,32 @@ namespace Arena {
 		}
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
-			Console.WriteLine("[S] Adding new player: " + name);
-			Player player = new Player(name, number, team, role);
-			RemoteClient rc = new RemoteClient(playerIndex, IsLocalServer ? null : incoming.SenderConnection);
-			RemoteClients.Add(playerIndex, rc);
+			AddPlayer(new Player(name, number, team, role));
+		}
+		public void AddPlayer(Player player) {
+			Console.WriteLine("[S] Adding new player: " + player.Name);
+			RemoteClient rc = null;
+			if (!(player is Bot)) {
+				rc = new RemoteClient(playerIndex, IsLocalServer ? null : incoming.SenderConnection);
+				RemoteClients.Add(playerIndex, rc);
+			}
 			Players.Add(playerIndex, player);
 			foreach (RemoteClient r in AllClients())
 				r.SendNewPlayer(playerIndex);
-			foreach (KeyValuePair<int, Player> kvp in Players)
-				if (kvp.Key != playerIndex)
-					rc.SendNewPlayer(kvp.Key);
+			if (!(player is Bot))
+				foreach (KeyValuePair<int, Player> kvp in Players)
+					if (kvp.Key != playerIndex)
+						rc.SendNewPlayer(kvp.Key);
 			Unit u = MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
-			foreach (KeyValuePair<int, Unit> kvp in Units)
-				if (kvp.Key != GetUnitID(u))
-					rc.SendNewPlayerUnit(GetUnitID(kvp.Value), GetPlayerID(kvp.Value.Owner));
+				if (!(player is Bot))
+				foreach (KeyValuePair<int, Unit> kvp in Units)
+					if (kvp.Key != GetUnitID(u))
+						rc.SendNewPlayerUnit(GetUnitID(kvp.Value), GetPlayerID(kvp.Value.Owner));
 			playerIndex++;
 		}
 		public void AddBot(Teams team, Roles role) {
 			Bot bot = new Bot(team, role);
-			Players.Add(++playerIndex, bot);
-			foreach(RemoteClient r in AllClients())
-				r.SendNewPlayer(playerIndex);
-			MakePlayerUnit(bot, new Vector2(150, 150 * playerIndex));
+			AddPlayer(bot);
 		}
 		public Unit MakePlayerUnit(Player player, Vector2 position) {
 			Console.WriteLine("[S] Making new player unit for " + player.Name + " at (" + position.X + ", " + position.Y + ")");
@@ -164,6 +172,13 @@ namespace Arena {
 			public void SendAttackOrder(Unit attacker, Unit victim) {
 				if (Server.Local.IsLocalServer) {
 					Client.Local.ReceiveAttackOrder(Server.Local.GetUnitID(attacker), Server.Local.GetUnitID(victim));
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.AttackOrder);
+					outMsg.Write(Server.Local.GetUnitID(attacker));
+					outMsg.Write(Server.Local.GetUnitID(victim));
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 			public void SendMoveOrder(Unit unit, Vector2 position) {
