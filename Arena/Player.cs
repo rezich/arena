@@ -30,11 +30,17 @@ namespace Arena {
 			Number = Arena.Config.Random.Next(1, 49);
 		}
 		public override void Update(GameTime gameTime) {
+			/*Unit attackUnit = null;
+			double attackUnitDistance = 10000000;
 			foreach (KeyValuePair<int, Unit> kvp in Server.Local.Units) {
-				if (CurrentUnit.AttitudeTowards(kvp.Value.Owner) == Attitude.Enemy) {
+				if (CurrentUnit.AttitudeTowards(kvp.Value.Owner) == Attitude.Enemy && Vector2.Distance(CurrentUnit.Position, kvp.Value.Position) < attackUnitDistance) {
 					SendAttackOrder(kvp.Value);
+					attackUnitDistance = Vector2.Distance(CurrentUnit.Position, kvp.Value.Position);
 				}
 			}
+			if (attackUnit != null && attackUnitDistance <= 200) {
+				SendAttackOrder(attackUnit);
+			}*/
 		}
 		protected void SendAttackOrder(Unit u) {
 			if (CurrentUnit.AttackTarget != u)

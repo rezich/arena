@@ -19,7 +19,7 @@ namespace Arena {
 		protected NetIncomingMessage incoming;
 
 
-		public static Server Local;
+		public static Server Local = null;
 		public readonly bool IsLocalServer;
 
 		public Dictionary<int, Player> Players = new Dictionary<int, Player>();
@@ -53,9 +53,6 @@ namespace Arena {
 						break;
 					case NetIncomingMessageType.Data:
 						switch ((PacketType)incoming.ReadByte()) {
-							case PacketType.MakePlayerUnit:
-								Console.WriteLine("[S] PRETTY SURE THIS SHOULDN'T HAPPEN");
-								break;
 							case PacketType.MoveOrder:
 								ReceiveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 								break;
@@ -72,7 +69,7 @@ namespace Arena {
 			AddPlayer(new Player(name, number, team, role));
 		}
 		public void AddPlayer(Player player) {
-			Console.WriteLine("[S] Adding new player: " + player.Name);
+			Console.WriteLine("[S] Adding new player: " + player.Name + " | " + player.Number + " | " + player.Team + " | " + player.Role);
 			RemoteClient rc = null;
 			if (!(player is Bot)) {
 				rc = new RemoteClient(playerIndex, IsLocalServer ? null : incoming.SenderConnection);
@@ -85,7 +82,7 @@ namespace Arena {
 				foreach (KeyValuePair<int, Player> kvp in Players)
 					if (kvp.Key != playerIndex)
 						rc.SendNewPlayer(kvp.Key);
-			Unit u = MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
+			Unit u = MakePlayerUnit(player, new Vector2(150, 500 * playerIndex));
 				if (!(player is Bot))
 				foreach (KeyValuePair<int, Unit> kvp in Units)
 					if (kvp.Key != GetUnitID(u))
@@ -213,17 +210,17 @@ namespace Arena {
 			public void SendNewPlayer(int index) {
 				if (Server.Local.IsLocalServer) {
 					Player p = Server.Local.Players[index];
-					Client.Local.ReceiveNewPlayer(index, p.Name, p.Number, p.Team, p.Role);
+					Client.Local.ReceiveNewPlayer(index, p.Name, p.Number, (byte)p.Team, (byte)p.Role);
 				}
 				else {
+					Player p = Server.Local.Players[index];
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
 					outMsg.Write((byte)PacketType.NewPlayer);
 					outMsg.Write((byte)index);
-					outMsg.Write(Server.Local.Players[index].Name);
-					outMsg.Write(Server.Local.Players[index].Number);
-					outMsg.Write((byte)Server.Local.Players[index].Team);
-					outMsg.Write((byte)Server.Local.Players[index].Role);
-					//Server.Local.server.SendMessage(outMsg, Server.Local.server., NetDeliveryMethod.ReliableOrdered, 0);
+					outMsg.Write(p.Name);
+					outMsg.Write((byte)p.Number);
+					outMsg.Write((byte)p.Team);
+					outMsg.Write((byte)p.Role);
 					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}

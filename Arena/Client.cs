@@ -7,7 +7,7 @@ using Lidgren.Network;
 
 namespace Arena {
 	public class Client {
-		public static Client Local;
+		public static Client Local = null;
 		public Player LocalPlayer = null;
 		public bool IsConnected = false;
 		public bool IsLocalServer = false;
@@ -45,13 +45,16 @@ namespace Arena {
 				if (incoming.MessageType == NetIncomingMessageType.Data) {
 					switch ((PacketType)incoming.ReadByte()) {
 						case PacketType.NewPlayer:
-							ReceiveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+							ReceiveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), incoming.ReadByte(), incoming.ReadByte());
 							break;
 						case PacketType.MakePlayerUnit:
 							ReceiveNewPlayerUnit(incoming.ReadInt32(), (int)incoming.ReadByte(), incoming.ReadFloat(), incoming.ReadFloat(), (double)incoming.ReadFloat());
 							break;
 						case PacketType.MoveOrder:
 							ReceiveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
+							break;
+						case PacketType.AttackOrder:
+							ReceiveAttackOrder(incoming.ReadInt32(), incoming.ReadInt32());
 							break;
 					}
 				}
@@ -92,11 +95,11 @@ namespace Arena {
 				Server.Local.AddPlayer(name, number, team, role);
 			}
 		}
-		public void ReceiveNewPlayer(int index, string name, int number, Teams team, Roles role) {
-			Console.WriteLine("[C] Recieving new player: " + name);
+		public void ReceiveNewPlayer(int index, string name, int number, byte team, byte role) {
+			Console.WriteLine("[C] Recieving new player: " + name + " | " + number + " | " + team + " | " + role);
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
-			Players.Add(index, new Player(name, number, team, role));
+			Players.Add(index, new Player(name, number, (Teams)team, (Roles)role));
 			if (Players.Count == 1) {
 				Console.WriteLine("[C] I didn't have any other players, so this new player is the local player.");
 				LocalPlayer = Players[index];
@@ -129,6 +132,7 @@ namespace Arena {
 				Server.Local.ReceiveAttackOrder(Units.FirstOrDefault(x => x.Value == LocalPlayer.CurrentUnit).Key, Units.FirstOrDefault(x => x.Value == unit).Key);
 			}
 			else {
+				Console.WriteLine("[C] Sending attack order: " + LocalPlayer.Name + " -> " + unit.Owner.Name);
 				NetOutgoingMessage outMsg = client.CreateMessage();
 				outMsg.Write((byte)PacketType.AttackOrder);
 				outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
@@ -153,9 +157,11 @@ namespace Arena {
 			}
 		}
 		public void ReceiveAttackOrder(int attackerIndex, int victimIndex) {
+			Console.WriteLine("[C] Receiving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
 			Units[attackerIndex].AttackTarget = Units[victimIndex];
 		}
 		public void ReceiveMoveOrder(int unitIndex, float x, float y) {
+			Units[unitIndex].AttackTarget = null;
 			Units[unitIndex].IntendedPosition = new Vector2(x, y);
 		}
 		public void MakeEffect(Effect effect) {

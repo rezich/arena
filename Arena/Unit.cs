@@ -199,7 +199,8 @@ namespace Arena {
 			if (gameTime.TotalGameTime > NextAutoAttackReady && !(Owner is Bot)) {
 				NextAutoAttackReady = gameTime.TotalGameTime + TimeSpan.FromSeconds(BaseAttackTime / AttackSpeed);
 				AttackTarget.Health = Math.Max(AttackTarget.Health - AttackDamage, 0);
-				Client.Local.MakeEffect(new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Position));
+				if (Client.Local != null)
+					Client.Local.MakeEffect(new Effects.AutoAttackBeam(gameTime, Position, AttackTarget.Position));
 			}
 		}
 		public void Regen() {
