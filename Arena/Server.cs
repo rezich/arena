@@ -14,6 +14,7 @@ namespace Arena {
 		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
 		protected int unitIndex = 0;
 		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
+		protected Shapes.Runner GenericShape = new Arena.Shapes.Runner();
 
 		public Server() {
 			IsLocalServer = true;
@@ -60,6 +61,19 @@ namespace Arena {
 			foreach (RemoteClient r in AllClientsButOne(GetPlayerID(Units[unitIndex].Owner)))
 				r.SendMoveOrder(Units[unitIndex], u.IntendedPosition);
 		}
+		public void RecieveLevelUp(int unitIndex, int ability) {
+			//foreach (RemoteClient r in AllClientsButOne(GetPlayerID((Player)Units[unitIndex].Owner)))
+			if (Units[unitIndex].CanLevelUp(ability)) {
+				Units[unitIndex].LevelUp(ability);
+				foreach (RemoteClient r in AllClients())
+					r.SendLevelUp(Units[unitIndex], ability);
+			}
+		}
+		public void RecieveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
+			Units[unitIndex].UseAbility(ability, val1, val2);
+			foreach (RemoteClient r in AllClients())
+				r.SendUseAbility(Units[unitIndex], ability, val1, val2);
+		}
 		public int GetPlayerID(UnitController player) {
 			return Players.FirstOrDefault(x => x.Value == player).Key;
 		}
@@ -81,6 +95,10 @@ namespace Arena {
 				kvp.Value.Update(gameTime);
 			foreach (KeyValuePair<int, Unit> kvp in Units)
 				kvp.Value.Update(gameTime);
+		}
+		public void Draw(GameTime gameTime, Cairo.Context g, Vector2 viewPosition, Vector2 viewOrigin) {
+			foreach (KeyValuePair<int, Unit> kvp in Units)
+				GenericShape.Draw(g, kvp.Value.Position - viewPosition + viewOrigin, kvp.Value.Direction, new Cairo.Color(0, 0, 0.5, 0.5), null, Config.ActorScale);
 		}
 
 		protected class RemoteClient {
@@ -104,6 +122,16 @@ namespace Arena {
 				if (Server.Local.IsLocalServer) {
 					Player p = Server.Local.Players[index];
 					Client.Local.RecieveNewPlayer(index, p.Name, p.Number, p.Team, p.Role);
+				}
+			}
+			public void SendLevelUp(Unit unit, int ability) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.RecieveLevelUp(Server.Local.GetUnitID(unit), ability);
+				}
+			}
+			public void SendUseAbility(Unit unit, int ability, float? val1, float? val2) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.RecieveUseAbility(Server.Local.GetUnitID(unit), ability, val1, val2);
 				}
 			}
 		}

@@ -38,13 +38,13 @@ namespace Arena {
 			Levels = levels;
 			Level = 0;
 		}
-		public void Activate(GameTime gameTime) {
+		public void Activate(float? val1, float? val2) {
 			if (Level < 1)
 				return;
 			justActivated = true;
-			OnActivate(gameTime);
+			OnActivate();
 		}
-		protected abstract void OnActivate(GameTime gameTime);
+		protected abstract void OnActivate();
 		public void Update(GameTime gameTime) {
 			if (Level < 1)
 				return;
@@ -82,7 +82,7 @@ namespace Arena.Abilities {
 				return 0;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
+		protected override void OnActivate() {
 		}
 		protected override void OnUpdate(GameTime gameTime) {
 
@@ -106,8 +106,8 @@ namespace Arena.Abilities {
 				return 10;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
-			Unit.Buffs.Add(new Buff("Sprint", BuffAlignment.Positive, BuffType.MoveSpeed, 5, gameTime.TotalGameTime + TimeSpan.FromSeconds(5), false));
+		protected override void OnActivate() {
+			//Unit.Buffs.Add(new Buff("Sprint", BuffAlignment.Positive, BuffType.MoveSpeed, 5, gameTime.TotalGameTime + TimeSpan.FromSeconds(5), false));
 		}
 		protected override void OnUpdate(GameTime gameTime) {
 
@@ -130,7 +130,7 @@ namespace Arena.Abilities {
 				return 0;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
+		protected override void OnActivate() {
 			if (Unit.Buffs.Contains(aura) && aura != null)
 				Unit.Buffs.Remove(aura);
 			aura = new Buff("Agility Aura", BuffAlignment.Positive, new List<Tuple<BuffType, double>>() {
@@ -142,6 +142,31 @@ namespace Arena.Abilities {
 		}
 		protected override void OnUpdate(GameTime gameTime) {
 
+		}
+		protected override void OnDraw(GameTime gameTime, Context g) {
+		}
+	}
+	public class Longshot : Ability {
+		Buff aura;
+		public Longshot(Unit unit) : base(unit, "Longshot", "Passively gain attack range. This is just an example spell.", Arena.AbilityActivationType.Passive, 4) {
+		}
+		public override int EnergyCost {
+			get {
+				return 0;
+			}
+		}
+		public override double Cooldown {
+			get {
+				return 0;
+			}
+		}
+		protected override void OnActivate() {
+			if (Unit.Buffs.Contains(aura) && aura != null)
+				Unit.Buffs.Remove(aura);
+			aura = new Buff("Longshot", BuffAlignment.Positive, BuffType.AttackRange, 2 * Level, null, false);
+			Unit.Buffs.Add(aura);
+		}
+		protected override void OnUpdate(GameTime gameTime) {
 		}
 		protected override void OnDraw(GameTime gameTime, Context g) {
 		}
@@ -161,7 +186,7 @@ namespace Arena.Abilities {
 				return 20;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
+		protected override void OnActivate() {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
@@ -184,7 +209,7 @@ namespace Arena.Abilities {
 				return 5;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
+		protected override void OnActivate() {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
@@ -207,7 +232,7 @@ namespace Arena.Abilities {
 				return 60;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
+		protected override void OnActivate() {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {
@@ -230,7 +255,7 @@ namespace Arena.Abilities {
 				return 60;
 			}
 		}
-		protected override void OnActivate(GameTime gameTime) {
+		protected override void OnActivate() {
 
 		}
 		protected override void OnUpdate(GameTime gameTime) {

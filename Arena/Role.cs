@@ -26,7 +26,7 @@ namespace Arena {
 				1.5,
 				new List<System.Type>() {
 					typeof(Arena.Abilities.Sprint),
-					typeof(Arena.Abilities.Placeholder),
+					typeof(Arena.Abilities.Longshot),
 					typeof(Arena.Abilities.AgilityAura),
 					typeof(Arena.Abilities.Placeholder)
 				}

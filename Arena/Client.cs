@@ -16,6 +16,8 @@ namespace Arena {
 		public List<Actor> Actors = new List<Actor>();
 		public List<Effect> Effects = new List<Effect>();
 
+		public int? CurrentAbility = null;
+
 		public Client() {
 		}
 
@@ -26,6 +28,13 @@ namespace Arena {
 			IsConnected = true;
 			IsLocalServer = true;
 			return IsConnected;
+		}
+
+		public int GetPlayerID(UnitController player) {
+			return Players.FirstOrDefault(x => x.Value == player).Key;
+		}
+		public int GetUnitID(Unit unit) {
+			return Units.FirstOrDefault(x => x.Value == unit).Key;
 		}
 
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
@@ -80,6 +89,40 @@ namespace Arena {
 		}
 		public void MakeEffect(Effect effect) {
 			Effects.Add(effect);
+		}
+		public void LevelUp(GameTime gameTime, int ability) {
+			if (LocalPlayer.CurrentUnit.CanLevelUp(ability)) {
+				if (IsLocalServer) {
+					Server.Local.RecieveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
+				}
+			}
+		}
+		public void RecieveLevelUp(int unitIndex, int ability) {
+			Units[unitIndex].LevelUp(ability);
+		}
+		public void BeginUsingAbility(GameTime gameTime, int ability) {
+			if (LocalPlayer.CurrentUnit.CanUseAbility(ability)) {
+				CurrentAbility = ability;
+				if (LocalPlayer.CurrentUnit.Abilities[ability].ActivationType == AbilityActivationType.NoTarget) {
+					FinishUsingAbility(gameTime);
+				}
+			}
+		}
+		public void FinishUsingAbility(GameTime gameTime) {
+			if (!CurrentAbility.HasValue)
+				return;
+			if (LocalPlayer.CurrentUnit.CanUseAbility((int)CurrentAbility)) {
+				if (IsLocalServer) {
+					Server.Local.RecieveUseAbility(GetUnitID(LocalPlayer.CurrentUnit), (int)CurrentAbility, null, null);
+				}
+			}
+			CurrentAbility = null;
+		}
+		public void CancelUsingAbility() {
+			CurrentAbility = null;
+		}
+		public void RecieveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
+			Units[unitIndex].UseAbility(ability, val1, val2);
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {

@@ -245,19 +245,40 @@ namespace Arena {
 		public void TurnTowards(Vector2 position) {
 			IntendedDirection = Math.Atan2(position.Y - Position.Y, position.X - Position.X);
 		}
-		public AbilityActivationType? UseAbility(GameTime gameTime, int ability) {
-			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready && Abilities[ability].ActivationType != AbilityActivationType.Passive) {
+		public bool CanUseAbility(int ability) {
+			return (Abilities.Count >= ability + 1 && Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready && Abilities[ability].ActivationType != AbilityActivationType.Passive);
+		}
+		/*public AbilityActivationType? BeginUseAbility(GameTime gameTime, int ability) {
+			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready) {
 				Energy -= Abilities[ability].EnergyCost;
 				Abilities[ability].Activate(gameTime);
 				return Abilities[ability].ActivationType;
 			}
 			return null;
 		}
-		public void LevelUp(GameTime gameTime, int ability) {
+		public void FinishUseAbilityNoTarget(GameTime gameTime, int ability) {
+
+		}
+		public void UseAbility(GameTime gameTime, int ability) {
+			if (Abilities[ability].Level > 0 && Energy >= Abilities[ability].EnergyCost && Abilities[ability].Ready && Abilities[ability].ActivationType != AbilityActivationType.Passive) {
+				Energy -= Abilities[ability].EnergyCost;
+				Abilities[ability].Activate(gameTime);
+				//return Abilities[ability].ActivationType;
+			}
+			//return null;
+		}*/
+		public void UseAbility(int ability, float? val1, float? val2) {
+			Abilities[ability].Activate(val1, val2);
+		}
+		public bool CanLevelUp(int ability) {
+			return (Abilities[ability].Level < Abilities[ability].Levels);
+		}
+		public void LevelUp(int ability) {
 			if (Abilities[ability].Level == 0)
-				Abilities[ability].ReadyTime = gameTime.TotalGameTime - TimeSpan.FromSeconds(1);
+				Abilities[ability].ReadyTime = TimeSpan.Zero;
 			Abilities[ability].Level += 1;
-			if (Abilities[ability].ActivationType == AbilityActivationType.Passive) Abilities[ability].Activate(gameTime);
+			if (Abilities[ability].ActivationType == AbilityActivationType.Passive)
+				UseAbility(ability, null, null);
 		}
 		public Attitude AttitudeTowards(UnitController unitController) {
 			if (unitController.Team != Team)

@@ -89,27 +89,31 @@ namespace ArenaClient {
 				viewPosition.Y += viewMoveSpeed;
 			if (input.IsNewKeyPress(Keys.Q)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 0);
-				else
-					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 0);
+					Client.Local.LevelUp(gameTime, 0);
+				else {
+					Client.Local.BeginUsingAbility(gameTime, 0);
+				}
 			}
 			if (input.IsNewKeyPress(Keys.W)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 1);
-				else
-					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 1);
+					Client.Local.LevelUp(gameTime, 1);
+				else {
+					Client.Local.BeginUsingAbility(gameTime, 1);
+				}
 			}
 			if (input.IsNewKeyPress(Keys.E)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 2);
-				else
-					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 2);
+					Client.Local.LevelUp(gameTime, 2);
+				else {
+					Client.Local.BeginUsingAbility(gameTime, 2);
+				}
 			}
 			if (input.IsNewKeyPress(Keys.R)) {
 				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LocalPlayer.CurrentUnit.LevelUp(gameTime, 3);
-				else
-					Client.Local.LocalPlayer.CurrentUnit.UseAbility(gameTime, 3);
+					Client.Local.LevelUp(gameTime, 3);
+				else {
+					Client.Local.BeginUsingAbility(gameTime, 3);
+				}
 			}
 			if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
@@ -149,6 +153,8 @@ namespace ArenaClient {
 				g.Stroke();
 			}
 			Client.Local.Draw(gameTime, g);
+			if (Client.Local.IsLocalServer)
+				Server.Local.Draw(gameTime, g, viewPosition, viewOrigin);
 			/*foreach (Effect e in Effect.List)
 				if (e.Height == EffectPosition.BelowActor)
 					e.Draw(gameTime, g, LocalPlayer);
@@ -181,18 +187,18 @@ namespace ArenaClient {
 			}
 
 			Cairo.Color cursorColor = new Cairo.Color(1, 1, 1);
-			/*
-			foreach (Actor a in Actor.List) {
-				if (a == LocalPlayer.CurrentUnit.Actor)
+
+			foreach (Actor a in Client.Local.Actors) {
+				if (a == Client.Local.LocalPlayer.CurrentUnit.Actor)
 					continue;
 				if (Vector2.Distance(a.Position, cursorPosition) < Arena.Config.ActorScale) {
-					if (LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy)
+					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy)
 						cursorColor = new Cairo.Color(0, 0, 1);
-					if (LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)
+					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)
 						cursorColor = new Cairo.Color(0, 1, 0);
 				}
 			}
-			*/
+
 
 			cursor.Draw(g, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
 		}
