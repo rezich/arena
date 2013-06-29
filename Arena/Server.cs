@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Lidgren.Network;
 
 namespace Arena {
 	public class Server {
+		protected NetServer server;
+		protected NetPeerConfiguration config;
 		public static Server Local;
 		public readonly bool IsLocalServer;
 		protected bool isDrawing = false;
@@ -27,6 +30,13 @@ namespace Arena {
 
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
+
+			config = new NetPeerConfiguration("arena-moba");
+			config.Port = 14242;
+			config.MaximumConnections = 16;
+			config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+			server = new NetServer(config);
+
 		}
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {

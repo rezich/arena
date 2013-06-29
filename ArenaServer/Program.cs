@@ -22,14 +22,17 @@ namespace ArenaServer {
 		static long TotalTicks = 0;
 		static readonly double Interval = (double)Stopwatch.Frequency / 60;
 		static TimeSpan LastUpdate = new TimeSpan();
+		static Server Server;
 		
 		static void Main() {
 
 			Console.Write("Initializing server...");
 
 			Role.Initialize();
-			Server server = new Server(false);
+			Arena.Config.Initialize();
+			Server = new Server(false);
 			Stopwatch.Start();
+			TicksSinceLastUpdate = Stopwatch.GetTimestamp();
 
 			Console.WriteLine("done.");
 
@@ -37,6 +40,7 @@ namespace ArenaServer {
 		}
 
 		static void Update(GameTime gameTime) {
+			Server.Update(gameTime);
 		}
 		
 		static void MainLoop() {
