@@ -25,8 +25,8 @@ namespace Arena {
 		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
 		protected Shapes.Runner GenericShape = new Arena.Shapes.Runner();
 
-		public Server() {
-			IsLocalServer = true;
+		public Server(bool isLocalServer) {
+			IsLocalServer = isLocalServer;
 		}
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {

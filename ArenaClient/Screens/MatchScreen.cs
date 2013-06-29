@@ -40,7 +40,7 @@ namespace ArenaClient {
 		public MatchScreen() {
 			Client.Local = new Client();
 			if (isLocalGame) {
-				Server.Local = new Server();
+				Server.Local = new Server(true);
 			}
 			Client.Local.Connect();
 
