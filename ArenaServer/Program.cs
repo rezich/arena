@@ -15,12 +15,13 @@ namespace ArenaServer {
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
-
-		static GameTime GameTime = new GameTime();
-		static bool stop = false;
-		static Stopwatch stopwatch = new Stopwatch();
-		static TimeSpan ElapsedTime = new TimeSpan();
-		static TimeSpan TargetElapsedTime;
+		
+		static bool Stop = false;
+		static Stopwatch Stopwatch = new Stopwatch();
+		static long TicksSinceLastUpdate = 0;
+		static long TotalTicks = 0;
+		static readonly double Interval = (double)Stopwatch.Frequency / 60;
+		static TimeSpan LastUpdate = new TimeSpan();
 		
 		static void Main() {
 
@@ -28,8 +29,7 @@ namespace ArenaServer {
 
 			Role.Initialize();
 			Server server = new Server(false);
-			TargetElapsedTime = TimeSpan.FromSeconds((double)1 / (double)60);
-			stopwatch.Start();
+			Stopwatch.Start();
 
 			Console.WriteLine("done.");
 
@@ -37,18 +37,15 @@ namespace ArenaServer {
 		}
 
 		static void Update(GameTime gameTime) {
-			Console.WriteLine("Hey!");
 		}
-
+		
 		static void MainLoop() {
-			while (!stop) {
-				GameTime.TotalGameTime += stopwatch.Elapsed;
-				ElapsedTime += stopwatch.Elapsed;
-				stopwatch.Restart();
-				if (ElapsedTime >= TargetElapsedTime) {
-					GameTime.ElapsedGameTime = ElapsedTime;
-					Update(GameTime);
-					ElapsedTime = new TimeSpan();
+			while (!Stop) {
+				TotalTicks = Stopwatch.GetTimestamp();
+				if (TotalTicks >= TicksSinceLastUpdate + Interval) {
+					Update(new GameTime(Stopwatch.Elapsed, Stopwatch.Elapsed - LastUpdate));
+					TicksSinceLastUpdate = Stopwatch.GetTimestamp();
+					LastUpdate = Stopwatch.Elapsed;
 				}
 			}
 		}
