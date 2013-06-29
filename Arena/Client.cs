@@ -23,8 +23,10 @@ namespace Arena {
 
 		public Client(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
-			NetPeerConfiguration config = new NetPeerConfiguration(Arena.Config.ApplicationID);
-			client = new NetClient(config);
+			if (!IsLocalServer) {
+				NetPeerConfiguration config = new NetPeerConfiguration(Arena.Config.ApplicationID);
+				client = new NetClient(config);
+			}
 		}
 
 		public void Tick() {
@@ -39,12 +41,15 @@ namespace Arena {
 			NetIncomingMessage incoming;
 			while ((incoming = client.ReadMessage()) != null) {
 				if (incoming.MessageType == NetIncomingMessageType.Data) {
-					switch ((PacketTypes)incoming.ReadByte()) {
-						case PacketTypes.NewPlayer:
+					switch ((PacketType)incoming.ReadByte()) {
+						case PacketType.NewPlayer:
 							RecieveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
 							break;
-						case PacketTypes.MakePlayerUnit:
+						case PacketType.MakePlayerUnit:
 							RecieveNewPlayerUnit(incoming.ReadInt32(), (int)incoming.ReadByte(), incoming.ReadFloat(), incoming.ReadFloat(), (double)incoming.ReadFloat());
+							break;
+						case PacketType.MoveOrder:
+							RecieveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 							break;
 					}
 				}
@@ -62,7 +67,7 @@ namespace Arena {
 				Console.Write("Connecting... ");
 				NetOutgoingMessage outMsg = client.CreateMessage();
 				client.Start();
-				outMsg.Write((byte)PacketTypes.Connect);
+				outMsg.Write((byte)PacketType.Connect);
 				outMsg.Write(Arena.Config.PlayerName);
 				outMsg.Write((byte)Arena.Config.PlayerNumber);
 				outMsg.Write((byte)Teams.Home);
@@ -121,10 +126,19 @@ namespace Arena {
 			}
 		}
 		public void SendMoveOrder(Vector2 position) {
+			Console.WriteLine("Sending move order for unit " + GetUnitID(LocalPlayer.CurrentUnit) + " to (" + position.X + ", " + position.Y + ")");
 			LocalPlayer.CurrentUnit.AttackTarget = null;
 			LocalPlayer.CurrentUnit.IntendedPosition = position;
 			if (IsLocalServer) {
-				Server.Local.RecieveMoveOrder(Units.FirstOrDefault(x => x.Value == LocalPlayer.CurrentUnit).Key, position.X, position.Y);
+				Server.Local.RecieveMoveOrder(GetUnitID(LocalPlayer.CurrentUnit), position.X, position.Y);
+			}
+			else {
+				NetOutgoingMessage outMsg = client.CreateMessage();
+				outMsg.Write((byte)PacketType.MoveOrder);
+				outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+				outMsg.Write(LocalPlayer.CurrentUnit.IntendedPosition.X);
+				outMsg.Write(LocalPlayer.CurrentUnit.IntendedPosition.Y);
+				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
 		public void RecieveAttackOrder(int attackerIndex, int victimIndex) {

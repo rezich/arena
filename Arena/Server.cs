@@ -6,10 +6,11 @@ using Microsoft.Xna.Framework;
 using Lidgren.Network;
 
 namespace Arena {
-	public enum PacketTypes {
+	public enum PacketType {
 		Connect,
 		NewPlayer,
-		MakePlayerUnit
+		MakePlayerUnit,
+		MoveOrder
 	}
 	public class Server {
 		protected NetServer server;
@@ -38,13 +39,14 @@ namespace Arena {
 
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
-
-			config = new NetPeerConfiguration(Arena.Config.ApplicationID);
-			config.Port = Arena.Config.Port;
-			config.MaximumConnections = 16;
-			config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
-			server = new NetServer(config);
-			server.Start();
+			if (!IsLocalServer) {
+				config = new NetPeerConfiguration(Arena.Config.ApplicationID);
+				config.Port = Arena.Config.Port;
+				config.MaximumConnections = 16;
+				config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+				server = new NetServer(config);
+				server.Start();
+			}
 			Local = this;
 		}
 
@@ -52,15 +54,18 @@ namespace Arena {
 			if ((incoming = server.ReadMessage()) != null) {
 				switch (incoming.MessageType) {
 					case NetIncomingMessageType.ConnectionApproval:
-						if (incoming.ReadByte() == (byte)PacketTypes.Connect) {
+						if (incoming.ReadByte() == (byte)PacketType.Connect) {
 							incoming.SenderConnection.Approve();
 							AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
 						}
 						break;
 					case NetIncomingMessageType.Data:
-						switch ((PacketTypes)incoming.ReadByte()) {
-							case PacketTypes.MakePlayerUnit:
+						switch ((PacketType)incoming.ReadByte()) {
+							case PacketType.MakePlayerUnit:
 								Console.WriteLine("PRETTY SURE THIS SHOULDN'T HAPPEN");
+								break;
+							case PacketType.MoveOrder:
+								RecieveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 								break;
 						}
 						break;
@@ -93,7 +98,7 @@ namespace Arena {
 			MakePlayerUnit(bot, new Vector2(150, 150 * playerIndex));
 		}
 		public Unit MakePlayerUnit(Player player, Vector2 position) {
-			Console.Write("Making new player unit for " + player.Name + " at (" + position.X + ", " + position.Y + ")");
+			Console.WriteLine("Making new player unit for " + player.Name + " at (" + position.X + ", " + position.Y + ")");
 			Unit u = new Unit(player, Role.List[player.Role].Health, Role.List[player.Role].Energy);
 			u.Owner = player;
 			u.Team = player.Team;
@@ -108,16 +113,18 @@ namespace Arena {
 			return u;
 		}
 		public void RecieveAttackOrder(int attackerIndex, int victimIndex) {
-			Console.WriteLine("Recieving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
+			Console.WriteLine("Receiving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
 			Units[attackerIndex].AttackTarget = Units[victimIndex];
 			foreach (RemoteClient r in AllClientsButOne(GetPlayerID(Units[attackerIndex].Owner)))
 				r.SendAttackOrder(Units[attackerIndex], Units[victimIndex]);
 		}
 		public void RecieveMoveOrder(int unitIndex, float x, float y) {
+			Console.WriteLine("Receiving move order for unit " + unitIndex + " to (" + x + ", " + y + ")");
 			Unit u = Units[unitIndex];
 			u.AttackTarget = null;
 			u.IntendedPosition = new Vector2(x, y);
 			foreach (RemoteClient r in AllClientsButOne(GetPlayerID(Units[unitIndex].Owner)))
+			//foreach (RemoteClient r in RemoteClients.Values)
 				r.SendMoveOrder(Units[unitIndex], u.IntendedPosition);
 		}
 		public void RecieveLevelUp(int unitIndex, int ability) {
@@ -180,6 +187,14 @@ namespace Arena {
 				if (Server.Local.IsLocalServer) {
 					Client.Local.RecieveMoveOrder(Server.Local.GetUnitID(unit), position.X, position.Y);
 				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.MoveOrder);
+					outMsg.Write(Server.Local.GetUnitID(unit));
+					outMsg.Write(unit.IntendedPosition.X);
+					outMsg.Write(unit.IntendedPosition.Y);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
 			}
 			public void SendNewPlayerUnit(int unitIndex, int playerIndex) {
 				if (Server.Local.IsLocalServer) {
@@ -188,7 +203,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
-					outMsg.Write((byte)PacketTypes.MakePlayerUnit);
+					outMsg.Write((byte)PacketType.MakePlayerUnit);
 					outMsg.Write(unitIndex);
 					outMsg.Write((byte)playerIndex);
 					outMsg.Write(Server.Local.Units[unitIndex].Position.X);
@@ -204,7 +219,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
-					outMsg.Write((byte)PacketTypes.NewPlayer);
+					outMsg.Write((byte)PacketType.NewPlayer);
 					outMsg.Write((byte)index);
 					outMsg.Write(Server.Local.Players[index].Name);
 					outMsg.Write(Server.Local.Players[index].Number);

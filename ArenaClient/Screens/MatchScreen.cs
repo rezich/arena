@@ -11,8 +11,8 @@ namespace ArenaClient {
 	public class MatchScreen : VGame.GameScreen {
 		Vector2 cursorPosition;
 		Arena.Shapes.Cursor cursor = new Arena.Shapes.Cursor();
-		Vector2 viewPosition;
-		Vector2 viewOrigin;
+		Vector2 viewPosition = Vector2.Zero;
+		Vector2 viewOrigin = Vector2.Zero;
 		int edgeScrollSize = 32;
 		double markerAnimationPercent = 0;
 		TimeSpan markerAnimationDuration = TimeSpan.FromSeconds(0.25);
@@ -136,6 +136,8 @@ namespace ArenaClient {
 			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
+			if (Client.Local.LocalPlayer == null || Client.Local.LocalPlayer.CurrentUnit == null)
+				return;
 			Cairo.Context g = VGame.Renderer.Context;
 
 			viewOrigin = new Vector2(Renderer.Width / 10, 0);
