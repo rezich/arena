@@ -7,6 +7,12 @@ namespace Arena {
 		public static Color HomeColor1, HomeColor2, AwayColor1, AwayColor2, HealthColor1, HealthColor2, EnemyHealthColor1, EnemyHealthColor2, EnergyColor1, EnergyColor2, HUDBackground, HUDText;
 		public static double ActorScale = 24;
 		public static Random Random = new Random();
+		public static string ApplicationID {
+			get {
+				return "arena-moba";
+			}
+		}
+		public static int Port = 14242;
 
 		public static void Initialize() {
 			HomeColor1 = VGame.Util.MakeColor(152, 174, 188, 1);

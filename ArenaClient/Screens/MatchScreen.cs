@@ -35,10 +35,10 @@ namespace ArenaClient {
 		}
 		int viewMoveSpeed = 16;
 
-		bool isLocalGame = true;
+		bool isLocalGame = false;
 
 		public MatchScreen() {
-			Client.Local = new Client();
+			/*Client.Local = new Client();
 			if (isLocalGame) {
 				Server.Local = new Server(true);
 			}
@@ -46,7 +46,10 @@ namespace ArenaClient {
 
 			Client.Local.AddPlayer("takua108", 17, Teams.Home, Roles.Runner);
 
-			Server.Local.AddBot(Teams.Away, Roles.Nuker);
+			Server.Local.AddBot(Teams.Away, Roles.Nuker);*/
+
+			Client.Local = new Client(false);
+			//Client.Local.Connect();
 
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
@@ -178,7 +181,7 @@ namespace ArenaClient {
 
 			HUD.Draw(gameTime, g, Client.Local.LocalPlayer);
 
-			if (Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition) {
+			if (Client.Local.LocalPlayer != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition) {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null)

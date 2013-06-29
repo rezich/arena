@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Lidgren.Network;
 
 namespace Arena {
 	public class Client {
@@ -18,15 +19,46 @@ namespace Arena {
 
 		public int? CurrentAbility = null;
 
-		public Client() {
+		protected NetClient client;
+
+		public Client(bool isLocalServer) {
+			IsLocalServer = isLocalServer;
+			NetPeerConfiguration config = new NetPeerConfiguration(Arena.Config.ApplicationID);
+			client = new NetClient(config);
+			Connect();
+			Local = this;
+		}
+
+		public void Tick() {
+			NetIncomingMessage incoming;
+			while ((incoming = client.ReadMessage()) != null) {
+				if (incoming.MessageType == NetIncomingMessageType.Data) {
+					if (incoming.ReadByte() == (byte)PacketTypes.NewPlayer) {
+						RecieveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+					}
+				}
+			}
 		}
 
 		/// <summary>
 		/// Connect to local server.
 		/// </summary>
 		public bool Connect() {
-			IsConnected = true;
-			IsLocalServer = true;
+			if (IsLocalServer) {
+				IsConnected = true;
+			}
+			else {
+				Console.WriteLine("Connecting");
+				NetOutgoingMessage outMsg = client.CreateMessage();
+				client.Start();
+				outMsg.Write((byte)PacketTypes.Connect);
+				outMsg.Write("takua108");
+				outMsg.Write((byte)17);
+				outMsg.Write((byte)Teams.Home);
+				outMsg.Write((byte)Roles.Runner);
+				client.Connect("localhost", Arena.Config.Port, outMsg);
+				IsConnected = true;
+			}
 			return IsConnected;
 		}
 
@@ -126,6 +158,7 @@ namespace Arena {
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
+			Tick();
 			foreach (KeyValuePair<int, Unit> kvp in Units)
 				kvp.Value.Update(gameTime);
 			foreach (Actor a in Actors)

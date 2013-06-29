@@ -6,9 +6,16 @@ using Microsoft.Xna.Framework;
 using Lidgren.Network;
 
 namespace Arena {
+	public enum PacketTypes {
+		Connect,
+		NewPlayer
+	}
 	public class Server {
 		protected NetServer server;
 		protected NetPeerConfiguration config;
+		protected NetIncomingMessage incoming;
+
+
 		public static Server Local;
 		public readonly bool IsLocalServer;
 		protected bool isDrawing = false;
@@ -31,21 +38,39 @@ namespace Arena {
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
 
-			config = new NetPeerConfiguration("arena-moba");
-			config.Port = 14242;
+			config = new NetPeerConfiguration(Arena.Config.ApplicationID);
+			config.Port = Arena.Config.Port;
 			config.MaximumConnections = 16;
 			config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
 			server = new NetServer(config);
+			server.Start();
+			Local = this;
+		}
 
+		public void Tick() {
+			if ((incoming = server.ReadMessage()) != null) {
+				switch (incoming.MessageType) {
+					case NetIncomingMessageType.ConnectionApproval:
+						if (incoming.ReadByte() == (byte)PacketTypes.Connect) {
+							incoming.SenderConnection.Approve();
+							AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+						}
+						break;
+				}
+			}
 		}
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
+			Console.WriteLine("Adding new player: " + name);
+			//Console.WriteLine("We now have a total of "
 			Player player = new Player(name, number, team, role);
-			RemoteClients.Add(++playerIndex, new RemoteClient());
+			RemoteClients.Add(server.Connections.Count - 1, new RemoteClient(server.Connections.Count - 1, playerIndex));
 			Players.Add(playerIndex, player);
-			foreach(RemoteClient r in AllClients())
-				r.SendNewPlayer(playerIndex);
-			MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
+			foreach (RemoteClient r in AllClients())
+				Console.WriteLine("hi");
+				//r.SendNewPlayer(playerIndex);
+			//MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
+			playerIndex++;
 		}
 		public void AddBot(Teams team, Roles role) {
 			Bot bot = new Bot(team, role);
@@ -125,6 +150,12 @@ namespace Arena {
 		}
 
 		protected class RemoteClient {
+			public int ID;
+			public int PlayerID;
+			public RemoteClient(int id, int playerID) {
+				ID = id;
+				PlayerID = playerID;
+			}
 			public void SendAttackOrder(Unit attacker, Unit victim) {
 				if (Server.Local.IsLocalServer) {
 					Client.Local.RecieveAttackOrder(Server.Local.GetUnitID(attacker), Server.Local.GetUnitID(victim));
@@ -145,6 +176,16 @@ namespace Arena {
 				if (Server.Local.IsLocalServer) {
 					Player p = Server.Local.Players[index];
 					Client.Local.RecieveNewPlayer(index, p.Name, p.Number, p.Team, p.Role);
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketTypes.NewPlayer);
+					outMsg.Write((byte)index);
+					outMsg.Write(Server.Local.Players[index].Name);
+					outMsg.Write(Server.Local.Players[index].Number);
+					outMsg.Write((byte)Server.Local.Players[index].Team);
+					outMsg.Write((byte)Server.Local.Players[index].Role);
+					Server.Local.server.SendMessage(outMsg, Server.Local.server.Connections[ID], NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 			public void SendLevelUp(Unit unit, int ability) {
