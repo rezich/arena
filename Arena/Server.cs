@@ -8,7 +8,8 @@ using Lidgren.Network;
 namespace Arena {
 	public enum PacketTypes {
 		Connect,
-		NewPlayer
+		NewPlayer,
+		MakePlayerUnit
 	}
 	public class Server {
 		protected NetServer server;
@@ -56,6 +57,13 @@ namespace Arena {
 							AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
 						}
 						break;
+					case NetIncomingMessageType.Data:
+						switch ((PacketTypes)incoming.ReadByte()) {
+							case PacketTypes.MakePlayerUnit:
+								Console.WriteLine("PRETTY SURE THIS SHOULDN'T HAPPEN");
+								break;
+						}
+						break;
 				}
 			}
 		}
@@ -71,7 +79,10 @@ namespace Arena {
 			foreach (KeyValuePair<int, Player> kvp in Players)
 				if (kvp.Key != playerIndex)
 					rc.SendNewPlayer(kvp.Key);
-			//MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
+			Unit u = MakePlayerUnit(player, new Vector2(150, 150 * playerIndex));
+			foreach (KeyValuePair<int, Unit> kvp in Units)
+				if (kvp.Key != GetUnitID(u))
+					rc.SendNewPlayerUnit(GetUnitID(kvp.Value), GetPlayerID(kvp.Value.Owner));
 			playerIndex++;
 		}
 		public void AddBot(Teams team, Roles role) {
@@ -81,7 +92,8 @@ namespace Arena {
 				r.SendNewPlayer(playerIndex);
 			MakePlayerUnit(bot, new Vector2(150, 150 * playerIndex));
 		}
-		public void MakePlayerUnit(Player player, Vector2 position) {
+		public Unit MakePlayerUnit(Player player, Vector2 position) {
+			Console.Write("Making new player unit for " + player.Name + " at (" + position.X + ", " + position.Y + ")");
 			Unit u = new Unit(player, Role.List[player.Role].Health, Role.List[player.Role].Energy);
 			u.Owner = player;
 			u.Team = player.Team;
@@ -93,6 +105,7 @@ namespace Arena {
 			Units.Add(++unitIndex, u);
 			foreach (RemoteClient r in AllClients())
 				r.SendNewPlayerUnit(unitIndex, GetPlayerID(player));
+			return u;
 		}
 		public void RecieveAttackOrder(int attackerIndex, int victimIndex) {
 			Console.WriteLine("Recieving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
@@ -172,6 +185,16 @@ namespace Arena {
 				if (Server.Local.IsLocalServer) {
 					Unit u = Server.Local.Units[unitIndex];
 					Client.Local.RecieveNewPlayerUnit(unitIndex, playerIndex, u.Position.X, u.Position.Y, u.Direction);
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketTypes.MakePlayerUnit);
+					outMsg.Write(unitIndex);
+					outMsg.Write((byte)playerIndex);
+					outMsg.Write(Server.Local.Units[unitIndex].Position.X);
+					outMsg.Write(Server.Local.Units[unitIndex].Position.Y);
+					outMsg.Write((float)Server.Local.Units[unitIndex].Direction);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 			public void SendNewPlayer(int index) {

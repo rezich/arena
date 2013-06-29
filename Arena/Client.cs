@@ -39,8 +39,13 @@ namespace Arena {
 			NetIncomingMessage incoming;
 			while ((incoming = client.ReadMessage()) != null) {
 				if (incoming.MessageType == NetIncomingMessageType.Data) {
-					if (incoming.ReadByte() == (byte)PacketTypes.NewPlayer) {
-						RecieveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+					switch ((PacketTypes)incoming.ReadByte()) {
+						case PacketTypes.NewPlayer:
+							RecieveNewPlayer((int)incoming.ReadByte(), incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+							break;
+						case PacketTypes.MakePlayerUnit:
+							RecieveNewPlayerUnit(incoming.ReadInt32(), (int)incoming.ReadByte(), incoming.ReadFloat(), incoming.ReadFloat(), (double)incoming.ReadFloat());
+							break;
 					}
 				}
 			}
@@ -90,6 +95,7 @@ namespace Arena {
 			Console.WriteLine("I now have " + Players.Count + " players.");
 		}
 		public void RecieveNewPlayerUnit(int unitIndex, int playerIndex, float x, float y, double direction) {
+			Console.WriteLine("Recieving new player unit for " + Players[playerIndex].Name + " at (" + x + ", " + y + ")");
 			Player player = Players[playerIndex];
 			Unit u = new Unit(player, Role.List[player.Role].Health, Role.List[player.Role].Energy);
 			u.Owner = player;
