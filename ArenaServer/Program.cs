@@ -29,7 +29,6 @@ namespace ArenaServer {
 			Role.Initialize();
 			Server server = new Server(false);
 			TargetElapsedTime = TimeSpan.FromSeconds((double)1 / (double)60);
-			//TargetElapsedTime = TimeSpan.FromSeconds(1);
 			stopwatch.Start();
 
 			Console.WriteLine("done.");
@@ -43,8 +42,6 @@ namespace ArenaServer {
 
 		static void MainLoop() {
 			while (!stop) {
-				//GameTime.ElapsedGameTime = new TimeSpan();
-				//GameTime.ElapsedGameTime += stopwatch.Elapsed;
 				GameTime.TotalGameTime += stopwatch.Elapsed;
 				ElapsedTime += stopwatch.Elapsed;
 				stopwatch.Restart();
