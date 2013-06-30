@@ -107,7 +107,17 @@ namespace ArenaClient {
 				}
 			}
 			if (input.IsNewKeyPress(Keys.T)) {
-				Client.Local.SendAllChat("Well played!");
+				// Chatwheel
+			}
+			if (input.IsNewKeyPress(Keys.Enter)) {
+				if (input.IsKeyDown(Keys.LeftShift)) {
+					// All chat
+					Client.Local.SendAllChat("Well played!");
+				}
+				else {
+					// Team chat
+					Client.Local.SendAllChat("Well played!");
+				}
 			}
 			if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
