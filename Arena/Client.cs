@@ -16,6 +16,7 @@ namespace Arena {
 		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
 		public List<Actor> Actors = new List<Actor>();
 		public List<Effect> Effects = new List<Effect>();
+		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
 
 		public int? CurrentAbility = null;
 
@@ -73,6 +74,9 @@ namespace Arena {
 						case PacketType.Disconnect:
 							ReceiveDisconnect((int)incoming.ReadByte());
 							break;
+						case PacketType.AllChat:
+							ReceiveAllChat((int)incoming.ReadByte(), incoming.ReadString());
+							break;
 					}
 				}
 			}
@@ -101,10 +105,14 @@ namespace Arena {
 		}
 
 		public void Disconnect() {
-			NetOutgoingMessage outMsg = client.CreateMessage();
-			outMsg.Write((byte)PacketType.Disconnect);
-			client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
-			client.Disconnect("");
+			if (IsLocalServer) {
+			}
+			else {
+				NetOutgoingMessage outMsg = client.CreateMessage();
+				outMsg.Write((byte)PacketType.Disconnect);
+				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				client.Disconnect("");
+			}
 		}
 
 		public int GetPlayerID(UnitController player) {
@@ -120,7 +128,7 @@ namespace Arena {
 			}
 		}
 		public void ReceiveNewPlayer(int index, string name, int number, byte team, byte role) {
-			Console.WriteLine("[C] Recieving new player: " + name + " | " + number + " | " + team + " | " + role);
+			Console.WriteLine("[C] Recieving new player: " + name + " | " + number + " | " + (Teams)team + " | " + (Roles)role);
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
 			Players.Add(index, new Player(name, number, (Teams)team, (Roles)role));
@@ -260,6 +268,21 @@ namespace Arena {
 				}
 			}
 			Players.Remove(playerIndex);
+		}
+		public void SendAllChat(string message) {
+			if (IsLocalServer) {
+				Server.Local.ReceiveAllChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message);
+			}
+			else {
+				NetOutgoingMessage outMsg = client.CreateMessage();
+				outMsg.Write((byte)PacketType.AllChat);
+				outMsg.Write(message);
+				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ReceiveAllChat(int playerIndex, string message) {
+			Console.WriteLine("[C] {0}: {1}", Players[playerIndex].Name, message);
+			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Teams.Neutral));
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {

@@ -15,7 +15,8 @@ namespace Arena {
 		AttackOrder,
 		Damage,
 		LevelUp,
-		UseAbility
+		UseAbility,
+		AllChat
 	}
 	public class Server {
 		protected NetServer server;
@@ -31,6 +32,7 @@ namespace Arena {
 		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
 		protected int unitIndex = 0;
 		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
+		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
 
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
@@ -120,6 +122,9 @@ namespace Arena {
 									val2 = (float?)incoming.ReadFloat();*/
 								ReceiveUseAbility(unitIndex, ability, val1, val2);
 								break;
+							case PacketType.AllChat:
+								ReceiveAllChat(GetPlayerByConnection(incoming.SenderConnection), incoming.ReadString());
+								break;
 						}
 						break;
 				}
@@ -199,11 +204,24 @@ namespace Arena {
 			foreach (RemoteClient r in AllClients())
 				r.SendUseAbility(Units[unitIndex], ability, val1, val2);
 		}
+		public void ReceiveAllChat(Player player, string message) {
+			Console.WriteLine("[S] {0}: {1}", player.Name, message);
+			foreach (RemoteClient r in AllClients())
+				r.SendAllChat(player, message);
+		}
+
 		public int GetPlayerID(UnitController player) {
 			return Players.FirstOrDefault(x => x.Value == player).Key;
 		}
 		public int GetUnitID(Unit unit) {
 			return Units.FirstOrDefault(x => x.Value == unit).Key;
+		}
+		public Player GetPlayerByConnection(NetConnection connection) {
+			foreach (KeyValuePair<int, RemoteClient> kvp in RemoteClients) {
+				if (kvp.Value.Connection == connection)
+					return Players[kvp.Value.PlayerID];
+			}
+			return null;
 		}
 
 		protected List<RemoteClient> AllClientsButOne(int one) {
@@ -323,6 +341,18 @@ namespace Arena {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
 					outMsg.Write((byte)PacketType.Disconnect);
 					outMsg.Write((byte)playerIndex);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
+			public void SendAllChat(Player player, string message) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveAllChat(Server.Local.GetPlayerID(player), message);
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.AllChat);
+					outMsg.Write((byte)Server.Local.GetPlayerID(player));
+					outMsg.Write(message);
 					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}

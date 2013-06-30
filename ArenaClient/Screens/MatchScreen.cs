@@ -106,6 +106,9 @@ namespace ArenaClient {
 					Client.Local.BeginUsingAbility(gameTime, 3);
 				}
 			}
+			if (input.IsNewKeyPress(Keys.T)) {
+				Client.Local.SendAllChat("Well played!");
+			}
 			if (input.IsNewKeyPress(Keys.Space)) {
 				viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 			}
