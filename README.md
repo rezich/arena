@@ -25,7 +25,7 @@ Controls
 - W - ability 2
 - E - ability 3
 - R - ability 4 (ultimate)
-- T - chatwheel*
+- T - chatwheel**
 - A - click to attack unit (including allied units, when possible)*
 - D - display stats panel*
 - F - level up ability*
@@ -33,8 +33,11 @@ Controls
 - Esc - quit
 - F1 - unlock cursor
 - Space - center camera on currently-selected unit
+- Enter - chat to your team**
+- Shift+Enter - chat to everyone on the server**
 
 \* not implemented
+\** half-assedly implemented
 
 
 Positions
