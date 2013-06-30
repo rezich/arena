@@ -40,6 +40,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ArenaServer\ArenaServer.csproj
+		StartupItem = ArenaClient\ArenaClient.csproj
 	EndGlobalSection
 EndGlobal

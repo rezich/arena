@@ -70,46 +70,46 @@ namespace ArenaClient {
 					Client.Local.SendMoveOrder(cursorWorldPosition);
 
 			}
-			if (input.IsKeyDown(Keys.Up))
+			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraUp]))
 				viewPosition.Y -= viewMoveSpeed;
-			if (input.IsKeyDown(Keys.Left))
+			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraLeft]))
 				viewPosition.X -= viewMoveSpeed;
-			if (input.IsKeyDown(Keys.Right))
+			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraRight]))
 				viewPosition.X += viewMoveSpeed;
-			if (input.IsKeyDown(Keys.Down))
+			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraDown]))
 				viewPosition.Y += viewMoveSpeed;
-			if (input.IsNewKeyPress(Keys.Q)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability1])) {
 				if (input.IsKeyDown(Keys.LeftShift))
 					Client.Local.LevelUp(gameTime, 0);
 				else {
 					Client.Local.BeginUsingAbility(gameTime, 0);
 				}
 			}
-			if (input.IsNewKeyPress(Keys.W)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability2])) {
 				if (input.IsKeyDown(Keys.LeftShift))
 					Client.Local.LevelUp(gameTime, 1);
 				else {
 					Client.Local.BeginUsingAbility(gameTime, 1);
 				}
 			}
-			if (input.IsNewKeyPress(Keys.E)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability3])) {
 				if (input.IsKeyDown(Keys.LeftShift))
 					Client.Local.LevelUp(gameTime, 2);
 				else {
 					Client.Local.BeginUsingAbility(gameTime, 2);
 				}
 			}
-			if (input.IsNewKeyPress(Keys.R)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability4])) {
 				if (input.IsKeyDown(Keys.LeftShift))
 					Client.Local.LevelUp(gameTime, 3);
 				else {
 					Client.Local.BeginUsingAbility(gameTime, 3);
 				}
 			}
-			if (input.IsNewKeyPress(Keys.T)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ChatWheel])) {
 				// Chatwheel
 			}
-			if (input.IsNewKeyPress(Keys.Enter)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Chat])) {
 				if (input.IsKeyDown(Keys.LeftShift)) {
 					// All chat
 					Client.Local.SendAllChat("Well played!");
@@ -119,10 +119,10 @@ namespace ArenaClient {
 					Client.Local.SendAllChat("Well played!");
 				}
 			}
-			if (input.IsNewKeyPress(Keys.Space)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.CenterView])) {
 				viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 			}
-			if (input.IsNewKeyPress(Keys.F1)) {
+			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.UnlockCursor])) {
 				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
 			}
 			base.HandleInput(gameTime, input);

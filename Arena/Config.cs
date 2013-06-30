@@ -1,8 +1,24 @@
 using System;
+using System.Collections.Generic;
 using Cairo;
 using VGame;
+using Microsoft.Xna.Framework.Input;
 
 namespace Arena {
+	public enum KeyCommand {
+		Ability1,
+		Ability2,
+		Ability3,
+		Ability4,
+		ChatWheel,
+		Chat,
+		CenterView,
+		UnlockCursor,
+		CameraUp,
+		CameraDown,
+		CameraLeft,
+		CameraRight
+	}
 	public static class Config {
 		public static Color HomeColor1, HomeColor2, AwayColor1, AwayColor2, HealthColor1, HealthColor2, EnemyHealthColor1, EnemyHealthColor2, EnergyColor1, EnergyColor2, HUDBackground, HUDText;
 		public static double ActorScale = 24;
@@ -18,6 +34,8 @@ namespace Arena {
 		public static string ServerAddress = "localhost";
 		public static bool LocalServer = false;
 
+		public static Dictionary<KeyCommand, Keys> KeyBindings = new Dictionary<KeyCommand, Keys>();
+
 		public static void Initialize() {
 			HomeColor1 = VGame.Util.MakeColor(152, 174, 188, 1);
 			HomeColor2 = VGame.Util.MakeColor(92, 123, 142, 1);
@@ -31,6 +49,19 @@ namespace Arena {
 			EnergyColor2 = VGame.Util.MakeColor(16, 16, 128, 0.25);
 			HUDBackground = VGame.Util.MakeColor(48, 48, 48, 1);
 			HUDText = VGame.Util.MakeColor(255, 255, 255, 1);
+
+			KeyBindings.Add(KeyCommand.Ability1, Keys.Q);
+			KeyBindings.Add(KeyCommand.Ability2, Keys.W);
+			KeyBindings.Add(KeyCommand.Ability3, Keys.E);
+			KeyBindings.Add(KeyCommand.Ability4, Keys.R);
+			KeyBindings.Add(KeyCommand.ChatWheel, Keys.T);
+			KeyBindings.Add(KeyCommand.Chat, Keys.Enter);
+			KeyBindings.Add(KeyCommand.CenterView, Keys.Space);
+			KeyBindings.Add(KeyCommand.UnlockCursor, Keys.F1);
+			KeyBindings.Add(KeyCommand.CameraUp, Keys.Up);
+			KeyBindings.Add(KeyCommand.CameraDown, Keys.Down);
+			KeyBindings.Add(KeyCommand.CameraLeft, Keys.Left);
+			KeyBindings.Add(KeyCommand.CameraRight, Keys.Right);
 		}
 	}
 }

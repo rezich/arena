@@ -148,7 +148,7 @@ namespace Arena {
 				foreach (KeyValuePair<int, Player> kvp in Players)
 					if (kvp.Key != playerIndex)
 						rc.SendNewPlayer(kvp.Key);
-			Unit u = MakePlayerUnit(player, new Vector2(150, 500 * playerIndex));
+			Unit u = MakePlayerUnit(player, new Vector2(100, 100).AddLengthDir(100, Arena.Config.Random.NextDouble() * MathHelper.TwoPi));
 				if (!(player is Bot))
 				foreach (KeyValuePair<int, Unit> kvp in Units)
 					if (kvp.Key != GetUnitID(u))

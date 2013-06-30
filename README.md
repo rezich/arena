@@ -19,6 +19,8 @@ Requires [GTK+](http://www.gtk.org/download/), as well as [this font](http://www
 Controls
 --------
 
+The following are the default controls. I say "default" but really there's no way to change them yet. Oops!
+
 - Mouse0 - click on ground to move, click on enemy to autoattack
 - Mouse1 - click on unit to select, drag to select multiple units*
 - Q - ability 1
@@ -58,7 +60,7 @@ Positions
 #### Abilities ####
 
 - **Sprint** - Temporarily gain a move speed bonus.
-- **???** - ???
+- **Longshot** - Passively gain attack range. This is just an example spell.
 - **Agility Aura** - Passively gain move speed, turn speed, and attack speed.
 - **???** - ???
 
