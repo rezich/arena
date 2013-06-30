@@ -70,6 +70,9 @@ namespace Arena {
 								val2 = (float?)incoming.ReadFloat();*/
 							ReceiveUseAbility(unitIndex, ability, val1, val2);
 							break;
+						case PacketType.Disconnect:
+							ReceiveDisconnect((int)incoming.ReadByte());
+							break;
 					}
 				}
 			}
@@ -239,6 +242,24 @@ namespace Arena {
 		public void ReceiveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
 			Console.WriteLine("[C] Receiving ability use for " + Units[unitIndex].Owner.Name + ", ability " + ability);
 			Units[unitIndex].UseAbility(ability, val1, val2);
+		}
+		public void ReceiveDisconnect(int playerIndex) {
+			Console.WriteLine("[C] Receiving player disconnect for " + Players[playerIndex]);
+			List<Unit> units = new List<Unit>(Units.Values.ToList());
+			List<int> keys = new List<int>(Units.Keys.ToList());
+			for (int j = 0; j < Units.Count; j++) {
+				if (units[j].AttackTarget != null && units[j].AttackTarget.Owner == Players[playerIndex]) {
+					Units[keys[j]].AttackTarget = null;
+					Units[keys[j]].IntendedPosition = Units[keys[j]].Position;
+				}
+				if (units[j].Owner == Players[playerIndex]) {
+					for (int k = 0; k < Actors.Count; k++)
+						if (Actors[k].Unit == units[j])
+							Actors.Remove(Actors[k]);
+					Units.Remove(keys[j]);
+				}
+			}
+			Players.Remove(playerIndex);
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {

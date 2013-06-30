@@ -128,7 +128,7 @@ namespace Arena {
 		public double Direction = 0;
 		public double IntendedDirection = 0;
 		public List<Ability> Abilities = new List<Ability>();
-		public Unit AttackTarget;
+		public Unit AttackTarget = null;
 		public TimeSpan NextAutoAttackReady = new TimeSpan();
 		public bool AutoAttacking = false;
 

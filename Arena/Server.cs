@@ -48,24 +48,33 @@ namespace Arena {
 		}
 
 		protected void DisconnectClient(RemoteClient r) {
+			List<Unit> units = new List<Unit>(Units.Values.ToList());
+			List<int> keys = new List<int>(Units.Keys.ToList());
 			for (int j = 0; j < Units.Count; j++) {
-				if (Units.Values.ToList()[j].Owner == Players[r.PlayerID]) {
-					Units.Remove(Units.Keys.ToList()[j]);
+				if (units[j].AttackTarget != null && units[j].AttackTarget.Owner == Players[r.PlayerID]) {
+					Units[keys[j]].AttackTarget = null;
+					Units[keys[j]].IntendedPosition = Units[keys[j]].Position;
+				}
+				if (units[j].Owner == Players[r.PlayerID]) {
+					Units.Remove(keys[j]);
 				}
 			}
 			Players.Remove(r.PlayerID);
+			int id = r.PlayerID;
 			RemoteClients.Remove(r.PlayerID);
+			foreach (RemoteClient rc in AllClients())
+				rc.SendDisconnect(id);
 			Console.WriteLine("[S] {0} clients, {1} players, {2} units remaining.", RemoteClients.Count, Players.Count, Units.Count);
 		}
 
 		public void Tick() {
 			List<RemoteClient> clients = new List<RemoteClient>(RemoteClients.Values.ToList());
-			for (int i = 0; i < clients.Count; i++) {
+			/*for (int i = 0; i < clients.Count; i++) {
 				if (clients[i].Connection == null || clients[i].Connection.Status == NetConnectionStatus.Disconnected) {
 					Console.WriteLine("[S] " + Players[clients[i].PlayerID].Name + " timed out!");
 					DisconnectClient(clients[i]);
 				}
-			}
+			}*/
 			if ((incoming = server.ReadMessage()) != null) {
 				switch (incoming.MessageType) {
 					case NetIncomingMessageType.ConnectionApproval:
@@ -303,6 +312,17 @@ namespace Arena {
 						outMsg.Write((float)val1);
 					if (val2.HasValue)
 						outMsg.Write((float)val2);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
+			public void SendDisconnect(int playerIndex) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveDisconnect(playerIndex);
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.Disconnect);
+					outMsg.Write((byte)playerIndex);
 					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
