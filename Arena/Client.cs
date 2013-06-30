@@ -97,6 +97,13 @@ namespace Arena {
 			}
 		}
 
+		public void Disconnect() {
+			NetOutgoingMessage outMsg = client.CreateMessage();
+			outMsg.Write((byte)PacketType.Disconnect);
+			client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+			client.Disconnect("");
+		}
+
 		public int GetPlayerID(UnitController player) {
 			return Players.FirstOrDefault(x => x.Value == player).Key;
 		}

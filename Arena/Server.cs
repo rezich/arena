@@ -8,6 +8,7 @@ using Lidgren.Network;
 namespace Arena {
 	public enum PacketType {
 		Connect,
+		Disconnect,
 		NewPlayer,
 		MakePlayerUnit,
 		MoveOrder,
@@ -36,6 +37,7 @@ namespace Arena {
 			if (!IsLocalServer) {
 				config = new NetPeerConfiguration(Arena.Config.ApplicationID);
 				config.Port = Arena.Config.Port;
+				config.ConnectionTimeout = 10;
 				config.MaximumConnections = 16;
 				config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
 				server = new NetServer(config);
@@ -45,7 +47,25 @@ namespace Arena {
 			Local = this;
 		}
 
+		protected void DisconnectClient(RemoteClient r) {
+			for (int j = 0; j < Units.Count; j++) {
+				if (Units.Values.ToList()[j].Owner == Players[r.PlayerID]) {
+					Units.Remove(Units.Keys.ToList()[j]);
+				}
+			}
+			Players.Remove(r.PlayerID);
+			RemoteClients.Remove(r.PlayerID);
+			Console.WriteLine("[S] {0} clients, {1} players, {2} units remaining.", RemoteClients.Count, Players.Count, Units.Count);
+		}
+
 		public void Tick() {
+			List<RemoteClient> clients = new List<RemoteClient>(RemoteClients.Values.ToList());
+			for (int i = 0; i < clients.Count; i++) {
+				if (clients[i].Connection == null || clients[i].Connection.Status == NetConnectionStatus.Disconnected) {
+					Console.WriteLine("[S] " + Players[clients[i].PlayerID].Name + " timed out!");
+					DisconnectClient(clients[i]);
+				}
+			}
 			if ((incoming = server.ReadMessage()) != null) {
 				switch (incoming.MessageType) {
 					case NetIncomingMessageType.ConnectionApproval:
@@ -54,8 +74,23 @@ namespace Arena {
 							AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
 						}
 						break;
+					case NetIncomingMessageType.StatusChanged:
+						if (incoming.SenderConnection.Status == NetConnectionStatus.Disconnected)
+							for (int i = 0; i < clients.Count; i++)
+								if (clients[i].Connection == incoming.SenderConnection) {
+									Console.WriteLine("[S] " + Players[clients[i].PlayerID].Name + " timed out!");
+									DisconnectClient(clients[i]);
+								}
+						break;
 					case NetIncomingMessageType.Data:
 						switch ((PacketType)incoming.ReadByte()) {
+							case PacketType.Disconnect:
+								for (int i = 0; i < clients.Count; i++)
+									if (clients[i].Connection == incoming.SenderConnection) {
+									Console.WriteLine("[S] " + Players[clients[i].PlayerID].Name + " intentionally disconnected!");
+									DisconnectClient(clients[i]);
+								}
+								break;
 							case PacketType.MoveOrder:
 								ReceiveMoveOrder(incoming.ReadInt32(), incoming.ReadFloat(), incoming.ReadFloat());
 								break;

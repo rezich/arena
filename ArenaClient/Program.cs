@@ -45,6 +45,8 @@ namespace ArenaClient {
 				Console.ReadKey();
 			}
 			finally {*/
+				if (Arena.Client.Local != null)
+					Arena.Client.Local.Disconnect();
 				VGame.Renderer.Dispose();
 			//}
 		}
