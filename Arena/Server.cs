@@ -209,11 +209,15 @@ namespace Arena {
 				r.SendUseAbility(Units[unitIndex], ability, val1, val2);
 		}
 		public void ReceiveAllChat(Player player, string message) {
+			if (message.Length == 0)
+				return;
 			Console.WriteLine("[S] {0}: {1}", player.Name, message);
 			foreach (RemoteClient r in AllClients())
 				r.SendAllChat(player, message);
 		}
 		public void ReceiveTeamChat(Player player, string message) {
+			if (message.Length == 0)
+				return;
 			Console.WriteLine("[S] {0} ({1}): {2}", player.Name, player.Team, message);
 			foreach (RemoteClient r in AllClients())
 				if (Players[r.PlayerID].Team == player.Team)

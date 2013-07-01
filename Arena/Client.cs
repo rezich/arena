@@ -18,6 +18,10 @@ namespace Arena {
 		public List<Effect> Effects = new List<Effect>();
 		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
 
+		public string ChatBuffer = "";
+		public bool IsChatting = false;
+		public bool IsAllChatting = false;
+
 		public int? CurrentAbility = null;
 
 		protected NetClient client;
@@ -273,6 +277,8 @@ namespace Arena {
 			Players.Remove(playerIndex);
 		}
 		public void SendAllChat(string message) {
+			if (message.Length == 0)
+				return;
 			if (IsLocalServer) {
 				Server.Local.ReceiveAllChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message);
 			}
@@ -284,6 +290,8 @@ namespace Arena {
 			}
 		}
 		public void ReceiveAllChat(int playerIndex, string message) {
+			if (message.Length == 0)
+				return;
 			Console.WriteLine("[C] {0}: {1}", Players[playerIndex].Name, message);
 			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Teams.Neutral));
 		}

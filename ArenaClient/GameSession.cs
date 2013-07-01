@@ -48,9 +48,9 @@ namespace ArenaClient {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime) {
 			// For Mobile devices, this logic will close the Game when the Back button is pressed
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.Escape)) {
+			/*if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || (Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.Escape) && (Client.Local == null || Client.Local.IsChatting == false) )) {
 				Exit();
-			}
+			}*/
 
 			base.Update(gameTime);
 		}

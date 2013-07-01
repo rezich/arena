@@ -39,7 +39,15 @@ namespace ArenaClient {
 		public static Cairo.Color AbilityEnergyBackground;
 		public static Cairo.Color AbilityCooldownBackground;
 		public static Cairo.Color AbilityKeyBackground;
+		
+		public static double IsChattingScale = 0;
 
+		public static void Update(GameTime gameTime, Player player) {
+			if (Client.Local.IsChatting)
+				IsChattingScale = Math.Min(IsChattingScale + 0.4, 1);
+			else
+				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
+		}
 		public static void Draw(GameTime gameTime, Cairo.Context g, Player player) {
 
 			if (player == null)
@@ -129,13 +137,21 @@ namespace ArenaClient {
 						col = Config.HomeColor2;
 					if (msg.Team == Teams.Away)
 						col = Config.AwayColor2;
-					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * i), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
+					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
 				}
 				for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
 					if (!player.CurrentUnit.Buffs[i].Hidden) {
 						string str = (player.CurrentUnit.Buffs[i].Permanent ? "" : "  " + Math.Round(((double)(player.CurrentUnit.Buffs[i].ExpirationTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal());
 						DrawText(g, new Vector2(Renderer.Width - BoxWidth - Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name + str, 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 0.5, 0) : new Cairo.Color(0, 0, 0.5)), 0, null);
 					}
+				}
+				if (Client.Local.IsChatting) {
+					Cairo.Color? col = null;
+					if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Home)
+						col = Config.HomeColor2;
+					if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
+						col = Config.AwayColor2;
+					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
 				}
 			}
 			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
@@ -209,6 +225,7 @@ namespace ArenaClient {
 			g.SelectFontFace(font, FontSlant.Normal, FontWeight.Normal);
 			g.SetFontSize(scale);
 			TextExtents ext = g.TextExtents(text);
+			TextExtents ext2 = g.TextExtents("|");
 			Vector2 offset = new Vector2(0, 0);
 			switch (hAlign) {
 				case TextAlign.Left:
@@ -224,14 +241,14 @@ namespace ArenaClient {
 				case TextAlign.Top:
 					break;
 					case TextAlign.Middle:
-					offset.Y = -(float)(ext.Height / 2);
+					offset.Y = -(float)(ext2.Height / 2);
 					break;
 					case TextAlign.Bottom:
-					offset.Y = -(float)(ext.Height);
+					offset.Y = -(float)(ext2.Height);
 					break;
 			}
-			Vector2 textPos = position - new Vector2((float)(ext.XBearing), (float)(ext.YBearing)) + offset;
-			Vector2 boxOffset = new Vector2((float)(ext.XBearing), (float)(-ext.Height));
+			Vector2 textPos = position - new Vector2((float)(ext.XBearing), (float)(ext2.YBearing)) + offset;
+			Vector2 boxOffset = new Vector2((float)(ext.XBearing), (float)(-ext2.Height));
 			if (backgroundColor.HasValue) {
 				g.MoveTo((textPos + boxOffset + new Vector2(-TextBoxPadding, -TextBoxPadding)).ToPointD());
 				g.LineTo((textPos + boxOffset + new Vector2((float)ext.Width, 0) + new Vector2(TextBoxPadding, -TextBoxPadding)).ToPointD());

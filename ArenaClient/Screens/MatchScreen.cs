@@ -70,61 +70,87 @@ namespace ArenaClient {
 					Client.Local.SendMoveOrder(cursorWorldPosition);
 
 			}
-			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraUp]))
-				viewPosition.Y -= viewMoveSpeed;
-			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraLeft]))
-				viewPosition.X -= viewMoveSpeed;
-			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraRight]))
-				viewPosition.X += viewMoveSpeed;
-			if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraDown]))
-				viewPosition.Y += viewMoveSpeed;
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability1])) {
-				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LevelUp(gameTime, 0);
-				else {
-					Client.Local.BeginUsingAbility(gameTime, 0);
+
+			if (Client.Local.IsChatting) {
+				if (input.IsNewKeyPress(Keys.Back) && Client.Local.ChatBuffer.Length > 0)
+					Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - 1);
+				foreach (char c in input.GetAscii()) {
+					Client.Local.ChatBuffer = Client.Local.ChatBuffer + c;
+				}
+				if (input.IsNewKeyPress(Keys.Escape)) {
+					Client.Local.ChatBuffer = "";
+					Client.Local.IsChatting = false;
+				}
+				if (input.IsNewKeyPress(Keys.Enter)) {
+					if (Client.Local.IsAllChatting)
+						Client.Local.SendAllChat(Client.Local.ChatBuffer);
+					else
+						Client.Local.SendTeamChat(Client.Local.ChatBuffer);
+					Client.Local.ChatBuffer = "";
+					Client.Local.IsChatting = false;
 				}
 			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability2])) {
-				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LevelUp(gameTime, 1);
-				else {
-					Client.Local.BeginUsingAbility(gameTime, 1);
+			else {
+				if (input.IsNewKeyPress(Keys.Escape)) {
+					ScreenManager.Game.Exit();
 				}
-			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability3])) {
-				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LevelUp(gameTime, 2);
-				else {
-					Client.Local.BeginUsingAbility(gameTime, 2);
+				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraUp]))
+					viewPosition.Y -= viewMoveSpeed;
+				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraLeft]))
+					viewPosition.X -= viewMoveSpeed;
+				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraRight]))
+					viewPosition.X += viewMoveSpeed;
+				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraDown]))
+					viewPosition.Y += viewMoveSpeed;
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability1])) {
+					if (input.IsKeyDown(Keys.LeftShift))
+						Client.Local.LevelUp(gameTime, 0);
+					else {
+						Client.Local.BeginUsingAbility(gameTime, 0);
+					}
 				}
-			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability4])) {
-				if (input.IsKeyDown(Keys.LeftShift))
-					Client.Local.LevelUp(gameTime, 3);
-				else {
-					Client.Local.BeginUsingAbility(gameTime, 3);
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability2])) {
+					if (input.IsKeyDown(Keys.LeftShift))
+						Client.Local.LevelUp(gameTime, 1);
+					else {
+						Client.Local.BeginUsingAbility(gameTime, 1);
+					}
 				}
-			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ChatWheel])) {
-				// Chatwheel
-				Client.Local.SendTeamChat("Well played!");
-			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Chat])) {
-				if (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)) {
-					// All chat
-					Client.Local.SendAllChat("Well played!");
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability3])) {
+					if (input.IsKeyDown(Keys.LeftShift))
+						Client.Local.LevelUp(gameTime, 2);
+					else {
+						Client.Local.BeginUsingAbility(gameTime, 2);
+					}
 				}
-				else {
-					// Team chat
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability4])) {
+					if (input.IsKeyDown(Keys.LeftShift))
+						Client.Local.LevelUp(gameTime, 3);
+					else {
+						Client.Local.BeginUsingAbility(gameTime, 3);
+					}
+				}
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ChatWheel])) {
+					// Chatwheel
 					Client.Local.SendTeamChat("Well played!");
 				}
-			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.CenterView])) {
-				viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
-			}
-			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.UnlockCursor])) {
-				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Chat])) {
+					if (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)) {
+						// All chat
+						Client.Local.IsAllChatting = true;
+					}
+					else {
+						// Team chat
+						Client.Local.IsAllChatting = false;
+					}
+					Client.Local.IsChatting = true;
+				}
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.CenterView])) {
+					viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
+				}
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.UnlockCursor])) {
+					ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
+				}
 			}
 			base.HandleInput(gameTime, input);
 		}
@@ -132,6 +158,7 @@ namespace ArenaClient {
 			if (isLocalGame)
 				Server.Local.Update(gameTime);
 			Client.Local.Update(gameTime, viewPosition, viewOrigin);
+			HUD.Update(gameTime, Client.Local.LocalPlayer);
 
 			markerAnimationPercent = Math.Min(Math.Max(((double)(markerAnimationDone.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)markerAnimationDuration.TotalMilliseconds), 0), 1);
 			base.Update(gameTime);
