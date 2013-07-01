@@ -72,6 +72,26 @@ namespace ArenaClient {
 			}
 
 			if (Client.Local.IsChatting) {
+				if (input.IsNewKeyPress(Keys.Tab)) {
+					string[] split = Client.Local.ChatBuffer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+					if (split.Length > 0) {
+						List<Player> found = new List<Player>();
+						foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
+							if (kvp.Value.Name.Substring(0, split[split.Length - 1].Length).ToLower() == split[split.Length - 1].ToLower()) {
+								found.Add(kvp.Value);
+							}
+						}
+						if (found.Count == 1) {
+							Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - split[split.Length - 1].Length);
+							string toAdd = found[0].Name;
+							if (Client.Local.ChatBuffer.Length == 0)
+								toAdd += ": ";
+							else
+								toAdd += " ";
+							Client.Local.ChatBuffer += toAdd;
+						}
+					}
+				}
 				if (input.IsNewKeyPress(Keys.Back) && Client.Local.ChatBuffer.Length > 0)
 					Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - 1);
 				foreach (char c in input.GetAscii()) {

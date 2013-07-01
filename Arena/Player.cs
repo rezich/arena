@@ -17,7 +17,7 @@ namespace Arena {
 		public Unit PlayerUnit;
 
 		public Player(string name, int number, Teams team, Roles role) {
-			_name = name;
+			_name = name.Replace(" ", "");
 			Number = number;
 			Team = team;
 			Role = role;
@@ -26,8 +26,7 @@ namespace Arena {
 		}
 	}
 	public class Bot : Player {
-		public Bot(Teams team, Roles role) : base("--BOT--", 0, team, role) {
-			Number = Arena.Config.Random.Next(1, 49);
+		public Bot(string name, int number, Teams team, Roles role) : base(name, number, team, role) {
 		}
 		public override void Update(GameTime gameTime) {
 			/*Unit attackUnit = null;

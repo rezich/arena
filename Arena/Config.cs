@@ -36,6 +36,17 @@ namespace Arena {
 
 		public static Dictionary<KeyCommand, Keys> KeyBindings = new Dictionary<KeyCommand, Keys>();
 
+		public static List<string> BotNames = new List<string>() {
+			"Stupid",
+			"Dumb",
+			"Lame",
+			"Poopy",
+			"Bad-At-Game",
+			"Feeding",
+			"Noob",
+			"Crappy"
+		};
+
 		public static void Initialize() {
 			HomeColor1 = VGame.Util.MakeColor(152, 174, 188, 1);
 			HomeColor2 = VGame.Util.MakeColor(92, 123, 142, 1);

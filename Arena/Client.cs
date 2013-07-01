@@ -280,12 +280,12 @@ namespace Arena {
 			if (message.Length == 0)
 				return;
 			if (IsLocalServer) {
-				Server.Local.ReceiveAllChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message);
+				Server.Local.ReceiveAllChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message.Trim());
 			}
 			else {
 				NetOutgoingMessage outMsg = client.CreateMessage();
 				outMsg.Write((byte)PacketType.AllChat);
-				outMsg.Write(message);
+				outMsg.Write(message.Trim());
 				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
@@ -297,12 +297,12 @@ namespace Arena {
 		}
 		public void SendTeamChat(string message) {
 			if (IsLocalServer) {
-				Server.Local.ReceiveTeamChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message);
+				Server.Local.ReceiveTeamChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message.Trim());
 			}
 			else {
 				NetOutgoingMessage outMsg = client.CreateMessage();
 				outMsg.Write((byte)PacketType.TeamChat);
-				outMsg.Write(message);
+				outMsg.Write(message.Trim());
 				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
