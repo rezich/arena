@@ -15,6 +15,8 @@ Installation notes
 
 Requires [GTK+](http://www.gtk.org/download/), as well as [this font](http://www.dsg4.com/04/extra/bitmap/stuff/04b_19.zip).
 
+If you just wanna try the game out, the latest "stable" build is available [here](http://rezich.com/Arena.zip) (complete with the font and all the GTK DLLs, so you don't need to install GTK+; just extract and go), and a server should be running at nukle.us. Just type "nukle.us" in for the server address!
+
 
 Controls
 --------
@@ -37,6 +39,7 @@ The following are the default controls. I say "default" but really there's no wa
 - Enter - chat to your team
 - Shift+Enter - chat to everyone on the server
 - Esc - cancel chat, quit game
+- Tab - show scoreboard
 
 \* not implemented
 \** half-assedly implemented
