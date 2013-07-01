@@ -41,17 +41,44 @@ namespace ArenaClient {
 		public static Cairo.Color AbilityKeyBackground;
 		
 		public static double IsChattingScale = 0;
+		public static double ScoreboardScale = 0;
 
 		public static void Update(GameTime gameTime, Player player) {
 			if (Client.Local.IsChatting)
 				IsChattingScale = Math.Min(IsChattingScale + 0.4, 1);
 			else
 				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
+			if (Client.Local.IsShowingScoreboard)
+				ScoreboardScale = Math.Min(ScoreboardScale + 0.1, 1);
+			else
+				ScoreboardScale = Math.Max(ScoreboardScale - 0.025, 0);
 		}
 		public static void Draw(GameTime gameTime, Cairo.Context g, Player player) {
 
 			if (player == null)
 				return;
+
+			// SCOREBOARD
+			int sbTop = 3;
+			if (ScoreboardScale > 0) {
+				DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), "HOME", 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, Config.HomeColor2, 0, null);
+				sbTop++;
+				foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
+					if (kvp.Value.Team == Teams.Home) {
+						DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), kvp.Value.Name.ToUpper(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+						sbTop++;
+					}
+				}
+				DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), "AWAY", 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, Config.AwayColor2, 0, null);
+				sbTop++;
+				foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
+					if (kvp.Value.Team == Teams.Away) {
+						DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), kvp.Value.Name.ToUpper(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+						sbTop++;
+					}
+				}
+			}
+
 
 			// LEFT
 			DrawBox(g, LeftBox, Arena.Config.HUDBackground, null);
@@ -155,9 +182,9 @@ namespace ArenaClient {
 				}
 			}
 			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 20), "P " + Client.Local.Players.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 40), "U " + Client.Local.Units.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 60), "A " + Client.Local.Actors.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 20), "P " + Client.Local.Players.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 40), "U " + Client.Local.Units.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 60), "A " + Client.Local.Actors.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 		}
 		private static void DrawAbility(GameTime gameTime, Cairo.Context g, Player player, int ability) {
 			DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0), null);

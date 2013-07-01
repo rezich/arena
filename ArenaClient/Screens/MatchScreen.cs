@@ -110,6 +110,11 @@ namespace ArenaClient {
 				}
 			}
 			else {
+				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.Scoreboard])) {
+					Client.Local.IsShowingScoreboard = true;
+				}
+				else
+					Client.Local.IsShowingScoreboard = false;
 				if (input.IsNewKeyPress(Keys.Escape)) {
 					ScreenManager.Game.Exit();
 				}

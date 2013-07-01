@@ -21,6 +21,7 @@ namespace Arena {
 		public string ChatBuffer = "";
 		public bool IsChatting = false;
 		public bool IsAllChatting = false;
+		public bool IsShowingScoreboard = false;
 
 		public int? CurrentAbility = null;
 

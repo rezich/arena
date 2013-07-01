@@ -17,7 +17,8 @@ namespace Arena {
 		CameraUp,
 		CameraDown,
 		CameraLeft,
-		CameraRight
+		CameraRight,
+		Scoreboard
 	}
 	public static class Config {
 		public static Color HomeColor1, HomeColor2, AwayColor1, AwayColor2, HealthColor1, HealthColor2, EnemyHealthColor1, EnemyHealthColor2, EnergyColor1, EnergyColor2, HUDBackground, HUDText;
@@ -73,6 +74,7 @@ namespace Arena {
 			KeyBindings.Add(KeyCommand.CameraDown, Keys.Down);
 			KeyBindings.Add(KeyCommand.CameraLeft, Keys.Left);
 			KeyBindings.Add(KeyCommand.CameraRight, Keys.Right);
+			KeyBindings.Add(KeyCommand.Scoreboard, Keys.Tab);
 		}
 	}
 }
