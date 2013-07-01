@@ -34,6 +34,7 @@ namespace ArenaClient {
 				Arena.Config.LocalServer = true;
 			else
 				Arena.Config.ServerAddress = readLine;
+			Console.WriteLine("Loading...");
 			game = new GameSession();
 			//try {
 				game.Run();

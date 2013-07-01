@@ -32,12 +32,11 @@ The following are the default controls. I say "default" but really there's no wa
 - D - display stats panel*
 - F - level up ability*
 - S - stop moving*
-- Shift+Esc - quit
 - F1 - unlock cursor
 - Space - center camera on currently-selected unit
 - Enter - chat to your team
 - Shift+Enter - chat to everyone on the server
-- Esc - cancel chat
+- Esc - cancel chat, quit game
 
 \* not implemented
 \** half-assedly implemented
