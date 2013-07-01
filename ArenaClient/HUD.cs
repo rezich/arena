@@ -124,7 +124,12 @@ namespace ArenaClient {
 				for (int i = 0; i < Math.Min(Client.Local.ChatMessages.Count, 10); i++) {
 					ChatMessage msg = Client.Local.ChatMessages[Client.Local.ChatMessages.Count - 1 - i];
 					string str = msg.Sender.ToUpper() + ": " + msg.Message.ToUpper();
-					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * i), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, null, 0, null);
+					Cairo.Color? col = null;
+					if (msg.Team == Teams.Home)
+						col = Config.HomeColor2;
+					if (msg.Team == Teams.Away)
+						col = Config.AwayColor2;
+					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * i), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
 				}
 				for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
 					if (!player.CurrentUnit.Buffs[i].Hidden) {

@@ -77,6 +77,9 @@ namespace Arena {
 						case PacketType.AllChat:
 							ReceiveAllChat((int)incoming.ReadByte(), incoming.ReadString());
 							break;
+						case PacketType.TeamChat:
+							ReceiveTeamChat((int)incoming.ReadByte(), incoming.ReadString());
+							break;
 					}
 				}
 			}
@@ -200,8 +203,8 @@ namespace Arena {
 			Effects.Add(effect);
 		}
 		public void LevelUp(GameTime gameTime, int ability) {
-			Console.WriteLine("[C] Sending level up for player " + LocalPlayer.Name);
 			if (LocalPlayer.CurrentUnit.CanLevelUp(ability)) {
+				Console.WriteLine("[C] Sending level up for player " + LocalPlayer.Name);
 				if (IsLocalServer) {
 					Server.Local.ReceiveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
 				}
@@ -283,6 +286,21 @@ namespace Arena {
 		public void ReceiveAllChat(int playerIndex, string message) {
 			Console.WriteLine("[C] {0}: {1}", Players[playerIndex].Name, message);
 			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Teams.Neutral));
+		}
+		public void SendTeamChat(string message) {
+			if (IsLocalServer) {
+				Server.Local.ReceiveTeamChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message);
+			}
+			else {
+				NetOutgoingMessage outMsg = client.CreateMessage();
+				outMsg.Write((byte)PacketType.TeamChat);
+				outMsg.Write(message);
+				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ReceiveTeamChat(int playerIndex, string message) {
+			Console.WriteLine("[C] {0} ({1}): {2}", Players[playerIndex].Name, Players[playerIndex].Team, message);
+			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Players[playerIndex].Team));
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {

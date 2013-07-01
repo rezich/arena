@@ -108,15 +108,16 @@ namespace ArenaClient {
 			}
 			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ChatWheel])) {
 				// Chatwheel
+				Client.Local.SendTeamChat("Well played!");
 			}
 			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Chat])) {
-				if (input.IsKeyDown(Keys.LeftShift)) {
+				if (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)) {
 					// All chat
 					Client.Local.SendAllChat("Well played!");
 				}
 				else {
 					// Team chat
-					Client.Local.SendAllChat("Well played!");
+					Client.Local.SendTeamChat("Well played!");
 				}
 			}
 			if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.CenterView])) {

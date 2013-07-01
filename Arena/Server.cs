@@ -16,7 +16,8 @@ namespace Arena {
 		Damage,
 		LevelUp,
 		UseAbility,
-		AllChat
+		AllChat,
+		TeamChat
 	}
 	public class Server {
 		protected NetServer server;
@@ -125,6 +126,9 @@ namespace Arena {
 							case PacketType.AllChat:
 								ReceiveAllChat(GetPlayerByConnection(incoming.SenderConnection), incoming.ReadString());
 								break;
+							case PacketType.TeamChat:
+								ReceiveTeamChat(GetPlayerByConnection(incoming.SenderConnection), incoming.ReadString());
+								break;
 						}
 						break;
 				}
@@ -208,6 +212,12 @@ namespace Arena {
 			Console.WriteLine("[S] {0}: {1}", player.Name, message);
 			foreach (RemoteClient r in AllClients())
 				r.SendAllChat(player, message);
+		}
+		public void ReceiveTeamChat(Player player, string message) {
+			Console.WriteLine("[S] {0} ({1}): {2}", player.Name, player.Team, message);
+			foreach (RemoteClient r in AllClients())
+				if (Players[r.PlayerID].Team == player.Team)
+					r.SendTeamChat(player, message);
 		}
 
 		public int GetPlayerID(UnitController player) {
@@ -351,6 +361,18 @@ namespace Arena {
 				else {
 					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
 					outMsg.Write((byte)PacketType.AllChat);
+					outMsg.Write((byte)Server.Local.GetPlayerID(player));
+					outMsg.Write(message);
+					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
+			public void SendTeamChat(Player player, string message) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveTeamChat(Server.Local.GetPlayerID(player), message);
+				}
+				else {
+					NetOutgoingMessage outMsg = Server.Local.server.CreateMessage();
+					outMsg.Write((byte)PacketType.TeamChat);
 					outMsg.Write((byte)Server.Local.GetPlayerID(player));
 					outMsg.Write(message);
 					Server.Local.server.SendMessage(outMsg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
