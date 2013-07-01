@@ -185,6 +185,39 @@ namespace VGame {
 			// a platform-agnostic way of getting ASCII text input.
 			// I'll probably eventually do a keyboard layout thing or something
 			// fuck I don't know.
+			if (IsNewKeyPress(Keys.OemTilde))
+				chars.Add(IsShiftKeyDown ? '~' : '`');
+			if (IsNewKeyPress(Keys.D1))
+				chars.Add(IsShiftKeyDown ? '!' : '1');
+			if (IsNewKeyPress(Keys.D2))
+				chars.Add(IsShiftKeyDown ? '@' : '2');
+			if (IsNewKeyPress(Keys.D3))
+				chars.Add(IsShiftKeyDown ? '#' : '3');
+			if (IsNewKeyPress(Keys.D4))
+				chars.Add(IsShiftKeyDown ? '$' : '4');
+			if (IsNewKeyPress(Keys.D5))
+				chars.Add(IsShiftKeyDown ? '%' : '5');
+			if (IsNewKeyPress(Keys.D6))
+				chars.Add(IsShiftKeyDown ? '^' : '6');
+			if (IsNewKeyPress(Keys.D7))
+				chars.Add(IsShiftKeyDown ? '&' : '7');
+			if (IsNewKeyPress(Keys.D8))
+				chars.Add(IsShiftKeyDown ? '*' : '8');
+			if (IsNewKeyPress(Keys.D9))
+				chars.Add(IsShiftKeyDown ? '(' : '9');
+			if (IsNewKeyPress(Keys.D0))
+				chars.Add(IsShiftKeyDown ? ')' : '0');
+			if (IsNewKeyPress(Keys.OemMinus))
+				chars.Add(IsShiftKeyDown ? '_' : '-');
+			if (IsNewKeyPress(Keys.OemPlus))
+				chars.Add(IsShiftKeyDown ? '+' : '=');
+			if (IsNewKeyPress(Keys.OemOpenBrackets))
+				chars.Add(IsShiftKeyDown ? '{' : '[');
+			if (IsNewKeyPress(Keys.OemCloseBrackets))
+				chars.Add(IsShiftKeyDown ? '}' : ']');
+			if (IsNewKeyPress(Keys.OemBackslash))
+				chars.Add(IsShiftKeyDown ? '|' : '\\');
+
 			if (IsNewKeyPress(Keys.A))
 				chars.Add(IsShiftKeyDown ? 'A' : 'a');
 			if (IsNewKeyPress(Keys.B))
@@ -237,32 +270,20 @@ namespace VGame {
 				chars.Add(IsShiftKeyDown ? 'Y' : 'y');
 			if (IsNewKeyPress(Keys.Z))
 				chars.Add(IsShiftKeyDown ? 'Z' : 'z');
-			if (IsNewKeyPress(Keys.D1))
-				chars.Add(IsShiftKeyDown ? '!' : '1');
-			if (IsNewKeyPress(Keys.D2))
-				chars.Add(IsShiftKeyDown ? '@' : '2');
-			if (IsNewKeyPress(Keys.D3))
-				chars.Add(IsShiftKeyDown ? '#' : '3');
-			if (IsNewKeyPress(Keys.D4))
-				chars.Add(IsShiftKeyDown ? '$' : '4');
-			if (IsNewKeyPress(Keys.D5))
-				chars.Add(IsShiftKeyDown ? '%' : '5');
-			if (IsNewKeyPress(Keys.D6))
-				chars.Add(IsShiftKeyDown ? '^' : '6');
-			if (IsNewKeyPress(Keys.D7))
-				chars.Add(IsShiftKeyDown ? '&' : '7');
-			if (IsNewKeyPress(Keys.D8))
-				chars.Add(IsShiftKeyDown ? '*' : '8');
-			if (IsNewKeyPress(Keys.D9))
-				chars.Add(IsShiftKeyDown ? '(' : '9');
-			if (IsNewKeyPress(Keys.D0))
-				chars.Add(IsShiftKeyDown ? ')' : '0');
-			if (IsNewKeyPress(Keys.Space))
-				chars.Add(' ');
+
+			if (IsNewKeyPress(Keys.OemSemicolon))
+				chars.Add(IsShiftKeyDown ? ':' : ';');
+			if (IsNewKeyPress(Keys.OemQuotes))
+				chars.Add(IsShiftKeyDown ? '"' : '\'');
 			if (IsNewKeyPress(Keys.OemComma))
 				chars.Add(IsShiftKeyDown ? '<' : ',');
 			if (IsNewKeyPress(Keys.OemPeriod))
 			    chars.Add(IsShiftKeyDown ? '>' : '.');
+			if (IsNewKeyPress(Keys.OemQuestion))
+				chars.Add(IsShiftKeyDown ? '?' : '/');
+			if (IsNewKeyPress(Keys.Space))
+				chars.Add(' ');
+
 			return chars;
 		}
 
