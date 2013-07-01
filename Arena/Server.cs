@@ -160,7 +160,24 @@ namespace Arena {
 			playerIndex++;
 		}
 		public void AddBot(Teams team, Roles role) {
-			Bot bot = new Bot(team, role);
+			int botNumber = 0;
+			string name = "";
+			while (name == "") {
+				for (int i = 0; i < Config.BotNames.Count; i++) {
+					string tryName = Config.BotNames[i] + " Bot" + (botNumber == 0 ? "" : botNumber.ToString());
+					bool found = false;
+					foreach (KeyValuePair<int, Player> kvp in Players) {
+						if (tryName == kvp.Value.Name)
+							found = true;
+					}
+					if (!found) {
+						name = tryName;
+						break;
+					}
+					botNumber++;
+				}
+			}
+			Bot bot = new Bot(name, Config.Random.Next(0, 50), team, role);
 			AddPlayer(bot);
 		}
 		public Unit MakePlayerUnit(Player player, Vector2 position) {
@@ -211,17 +228,17 @@ namespace Arena {
 		public void ReceiveAllChat(Player player, string message) {
 			if (message.Length == 0)
 				return;
-			Console.WriteLine("[S] {0}: {1}", player.Name, message);
+			Console.WriteLine("[S] {0}: {1}", player.Name, message.Trim());
 			foreach (RemoteClient r in AllClients())
-				r.SendAllChat(player, message);
+				r.SendAllChat(player, message.Trim());
 		}
 		public void ReceiveTeamChat(Player player, string message) {
 			if (message.Length == 0)
 				return;
-			Console.WriteLine("[S] {0} ({1}): {2}", player.Name, player.Team, message);
+			Console.WriteLine("[S] {0} ({1}): {2}", player.Name, player.Team, message.Trim());
 			foreach (RemoteClient r in AllClients())
 				if (Players[r.PlayerID].Team == player.Team)
-					r.SendTeamChat(player, message);
+					r.SendTeamChat(player, message.Trim());
 		}
 
 		public int GetPlayerID(UnitController player) {
