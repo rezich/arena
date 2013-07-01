@@ -136,7 +136,19 @@ namespace Arena {
 		}
 		
 		public void AddPlayer(string name, int number, Teams team, Roles role) {
-			AddPlayer(new Player(name, number, team, role));
+			string baseName = name;
+			int tryNumber = 0;
+			while (true) {
+				bool found = false;
+				foreach (KeyValuePair<int, Player> kvp in Players)
+					if (kvp.Value.Name == baseName + (tryNumber == 0 ? "" : tryNumber.ToString()))
+						found = true;
+				if (found)
+					tryNumber++;
+				else
+					break;
+			}
+			AddPlayer(new Player(baseName + (tryNumber == 0 ? "" : tryNumber.ToString()), number, team, role));
 		}
 		public void AddPlayer(Player player) {
 			Console.WriteLine("[S] Adding new player: " + player.Name + " | " + player.Number + " | " + player.Team + " | " + player.Role);

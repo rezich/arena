@@ -38,7 +38,6 @@ namespace ArenaClient {
 		bool isLocalGame = false;
 
 		public MatchScreen() {
-
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate();
 			Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)(Resolution.Width / 2), (int)(Resolution.Height / 2));
@@ -77,14 +76,14 @@ namespace ArenaClient {
 					if (split.Length > 0) {
 						List<Player> found = new List<Player>();
 						foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
-							if (kvp.Value.Name.Substring(0, split[split.Length - 1].Length).ToLower() == split[split.Length - 1].ToLower()) {
+							if (kvp.Value.Name.Length >= split[split.Length - 1].Length && kvp.Value.Name.Substring(0, split[split.Length - 1].Length).ToLower() == split[split.Length - 1].ToLower()) {
 								found.Add(kvp.Value);
 							}
 						}
 						if (found.Count == 1) {
 							Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - split[split.Length - 1].Length);
 							string toAdd = found[0].Name;
-							if (Client.Local.ChatBuffer.Length == 0)
+							if (Client.Local.ChatBuffer.Length == 0 && (Client.Local.IsAllChatting || found[0].Team == Client.Local.LocalPlayer.Team))
 								toAdd += ": ";
 							else
 								toAdd += " ";

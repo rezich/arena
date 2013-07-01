@@ -131,19 +131,13 @@ namespace ArenaClient {
 				DrawText(g, new Vector2(Margin, Margin + 42), "ATTACK RANGE: " + player.CurrentUnit.AttackRange.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 				for (int i = 0; i < Math.Min(Client.Local.ChatMessages.Count, 10); i++) {
 					ChatMessage msg = Client.Local.ChatMessages[Client.Local.ChatMessages.Count - 1 - i];
-					string str = msg.Sender.ToUpper() + ": " + msg.Message.ToUpper();
+					string str = "<" + msg.Sender.ToUpper() + "> " + msg.Message.ToUpper();
 					Cairo.Color? col = null;
 					if (msg.Team == Teams.Home)
 						col = Config.HomeColor2;
 					if (msg.Team == Teams.Away)
 						col = Config.AwayColor2;
 					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
-				}
-				for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
-					if (!player.CurrentUnit.Buffs[i].Hidden) {
-						string str = (player.CurrentUnit.Buffs[i].Permanent ? "" : "  " + Math.Round(((double)(player.CurrentUnit.Buffs[i].ExpirationTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal());
-						DrawText(g, new Vector2(Renderer.Width - BoxWidth - Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name + str, 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 0.5, 0) : new Cairo.Color(0, 0, 0.5)), 0, null);
-					}
 				}
 				if (Client.Local.IsChatting) {
 					Cairo.Color? col = null;
@@ -152,6 +146,12 @@ namespace ArenaClient {
 					if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
 						col = Config.AwayColor2;
 					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer.ToUpper(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
+				}
+				for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
+					if (!player.CurrentUnit.Buffs[i].Hidden) {
+						string str = (player.CurrentUnit.Buffs[i].Permanent ? "" : "  " + Math.Round(((double)(player.CurrentUnit.Buffs[i].ExpirationTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal());
+						DrawText(g, new Vector2(Renderer.Width - BoxWidth - Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name + str, 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 0.5, 0) : new Cairo.Color(0, 0, 0.5)), 0, null);
+					}
 				}
 			}
 			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
