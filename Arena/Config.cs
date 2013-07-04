@@ -35,6 +35,7 @@ namespace Arena {
 		public static string ServerAddress = "localhost";
 		public static bool LocalServer = false;
 		public static int ReadyCountdown = 5;
+		public static int PostLoadingCountdown = 5;
 
 		public static Dictionary<KeyCommand, Keys> KeyBindings = new Dictionary<KeyCommand, Keys>();
 

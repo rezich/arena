@@ -13,8 +13,8 @@ namespace Arena {
 		public bool IsLocalServer = false;
 		public Match Match = null;
 
-		public Dictionary<int, Player> Players = new Dictionary<int, Player>();
-		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
+		public SortedDictionary<int, Player> Players = new SortedDictionary<int, Player>();
+		public SortedDictionary<int, Unit> Units = new SortedDictionary<int, Unit>();
 		public List<Actor> Actors = new List<Actor>();
 		public List<Effect> Effects = new List<Effect>();
 		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
@@ -25,6 +25,8 @@ namespace Arena {
 		public bool IsShowingScoreboard = false;
 
 		public int? CurrentAbility = null;
+
+		public double? StartTime = null;
 
 		protected NetClient client;
 
@@ -101,8 +103,14 @@ namespace Arena {
 						case PacketType.Ready:
 							ReceiveReady((int)incoming.ReadByte(), (bool)(incoming.ReadByte() > 0));
 							break;
+						case PacketType.StartLoading:
+							ReceiveStartLoading();
+							break;
+						case PacketType.LoadingPercent:
+							ReceiveLoadingPercent((int)incoming.ReadByte(), incoming.ReadFloat());
+							break;
 						case PacketType.StartMatch:
-							ReceiveStartMatch();
+							ReceiveStartMatch(incoming.ReadTime(true) - incoming.ReceiveTime);
 							break;
 					}
 				}
@@ -129,8 +137,7 @@ namespace Arena {
 				msg.Write((byte)Teams.Home);
 				msg.Write((byte)Roles.Runner);
 				*/
-				NetConnection con = client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, msg);
-
+				client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, msg);
 			}
 		}
 
@@ -185,8 +192,10 @@ namespace Arena {
 			Actors.Add(u.Actor);
 			Units.Add(unitIndex, u);
 			player.ControlledUnits.Add(u);
-			if (player == LocalPlayer)
-				LocalPlayer.CurrentUnit = u;
+			if (player.ControlledUnits.Count == 0) {
+				player.PlayerUnit = u;
+				player.CurrentUnit = u;
+			}
 		}
 		public void SendAttackOrder(Unit unit) {
 			LocalPlayer.CurrentUnit.AttackTarget = unit;
@@ -383,12 +392,48 @@ namespace Arena {
 		public void ReceiveReady(int playerIndex, bool ready) {
 			Players[playerIndex].Ready = ready;
 		}
-		public void ReceiveStartMatch() {
+		public void ReceiveStartLoading() {
 			Match = new Match();
+		}
+		public void SendLoadingPercent() {
+			if (IsLocalServer) {
+				Server.Local.ReceiveLoadingPercent(Server.Local.Players[GetPlayerID(LocalPlayer)], LocalPlayer.LoadingPercent);
+			}
+			else {
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.LoadingPercent);
+				msg.Write(LocalPlayer.LoadingPercent);
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ReceiveLoadingPercent(int playerIndex, float percent) {
+			Players[playerIndex].LoadingPercent = percent;
+		}
+		public void DoneLoading() {
+			if (LocalPlayer.Loaded)
+				return;
+			LocalPlayer.Loaded = true;
+			if (IsLocalServer) {
+				Server.Local.ReceiveLoaded(Server.Local.Players[GetPlayerID(LocalPlayer)]);
+			}
+			else {
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.Loaded);
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ReceiveStartMatch(double offset) {
+			//int now = DateTime.UtcNow.Millisecond
+			Console.WriteLine("[C] Received match start notification with an offset of {0}", offset);
+			StartTime = NetTime.Now + offset + Config.PostLoadingCountdown;
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
 			Tick();
+			if (Match != null && !Match.Started && StartTime.HasValue && NetTime.Now >= StartTime) {
+				Match.Started = true;
+				StartTime = null;
+			}
 			foreach (KeyValuePair<int, Unit> kvp in Units)
 				kvp.Value.Update(gameTime);
 			foreach (Actor a in Actors)

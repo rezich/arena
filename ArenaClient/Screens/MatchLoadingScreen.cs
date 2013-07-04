@@ -9,12 +9,30 @@ using Arena;
 
 namespace ArenaClient {
 	public class MatchLoadingScreen : GameScreen {
+		TimeSpan FakeLoadingTime;
+		TimeSpan? FakeLoadingDone = null;
+		TimeSpan UpdateLoadingTime = TimeSpan.FromSeconds(0.5);
+		TimeSpan NextUpdate = TimeSpan.Zero;
 		public MatchLoadingScreen() {
+			FakeLoadingTime = TimeSpan.FromSeconds(4 + Config.Random.Next(1));
 		}
 		public override void Update(GameTime gameTime) {
+			if (!FakeLoadingDone.HasValue)
+				FakeLoadingDone = gameTime.TotalGameTime + FakeLoadingTime;
+			if (gameTime.TotalGameTime > NextUpdate) {
+				Client.Local.SendLoadingPercent();
+				NextUpdate = gameTime.TotalGameTime + UpdateLoadingTime;
+			}
+			Client.Local.LocalPlayer.LoadingPercent = 1 - (float)Math.Max(Math.Min(((TimeSpan)FakeLoadingDone - gameTime.TotalGameTime).TotalMilliseconds / FakeLoadingTime.TotalMilliseconds, 1), 0);
+			if (Client.Local.LocalPlayer.LoadingPercent == 1)
+				Client.Local.DoneLoading();
 			if (Client.Local.IsLocalServer)
 				Server.Local.Update(gameTime);
 			Client.Local.Update(gameTime, Vector2.Zero, Vector2.Zero);
+			if (Client.Local.Match.Started) {
+				Console.WriteLine("[C] Moving to MatchScreen...");
+				ScreenManager.ReplaceScreen(new MatchScreen(), PlayerIndex.One);
+			}
 		}
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = Renderer.Context;

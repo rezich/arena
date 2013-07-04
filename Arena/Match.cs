@@ -6,8 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Arena {
 	public class Match {
-		public List<Actor> Actors;
-		public List<Player> Players;
+		public bool Started = false;
+		public TimeSpan StartTime;
 		public Match() {
 		}
 	}

@@ -21,23 +21,25 @@ namespace Arena {
 		ChangeTeam,
 		ChangeRole,
 		Ready,
-		StartMatch,
-		LoadingPercent
+		StartLoading,
+		LoadingPercent,
+		Loaded,
+		TimeSync,
+		StartMatch
 	}
 	public class Server {
 		protected NetServer server;
 		protected NetPeerConfiguration config;
 		protected NetIncomingMessage incoming;
 
-
 		public static Server Local = null;
 		public readonly bool IsLocalServer;
 
-		public Dictionary<int, Player> Players = new Dictionary<int, Player>();
+		public SortedDictionary<int, Player> Players = new SortedDictionary<int, Player>();
 		protected int playerIndex = 0;
-		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
+		public SortedDictionary<int, Unit> Units = new SortedDictionary<int, Unit>();
 		protected int unitIndex = 0;
-		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
+		protected SortedDictionary<int, RemoteClient> RemoteClients = new SortedDictionary<int, RemoteClient>();
 		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
 		public Match Match = null;
 		public TimeSpan? StartTime = null;
@@ -100,6 +102,7 @@ namespace Arena {
 								incoming.SenderConnection.Approve();
 								//AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
 								AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), Teams.Neutral, Roles.Runner);
+								//RemoteClients[GetPlayerID(GetPlayerByConnection(incoming.SenderConnection))].SendTimeSync();
 							}
 						}
 						break;
@@ -162,6 +165,12 @@ namespace Arena {
 								break;
 							case PacketType.Ready:
 								ReceiveReady(GetPlayerByConnection(incoming.SenderConnection), (bool)(incoming.ReadByte() > 0));
+								break;
+							case PacketType.LoadingPercent:
+								ReceiveLoadingPercent(GetPlayerByConnection(incoming.SenderConnection), incoming.ReadFloat());
+								break;
+							case PacketType.Loaded:
+								ReceiveLoaded(GetPlayerByConnection(incoming.SenderConnection));
 								break;
 						}
 						break;
@@ -314,10 +323,29 @@ namespace Arena {
 				r.SendReady(player, ready);
 			}
 		}
+		public void ReceiveLoadingPercent(Player player, float percent) {
+			player.LoadingPercent = percent;
+			foreach (RemoteClient r in AllClientsButOne(GetPlayerID(player))) {
+				r.SendLoadingPercent(player, percent);
+			}
+		}
+		public void ReceiveLoaded(Player player) {
+			player.Loaded = true;
+		}
 
+		public void StartLoading() {
+			Console.WriteLine("[S] Starting match loading");
+			Match = new Match();
+			foreach (RemoteClient r in AllClients()) {
+				r.SendStartLoading();
+			}
+			foreach (KeyValuePair<int, Player> kvp in Players) {
+				Unit u = MakePlayerUnit(kvp.Value, new Vector2(100, 100).AddLengthDir(100, Arena.Config.Random.NextDouble() * MathHelper.TwoPi));
+			}
+		}
 		public void StartMatch() {
 			Console.WriteLine("[S] Starting match!");
-			Match = new Match();
+			Match.Started = true;
 			foreach (RemoteClient r in AllClients()) {
 				r.SendStartMatch();
 			}
@@ -351,7 +379,7 @@ namespace Arena {
 				if (Players.Count > 0 && Players.Where(x => x.Value.Ready == false).Count() == 0) {
 					if (StartTime.HasValue) {
 						if (gameTime.TotalGameTime >= StartTime) {
-							StartMatch();
+							StartLoading();
 							StartTime = null;
 						}
 					}
@@ -362,6 +390,13 @@ namespace Arena {
 				}
 				else {
 					StartTime = null;
+				}
+			}
+			else {
+				if (!Match.Started) {
+					if (Players.Where(x => x.Value.Loaded == false).Count() == 0) {
+						StartMatch();
+					}
 				}
 			}
 			foreach (KeyValuePair<int, Player> kvp in Players)
@@ -546,14 +581,39 @@ namespace Arena {
 					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
+			public void SendStartLoading() {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveStartLoading();
+				}
+				else {
+					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
+					msg.Write((byte)PacketType.StartLoading);
+					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
+			public void SendLoadingPercent(Player player, float percent) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveLoadingPercent(Server.Local.GetPlayerID(player), percent);
+				}
+				else {
+					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
+					msg.Write((byte)PacketType.LoadingPercent);
+					msg.Write((byte)Server.Local.GetPlayerID(player));
+					msg.Write(percent);
+					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
 			public void SendStartMatch() {
 				if (Server.Local.IsLocalServer) {
-					Client.Local.ReceiveStartMatch();
+					//Client.Local.ReceiveTimeSync();
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
 					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.StartMatch);
+					msg.WriteTime(NetTime.Now, true);
 					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
