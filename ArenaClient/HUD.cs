@@ -248,7 +248,6 @@ namespace ArenaClient {
 		public static void DrawText(Cairo.Context g, Vector2 position, string text, double scale, TextAlign hAlign, TextAlign vAlign, Cairo.Color? fillColor, Cairo.Color? strokeColor, Cairo.Color? backgroundColor, double angle, string font) {
 			if (font == null)
 				font = "04b_19";
-			g.Save();
 			g.SelectFontFace(font, FontSlant.Normal, FontWeight.Normal);
 			g.SetFontSize(scale);
 			TextExtents ext = g.TextExtents(text);
@@ -299,8 +298,9 @@ namespace ArenaClient {
 				g.TextPath(text);
 				if (angle != 0) g.Rotate(angle);
 				g.Stroke();
+				g.LineWidth = 2;
 			}
-			g.Restore();
+			VGame.Renderer.EnableAntialiasing(g);
 		}
 		private static void DrawBox(Cairo.Context g, List<Vector2> points, Cairo.Color? fillColor, Cairo.Color? strokeColor) {
 			g.MoveTo(points[0].ToPointD());

@@ -54,6 +54,7 @@ namespace ArenaClient {
 				Console.WriteLine("[C] Moving to MatchLoadingScreen...");
 				ScreenManager.ReplaceScreen(new MatchLoadingScreen(), PlayerIndex.One);
 			}
+			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = VGame.Renderer.Context;
@@ -67,6 +68,7 @@ namespace ArenaClient {
 				"Q: move to HOME",
 				"W: move to AWAY",
 				"E: move to SPECTATOR",
+				"R: toggle READY",
 				"1: change to RUNNER",
 				"2: change to NUKER",
 				"3: change to GRAPPLER",
@@ -104,6 +106,7 @@ namespace ArenaClient {
 				HUD.DrawText(g, spectatorOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, kvp.Value.Ready ? Config.NeutralColor1 : HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
+			base.Draw(gameTime);
 		}
 	}
 }

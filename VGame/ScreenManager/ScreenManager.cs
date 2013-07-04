@@ -128,10 +128,13 @@ namespace VGame {
 		}
 
 		public override void Draw(GameTime gameTime) {
+			VGame.Renderer.BeginDrawing();
 			foreach (GameScreen screen in screens) {
 				if (screen.ScreenState == ScreenState.Hidden) continue;
 				screen.Draw(gameTime);
 			}
+			((VectorGameSession)Game).DrawVectors(gameTime);
+			VGame.Renderer.EndDrawing();
 		}
 	}
 }

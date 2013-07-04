@@ -33,6 +33,7 @@ namespace ArenaClient {
 				Console.WriteLine("[C] Moving to MatchScreen...");
 				ScreenManager.ReplaceScreen(new MatchScreen(), PlayerIndex.One);
 			}
+			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = Renderer.Context;
@@ -60,6 +61,7 @@ namespace ArenaClient {
 				HUD.DrawText(g, pOrigin + new Vector2(0, 2), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
+			base.Draw(gameTime);
 		}
 	}
 }

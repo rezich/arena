@@ -8,23 +8,12 @@ using Cairo;
 namespace VGame {
 	public class VectorGameSession : Game {
 		protected ScreenManager screenManager;
-		PreRenderer preRenderer;
-		PostRenderer postRenderer;
 		GraphicsDeviceManager graphics;
 
 		public VectorGameSession() {
-			Window.AllowUserResizing = true;
 			graphics = new GraphicsDeviceManager(this);
-			preRenderer = new PreRenderer(this);
-			preRenderer.DrawOrder = 1;
 			screenManager = new ScreenManager(this);
-			screenManager.DrawOrder = 2;
-			postRenderer = new PostRenderer(this);
-			postRenderer.DrawOrder = 3;
-
-			Components.Add(preRenderer);
 			Components.Add(screenManager);
-			Components.Add(postRenderer);
 		}
 		protected override void Initialize() {
 			Resolution.Initialize(graphics);
@@ -38,7 +27,6 @@ namespace VGame {
 		}
 
 		protected override void Update(GameTime gameTime) {
-			Window.AllowUserResizing = false;
 			Renderer.ElapsedTime += gameTime.ElapsedGameTime.TotalMilliseconds;
 			if (Renderer.ElapsedTime >= 1000) {
 				Renderer.FPS = Renderer.TotalFrames;
@@ -58,23 +46,6 @@ namespace VGame {
 			screenManager.SpriteBatch.End();
 		}
 	}
-	public class PreRenderer : DrawableGameComponent {
-		public PreRenderer(VectorGameSession game)
-			: base(game) {
-		}
-		public override void Draw(GameTime gameTime) {
-			VGame.Renderer.BeginDrawing();
-		}
-	}
-	public class PostRenderer : DrawableGameComponent {
-		public PostRenderer(VectorGameSession game)
-			: base(game) {
-		}
-		public override void Draw(GameTime gameTime) {
-			((VectorGameSession)Game).DrawVectors(gameTime);
-			VGame.Renderer.EndDrawing();
-		}
-	}
 	public static class Renderer {
 		private static GraphicsDevice graphics;
 		public static ImageSurface Surface;
@@ -88,6 +59,7 @@ namespace VGame {
 		public static int FPS = 0;
 		private static bool _doubleBuffered;
 		public static int CurrentBuffer = 0;
+		public static bool Antialiasing = true;
 		public static bool DoubleBuffered {
 			get {
 				return _doubleBuffered;
@@ -127,23 +99,21 @@ namespace VGame {
 			Height = height;
 			Surface = new Cairo.ImageSurface(Cairo.Format.Rgb24, Width, Height);
 			Context = new Cairo.Context(Surface);
-			Context.Antialias = Cairo.Antialias.Subpixel;
+			EnableAntialiasing(Context);
 			RenderTargets.Add(new Texture2D(graphics, Width, Height));
 			RenderTargets.Add(new Texture2D(graphics, Width, Height));
+		}
+		public static void EnableAntialiasing(Cairo.Context g) {
+			g.Antialias = Antialiasing ? Cairo.Antialias.Subpixel : Cairo.Antialias.None;
 		}
 		public static void BeginDrawing() {
 			if (!Initialized)
 				throw new Exception("lolwat");
-			Context.Save();
-			//Context.SetSourceRGBA(0, 0, 0, 0);
-			//Context.Operator = Cairo.Operator.Source;
 			Context.SetSourceRGB(0.83, 0.83, 0.83);
 			Context.Paint();
-			Context.Restore();
 		}
 		public static void EndDrawing() {
-			//((IDisposable)Context).Dispose();
-			RenderTargets[CurrentBuffer].SetData(Surface.Data);
+			DrawRenderTarget.SetData(Surface.Data);
 			if (DoubleBuffered)
 				CurrentBuffer = CurrentBuffer == 0 ? 1 : 0;
 			else
@@ -153,7 +123,6 @@ namespace VGame {
 			if (!Initialized)
 				return;
 			((IDisposable)Context).Dispose();
-			//((IDisposable)Context.Target).Dispose();
 		}
 	}
 	public static class Util {

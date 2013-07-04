@@ -30,6 +30,7 @@ namespace ArenaClient {
 		}
 
 		public override void Draw(GameTime gameTime) {
+			base.Draw(gameTime);
 		}
 	}
 }

@@ -257,6 +257,7 @@ namespace ArenaClient {
 
 
 			cursor.Draw(g, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
+			base.Draw(gameTime);
 		}
 	}
 }
