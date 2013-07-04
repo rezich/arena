@@ -28,6 +28,9 @@ namespace ArenaClient {
 				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability3])) {
 					Client.Local.ChangeTeam(Teams.Spectator);
 				}
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability4])) {
+					Client.Local.ToggleReady();
+				}
 				if (input.IsNewKeyPress(Keys.D1)) {
 					Client.Local.ChangeRole(Roles.Runner);
 				}
@@ -47,6 +50,10 @@ namespace ArenaClient {
 			if (Client.Local.IsLocalServer)
 				Server.Local.Update(gameTime);
 			Client.Local.Update(gameTime, Vector2.Zero, Vector2.Zero);
+			if (Client.Local.Match != null) {
+				Console.WriteLine("[C] Moving to MatchLoadingScreen...");
+				ScreenManager.ReplaceScreen(new MatchLoadingScreen(), PlayerIndex.One);
+			}
 		}
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = VGame.Renderer.Context;
@@ -73,7 +80,7 @@ namespace ArenaClient {
 			HUD.DrawText(g, homeOrigin, "HOME", 20, TextAlign.Left, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, Config.HomeColor2, 0, null);
 			int offset = 0;
 			foreach (KeyValuePair<int, Player> kvp in Client.Local.Players.Where(x => x.Value.Team == Teams.Home)) {
-				HUD.DrawText(g, homeOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Name + " - " + kvp.Value.Role, 20, TextAlign.Left, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
+				HUD.DrawText(g, homeOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Name + " - " + kvp.Value.Role, 20, TextAlign.Left, TextAlign.Top, kvp.Value.Ready ? Config.HomeColor1 : HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
 			// UNASSIGNED
@@ -87,14 +94,14 @@ namespace ArenaClient {
 			HUD.DrawText(g, awayOrigin, "AWAY", 20, TextAlign.Right, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, Config.AwayColor2, 0, null);
 			offset = 0;
 			foreach (KeyValuePair<int, Player> kvp in Client.Local.Players.Where(x => x.Value.Team == Teams.Away)) {
-				HUD.DrawText(g, awayOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Role + " - " + kvp.Value.Name, 20, TextAlign.Right, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
+				HUD.DrawText(g, awayOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Role + " - " + kvp.Value.Name, 20, TextAlign.Right, TextAlign.Top, kvp.Value.Ready ? Config.AwayColor1 : HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
 			// SPECTATOR
 			HUD.DrawText(g, spectatorOrigin, "SPECTATOR", 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, Config.NeutralColor2, 0, null);
 			offset = 0;
 			foreach (KeyValuePair<int, Player> kvp in Client.Local.Players.Where(x => x.Value.Team == Teams.Spectator)) {
-				HUD.DrawText(g, spectatorOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
+				HUD.DrawText(g, spectatorOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, kvp.Value.Ready ? Config.NeutralColor1 : HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
 		}

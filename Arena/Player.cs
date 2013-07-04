@@ -15,6 +15,9 @@ namespace Arena {
 		public int Number;
 		public Roles Role;
 		public Unit PlayerUnit;
+		public bool Ready = false;
+		public bool Loaded = false;
+		public float LoadingPercent = 0;
 
 		public Player(string name, int number, Teams team, Roles role) {
 			_name = name.Replace(" ", "");

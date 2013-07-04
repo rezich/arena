@@ -11,6 +11,7 @@ namespace Arena {
 		public Player LocalPlayer = null;
 		public bool IsConnected = false;
 		public bool IsLocalServer = false;
+		public Match Match = null;
 
 		public Dictionary<int, Player> Players = new Dictionary<int, Player>();
 		public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
@@ -48,6 +49,15 @@ namespace Arena {
 			}
 			NetIncomingMessage incoming;
 			while ((incoming = client.ReadMessage()) != null) {
+				NetConnectionStatus status = (NetConnectionStatus)incoming.ReadByte();
+				switch (status) {
+					case NetConnectionStatus.Disconnected:
+						Console.WriteLine(incoming.ReadString());
+						break;
+				}
+				if (incoming.MessageType == NetIncomingMessageType.ConnectionApproval) {
+					Console.WriteLine(incoming.ReadString());
+				}
 				if (incoming.MessageType == NetIncomingMessageType.Data) {
 					switch ((PacketType)incoming.ReadByte()) {
 						case PacketType.NewPlayer:
@@ -88,6 +98,12 @@ namespace Arena {
 						case PacketType.ChangeTeam:
 							ReceiveChangeTeam((int)incoming.ReadByte(), (Teams)incoming.ReadByte());
 							break;
+						case PacketType.Ready:
+							ReceiveReady((int)incoming.ReadByte(), (bool)(incoming.ReadByte() > 0));
+							break;
+						case PacketType.StartMatch:
+							ReceiveStartMatch();
+							break;
 					}
 				}
 			}
@@ -113,7 +129,8 @@ namespace Arena {
 				msg.Write((byte)Teams.Home);
 				msg.Write((byte)Roles.Runner);
 				*/
-				client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, msg);
+				NetConnection con = client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, msg);
+
 			}
 		}
 
@@ -347,6 +364,27 @@ namespace Arena {
 		}
 		public void ReceiveChangeRole(int playerIndex, Roles role) {
 			Players[playerIndex].Role = role;
+		}
+		public void ToggleReady() {
+			if (LocalPlayer.Team == Teams.Neutral)
+				return;
+			Console.WriteLine("[C] Setting READY to " + !LocalPlayer.Ready);
+			LocalPlayer.Ready = !LocalPlayer.Ready;
+			if (IsLocalServer) {
+				Server.Local.ReceiveReady(Server.Local.Players[GetPlayerID(LocalPlayer)], LocalPlayer.Ready);
+			}
+			else {
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.Ready);
+				msg.Write((byte)(LocalPlayer.Ready ? 1 : 0));
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ReceiveReady(int playerIndex, bool ready) {
+			Players[playerIndex].Ready = ready;
+		}
+		public void ReceiveStartMatch() {
+			Match = new Match();
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {

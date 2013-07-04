@@ -21,6 +21,7 @@ namespace Arena {
 		ChangeTeam,
 		ChangeRole,
 		Ready,
+		StartMatch,
 		LoadingPercent
 	}
 	public class Server {
@@ -39,6 +40,7 @@ namespace Arena {
 		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
 		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
 		public Match Match = null;
+		public TimeSpan? StartTime = null;
 
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
@@ -157,6 +159,9 @@ namespace Arena {
 								break;
 							case PacketType.ChangeRole:
 								ReceiveChangeRole(GetPlayerByConnection(incoming.SenderConnection), (Roles)incoming.ReadByte());
+								break;
+							case PacketType.Ready:
+								ReceiveReady(GetPlayerByConnection(incoming.SenderConnection), (bool)(incoming.ReadByte() > 0));
 								break;
 						}
 						break;
@@ -299,6 +304,24 @@ namespace Arena {
 				r.SendChangeRole(player, role);
 			}
 		}
+		public void ReceiveReady(Player player, bool ready) {
+			if (player.Team == Teams.Neutral)
+				return;
+			// TODO: IF IN LOBBY
+			player.Ready = ready;
+			Console.WriteLine("[S] {0}'s READY is now {1}", player.Name, ready);
+			foreach (RemoteClient r in AllClientsButOne(GetPlayerID(player))) {
+				r.SendReady(player, ready);
+			}
+		}
+
+		public void StartMatch() {
+			Console.WriteLine("[S] Starting match!");
+			Match = new Match();
+			foreach (RemoteClient r in AllClients()) {
+				r.SendStartMatch();
+			}
+		}
 
 		public int GetPlayerID(UnitController player) {
 			return Players.FirstOrDefault(x => x.Value == player).Key;
@@ -324,6 +347,23 @@ namespace Arena {
 		}
 
 		public void Update(GameTime gameTime) {
+			if (Match == null) {
+				if (Players.Count > 0 && Players.Where(x => x.Value.Ready == false).Count() == 0) {
+					if (StartTime.HasValue) {
+						if (gameTime.TotalGameTime >= StartTime) {
+							StartMatch();
+							StartTime = null;
+						}
+					}
+					else {
+						Console.WriteLine("[S] All clients ready, beginning countdown");
+						StartTime = gameTime.TotalGameTime + TimeSpan.FromSeconds(Config.ReadyCountdown);
+					}
+				}
+				else {
+					StartTime = null;
+				}
+			}
 			foreach (KeyValuePair<int, Player> kvp in Players)
 				kvp.Value.Update(gameTime);
 			foreach (KeyValuePair<int, Unit> kvp in Units)
@@ -343,6 +383,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.AttackOrder);
 					msg.Write(Server.Local.GetUnitID(attacker));
 					msg.Write(Server.Local.GetUnitID(victim));
@@ -355,6 +396,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.MoveOrder);
 					msg.Write(Server.Local.GetUnitID(unit));
 					msg.Write(unit.IntendedPosition.X);
@@ -369,6 +411,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.MakePlayerUnit);
 					msg.Write(unitIndex);
 					msg.Write((byte)playerIndex);
@@ -386,6 +429,7 @@ namespace Arena {
 				else {
 					Player p = Server.Local.Players[index];
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.NewPlayer);
 					msg.Write((byte)index);
 					msg.Write(p.Name);
@@ -401,6 +445,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.LevelUp);
 					msg.Write(Server.Local.GetUnitID(unit));
 					msg.Write((byte)ability);
@@ -413,6 +458,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.UseAbility);
 					msg.Write(Server.Local.GetUnitID(unit));
 					msg.Write((byte)ability);
@@ -429,6 +475,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.Disconnect);
 					msg.Write((byte)playerIndex);
 					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
@@ -440,6 +487,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.AllChat);
 					msg.Write((byte)Server.Local.GetPlayerID(player));
 					msg.Write(message);
@@ -452,6 +500,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.TeamChat);
 					msg.Write((byte)Server.Local.GetPlayerID(player));
 					msg.Write(message);
@@ -464,6 +513,7 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.ChangeTeam);
 					msg.Write((byte)Server.Local.GetPlayerID(player));
 					msg.Write((byte)team);
@@ -476,9 +526,34 @@ namespace Arena {
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
 					msg.Write((byte)PacketType.ChangeRole);
 					msg.Write((byte)Server.Local.GetPlayerID(player));
 					msg.Write((byte)role);
+					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
+			public void SendReady(Player player, bool ready) {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveReady(Server.Local.GetPlayerID(player), ready);
+				}
+				else {
+					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
+					msg.Write((byte)PacketType.Ready);
+					msg.Write((byte)Server.Local.GetPlayerID(player));
+					msg.Write((byte)(ready ? 1 : 0));
+					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
+				}
+			}
+			public void SendStartMatch() {
+				if (Server.Local.IsLocalServer) {
+					Client.Local.ReceiveStartMatch();
+				}
+				else {
+					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
+					msg.Write((byte)NetConnectionStatus.Connected);
+					msg.Write((byte)PacketType.StartMatch);
 					Server.Local.server.SendMessage(msg, Connection, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
