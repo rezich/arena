@@ -48,6 +48,8 @@
     <Compile Include="Screens\MatchScreen.cs" />
     <Compile Include="HUD.cs" />
     <Compile Include="Screens\ConnectionScreen.cs" />
+    <Compile Include="Screens\LobbyScreen.cs" />
+    <Compile Include="Screens\MatchLoadingScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

@@ -34,6 +34,7 @@ namespace Arena {
 		protected int unitIndex = 0;
 		protected Dictionary<int, RemoteClient> RemoteClients = new Dictionary<int, RemoteClient>();
 		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
+		public Match Match = null;
 
 		public Server(bool isLocalServer) {
 			IsLocalServer = isLocalServer;
@@ -82,8 +83,17 @@ namespace Arena {
 				switch (incoming.MessageType) {
 					case NetIncomingMessageType.ConnectionApproval:
 						if (incoming.ReadByte() == (byte)PacketType.Connect) {
-							incoming.SenderConnection.Approve();
-							AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+							if (server.ConnectionsCount >= server.Configuration.MaximumConnections) {
+								incoming.SenderConnection.Deny("Server full.");
+							}
+							else if (Match != null) {
+								// TODO: Check to see if it's a reconnecting user.
+								incoming.SenderConnection.Deny("Match is already in progress.");
+							}
+							else {
+								incoming.SenderConnection.Approve();
+								AddPlayer(incoming.ReadString(), (int)incoming.ReadByte(), (Teams)incoming.ReadByte(), (Roles)incoming.ReadByte());
+							}
 						}
 						break;
 					case NetIncomingMessageType.StatusChanged:
