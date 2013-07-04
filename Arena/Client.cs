@@ -85,6 +85,9 @@ namespace Arena {
 						case PacketType.TeamChat:
 							ReceiveTeamChat((int)incoming.ReadByte(), incoming.ReadString());
 							break;
+						case PacketType.ChangeTeam:
+							ReceiveChangeTeam((int)incoming.ReadByte(), (Teams)incoming.ReadByte());
+							break;
 					}
 				}
 			}
@@ -96,19 +99,21 @@ namespace Arena {
 		public void Connect() {
 			if (IsLocalServer) {
 				IsConnected = true;
-				Server.Local.AddPlayer(Arena.Config.PlayerName, Arena.Config.PlayerNumber, Teams.Home, Roles.Runner);
+				Server.Local.AddPlayer(Arena.Config.PlayerName, Arena.Config.PlayerNumber, Teams.Neutral, Roles.Runner);
 				Console.WriteLine("[C] Connected to local single-player server.");
 			}
 			else {
 				Console.WriteLine("[C] Connecting to server... ");
-				NetOutgoingMessage outMsg = client.CreateMessage();
+				NetOutgoingMessage msg = client.CreateMessage();
 				client.Start();
-				outMsg.Write((byte)PacketType.Connect);
-				outMsg.Write(Arena.Config.PlayerName);
-				outMsg.Write((byte)Arena.Config.PlayerNumber);
-				outMsg.Write((byte)Teams.Home);
-				outMsg.Write((byte)Roles.Runner);
-				client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, outMsg);
+				msg.Write((byte)PacketType.Connect);
+				msg.Write(Arena.Config.PlayerName);
+				msg.Write((byte)Arena.Config.PlayerNumber);
+				/* TODO: Use these for reconnecting
+				msg.Write((byte)Teams.Home);
+				msg.Write((byte)Roles.Runner);
+				*/
+				client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, msg);
 			}
 		}
 
@@ -116,9 +121,9 @@ namespace Arena {
 			if (IsLocalServer) {
 			}
 			else {
-				NetOutgoingMessage outMsg = client.CreateMessage();
-				outMsg.Write((byte)PacketType.Disconnect);
-				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.Disconnect);
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 				client.Disconnect("");
 			}
 		}
@@ -173,11 +178,11 @@ namespace Arena {
 			}
 			else {
 				Console.WriteLine("[C] Sending attack order: " + LocalPlayer.Name + " -> " + unit.Owner.Name);
-				NetOutgoingMessage outMsg = client.CreateMessage();
-				outMsg.Write((byte)PacketType.AttackOrder);
-				outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
-				outMsg.Write(GetUnitID(unit));
-				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.AttackOrder);
+				msg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+				msg.Write(GetUnitID(unit));
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
 		public void SendMoveOrder(Vector2 position) {
@@ -188,12 +193,12 @@ namespace Arena {
 				Server.Local.ReceiveMoveOrder(GetUnitID(LocalPlayer.CurrentUnit), position.X, position.Y);
 			}
 			else {
-				NetOutgoingMessage outMsg = client.CreateMessage();
-				outMsg.Write((byte)PacketType.MoveOrder);
-				outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
-				outMsg.Write(LocalPlayer.CurrentUnit.IntendedPosition.X);
-				outMsg.Write(LocalPlayer.CurrentUnit.IntendedPosition.Y);
-				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.MoveOrder);
+				msg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+				msg.Write(LocalPlayer.CurrentUnit.IntendedPosition.X);
+				msg.Write(LocalPlayer.CurrentUnit.IntendedPosition.Y);
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
 		public void ReceiveAttackOrder(int attackerIndex, int victimIndex) {
@@ -214,11 +219,11 @@ namespace Arena {
 					Server.Local.ReceiveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
 				}
 				else {
-					NetOutgoingMessage outMsg = client.CreateMessage();
-					outMsg.Write((byte)PacketType.LevelUp);
-					outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
-					outMsg.Write((byte)ability);
-					client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+					NetOutgoingMessage msg = client.CreateMessage();
+					msg.Write((byte)PacketType.LevelUp);
+					msg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+					msg.Write((byte)ability);
+					client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 		}
@@ -243,11 +248,11 @@ namespace Arena {
 					Server.Local.ReceiveUseAbility(GetUnitID(LocalPlayer.CurrentUnit), (int)CurrentAbility, null, null);
 				}
 				else {
-					NetOutgoingMessage outMsg = client.CreateMessage();
-					outMsg.Write((byte)PacketType.UseAbility);
-					outMsg.Write(GetUnitID(LocalPlayer.CurrentUnit));
-					outMsg.Write((byte)CurrentAbility);
-					client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+					NetOutgoingMessage msg = client.CreateMessage();
+					msg.Write((byte)PacketType.UseAbility);
+					msg.Write(GetUnitID(LocalPlayer.CurrentUnit));
+					msg.Write((byte)CurrentAbility);
+					client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 				}
 			}
 			CurrentAbility = null;
@@ -284,10 +289,10 @@ namespace Arena {
 				Server.Local.ReceiveAllChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message.Trim());
 			}
 			else {
-				NetOutgoingMessage outMsg = client.CreateMessage();
-				outMsg.Write((byte)PacketType.AllChat);
-				outMsg.Write(message.Trim());
-				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.AllChat);
+				msg.Write(message.Trim());
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
 		public void ReceiveAllChat(int playerIndex, string message) {
@@ -301,15 +306,47 @@ namespace Arena {
 				Server.Local.ReceiveTeamChat(Server.Local.Players[GetPlayerID(LocalPlayer)], message.Trim());
 			}
 			else {
-				NetOutgoingMessage outMsg = client.CreateMessage();
-				outMsg.Write((byte)PacketType.TeamChat);
-				outMsg.Write(message.Trim());
-				client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.TeamChat);
+				msg.Write(message.Trim());
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
 		}
 		public void ReceiveTeamChat(int playerIndex, string message) {
 			Console.WriteLine("[C] {0} ({1}): {2}", Players[playerIndex].Name, Players[playerIndex].Team, message);
 			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Players[playerIndex].Team));
+		}
+		public void ChangeTeam(Teams team) {
+			Console.WriteLine("[C] Moving to " + team);
+			if (IsLocalServer) {
+				Server.Local.ReceiveChangeTeam(Server.Local.Players[GetPlayerID(LocalPlayer)], team);
+			}
+			else {
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.ChangeTeam);
+				msg.Write((byte)team);
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ChangeRole(Roles role) {
+			if (LocalPlayer.Team != Teams.Home && LocalPlayer.Team != Teams.Away)
+				return;
+			Console.WriteLine("[C] Changing role to " + role);
+			if (IsLocalServer) {
+				Server.Local.ReceiveChangeRole(Server.Local.Players[GetPlayerID(LocalPlayer)], role);
+			}
+			else {
+				NetOutgoingMessage msg = client.CreateMessage();
+				msg.Write((byte)PacketType.ChangeRole);
+				msg.Write((byte)role);
+				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+			}
+		}
+		public void ReceiveChangeTeam(int playerIndex, Teams team) {
+			Players[playerIndex].Team = team;
+		}
+		public void ReceiveChangeRole(int playerIndex, Roles role) {
+			Players[playerIndex].Role = role;
 		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {

@@ -28,6 +28,7 @@ namespace ArenaClient {
 
 			Role.Initialize();
 			Arena.Config.Initialize();
+			HUD.Recalculate();
 
 			//screenManager.AddScreen(new MatchScreen(), PlayerIndex.One);
 			screenManager.AddScreen(new ConnectionScreen(), PlayerIndex.One);

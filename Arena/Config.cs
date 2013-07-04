@@ -21,7 +21,7 @@ namespace Arena {
 		Scoreboard
 	}
 	public static class Config {
-		public static Color HomeColor1, HomeColor2, AwayColor1, AwayColor2, HealthColor1, HealthColor2, EnemyHealthColor1, EnemyHealthColor2, EnergyColor1, EnergyColor2, HUDBackground, HUDText;
+		public static Color HomeColor1, HomeColor2, AwayColor1, AwayColor2, NeutralColor1, NeutralColor2, HealthColor1, HealthColor2, EnemyHealthColor1, EnemyHealthColor2, EnergyColor1, EnergyColor2, HUDBackground, HUDText;
 		public static double ActorScale = 24;
 		public static Random Random = new Random();
 		public static string ApplicationID {
@@ -53,6 +53,8 @@ namespace Arena {
 			HomeColor2 = VGame.Util.MakeColor(92, 123, 142, 1);
 			AwayColor1 = VGame.Util.MakeColor(242, 159, 98, 1);
 			AwayColor2 = VGame.Util.MakeColor(238, 120, 30, 1);
+			NeutralColor1 = VGame.Util.MakeColor(192, 192, 192, 1);
+			NeutralColor2 = VGame.Util.MakeColor(128, 128, 128, 1);
 			HealthColor1 = VGame.Util.MakeColor(16, 128, 16, 0.1);
 			HealthColor2 = VGame.Util.MakeColor(8, 128, 8, 0.15);
 			EnemyHealthColor1 = HealthColor1; //VGame.Util.MakeColor(128, 16, 16, 0.2);

@@ -8,7 +8,7 @@ using VGame;
 using Arena;
 
 namespace ArenaClient {
-	public class MatchScreen : VGame.GameScreen {
+	public class MatchScreen : GameScreen {
 		Vector2 cursorPosition;
 		Arena.Shapes.Cursor cursor = new Arena.Shapes.Cursor();
 		Vector2 viewPosition = Vector2.Zero;

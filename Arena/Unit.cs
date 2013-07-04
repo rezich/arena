@@ -9,7 +9,8 @@ namespace Arena {
 	public enum Teams {
 		Home,
 		Away,
-		Neutral
+		Neutral,
+		Spectator
 	}
 	public enum Attitude {
 		Neutral,
