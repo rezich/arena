@@ -14,6 +14,8 @@ namespace Arena {
 		Chat,
 		CenterView,
 		UnlockCursor,
+		ToggleAntialiasing,
+		ToggleDoubleBuffering,
 		CameraUp,
 		CameraDown,
 		CameraLeft,
@@ -74,6 +76,8 @@ namespace Arena {
 			KeyBindings.Add(KeyCommand.Chat, Keys.Enter);
 			KeyBindings.Add(KeyCommand.CenterView, Keys.Space);
 			KeyBindings.Add(KeyCommand.UnlockCursor, Keys.F1);
+			KeyBindings.Add(KeyCommand.ToggleAntialiasing, Keys.F2);
+			KeyBindings.Add(KeyCommand.ToggleDoubleBuffering, Keys.F3);
 			KeyBindings.Add(KeyCommand.CameraUp, Keys.Up);
 			KeyBindings.Add(KeyCommand.CameraDown, Keys.Down);
 			KeyBindings.Add(KeyCommand.CameraLeft, Keys.Left);

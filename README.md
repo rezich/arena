@@ -35,6 +35,8 @@ The following are the default controls. I say "default" but really there's no wa
 - F - level up ability*
 - S - stop moving*
 - F1 - unlock cursor
+- F2 - toggle anti-aliasing
+- F3 - toggle double-buffering
 - Space - center camera on currently-selected unit
 - Enter - chat to your team
 - Shift+Enter - chat to everyone on the server

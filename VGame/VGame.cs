@@ -66,8 +66,15 @@ namespace VGame {
 			}
 			set {
 				if (value) {
+					if (RenderTargets.Count == 1)
+						RenderTargets.Add(new Texture2D(graphics, Width, Height));
 				}
 				else {
+					if (RenderTargets.Count == 2) {
+						RenderTargets[1].Dispose();
+						RenderTargets.RemoveAt(1);
+						CurrentBuffer = 0;
+					}
 				}
 				_doubleBuffered = value;
 			}

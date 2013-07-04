@@ -19,6 +19,14 @@ namespace ArenaClient {
 				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.UnlockCursor])) {
 					ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
 				}
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ToggleAntialiasing])) {
+					Renderer.Antialiasing = !Renderer.Antialiasing;
+					Console.WriteLine("[C] Antialiasing is now " + (Renderer.Antialiasing ? "on" : "off"));
+				}
+				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ToggleDoubleBuffering])) {
+					Renderer.DoubleBuffered = !Renderer.DoubleBuffered;
+					Console.WriteLine("[C] Double-buffering is now " + (Renderer.DoubleBuffered ? "on" : "off"));
+				}
 				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability1])) {
 					Client.Local.ChangeTeam(Teams.Home);
 				}
