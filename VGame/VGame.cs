@@ -54,7 +54,7 @@ namespace VGame {
 		}
 		public void DrawVectors(GameTime gameTime) {
 			screenManager.SpriteBatch.Begin();
-			screenManager.SpriteBatch.Draw(VGame.Renderer.RenderTarget, Resolution.Rectangle, Microsoft.Xna.Framework.Color.White);
+			screenManager.SpriteBatch.Draw(VGame.Renderer.DisplayRenderTarget, Resolution.Rectangle, Microsoft.Xna.Framework.Color.White);
 			screenManager.SpriteBatch.End();
 		}
 	}
@@ -78,7 +78,7 @@ namespace VGame {
 	public static class Renderer {
 		private static GraphicsDevice graphics;
 		public static ImageSurface Surface;
-		public static RenderTarget2D RenderTarget;
+		public static List<Texture2D> RenderTargets = new List<Texture2D>();
 		public static Context Context;
 		public static int Width;
 		public static int Height;
@@ -86,10 +86,41 @@ namespace VGame {
 		public static int TotalFrames = 0;
 		public static double ElapsedTime = 0;
 		public static int FPS = 0;
+		private static bool _doubleBuffered;
+		public static int CurrentBuffer = 0;
+		public static bool DoubleBuffered {
+			get {
+				return _doubleBuffered;
+			}
+			set {
+				if (value) {
+				}
+				else {
+				}
+				_doubleBuffered = value;
+			}
+		}
+		public static Texture2D DisplayRenderTarget {
+			get {
+				if (DoubleBuffered)
+					return RenderTargets[Renderer.CurrentBuffer == 0 ? 1 : 0];
+				else
+					return RenderTargets[0];
+			}
+		}
+		public static Texture2D DrawRenderTarget {
+			get {
+				if (DoubleBuffered)
+					return RenderTargets[Renderer.CurrentBuffer];
+				else
+					return RenderTargets[0];
+			}
+		}
 		public static void Initialize(GraphicsDevice graphicsDevice, int width, int height) {
 			graphics = graphicsDevice;
 			Resize(width, height);
 			Initialized = true;
+			DoubleBuffered = true;
 		}
 		public static void Resize(int width, int height) {
 			Width = width;
@@ -97,7 +128,8 @@ namespace VGame {
 			Surface = new Cairo.ImageSurface(Cairo.Format.Rgb24, Width, Height);
 			Context = new Cairo.Context(Surface);
 			Context.Antialias = Cairo.Antialias.Subpixel;
-			RenderTarget = new RenderTarget2D(graphics, Width, Height);
+			RenderTargets.Add(new Texture2D(graphics, Width, Height));
+			RenderTargets.Add(new Texture2D(graphics, Width, Height));
 		}
 		public static void BeginDrawing() {
 			if (!Initialized)
@@ -111,7 +143,11 @@ namespace VGame {
 		}
 		public static void EndDrawing() {
 			//((IDisposable)Context).Dispose();
-			RenderTarget.SetData(Surface.Data);
+			RenderTargets[CurrentBuffer].SetData(Surface.Data);
+			if (DoubleBuffered)
+				CurrentBuffer = CurrentBuffer == 0 ? 1 : 0;
+			else
+				CurrentBuffer = 0;
 		}
 		public static void Dispose() {
 			if (!Initialized)

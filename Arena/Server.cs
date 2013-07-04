@@ -607,7 +607,7 @@ namespace Arena {
 			}
 			public void SendStartMatch() {
 				if (Server.Local.IsLocalServer) {
-					//Client.Local.ReceiveTimeSync();
+					Client.Local.ReceiveStartMatch(0);
 				}
 				else {
 					NetOutgoingMessage msg = Server.Local.server.CreateMessage();
