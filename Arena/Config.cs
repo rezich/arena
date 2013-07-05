@@ -34,8 +34,7 @@ namespace Arena {
 		public static int Port = 14242;
 		public static string PlayerName = "UNNAMED";
 		public static int PlayerNumber = 0;
-		public static string ServerAddress = "localhost";
-		public static bool LocalServer = false;
+		public static string LastServerAddress = "localhost";
 		public static int ReadyCountdown = 5;
 		public static int PostLoadingCountdown = 5;
 

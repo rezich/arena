@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Cairo;
@@ -220,6 +221,14 @@ namespace VGame {
 			return char.IsDigit(c);
 		}
 	}
+	public class AddressInputEntry : TextInputEntry {
+		protected static Regex regex = new Regex(@"[a-zA-Z0-9\.\-]", RegexOptions.IgnoreCase);
+		public AddressInputEntry(string text, string address) : base(text, address) {
+		}
+		public override bool IsCharValid(char c) {
+			return regex.IsMatch(c.ToString());
+		}
+	}
 	public class HeadingEntry : MenuEntry {
 		public HeadingEntry(string text) : base(text) {
 			selectable = false;
@@ -230,6 +239,14 @@ namespace VGame {
 	public class SpacerEntry : MenuEntry {
 		public SpacerEntry() : base("") {
 			Enabled = false;
+		}
+	}
+	public class CancelEntry : MenuEntry {
+		public CancelEntry() : base("Cancel") {
+			IsCancel = true;
+		}
+		public CancelEntry(string text) : base(text) {
+			IsCancel = true;
 		}
 	}
 }

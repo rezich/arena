@@ -120,16 +120,17 @@ namespace Arena {
 			}
 		}
 
-		/// <summary>
-		/// Connect to local server.
-		/// </summary>
 		public void Connect() {
 			if (IsLocalServer) {
 				IsConnected = true;
 				Server.Local.AddPlayer(Arena.Config.PlayerName, Arena.Config.PlayerNumber, Teams.Neutral, Roles.Runner);
 				Console.WriteLine("[C] Connected to local single-player server.");
 			}
-			else {
+			else
+				throw new Exception("Can't local-connect to remote server.");
+		}
+		public void Connect(string address) {
+			if (!IsLocalServer) {
 				Console.WriteLine("[C] Connecting to server... ");
 				NetOutgoingMessage msg = client.CreateMessage();
 				client.Start();
@@ -140,8 +141,10 @@ namespace Arena {
 				msg.Write((byte)Teams.Home);
 				msg.Write((byte)Roles.Runner);
 				*/
-				client.Connect(Arena.Config.ServerAddress, Arena.Config.Port, msg);
+				client.Connect(address, Arena.Config.Port, msg);
 			}
+			else
+				throw new Exception("Can't remote-connect to local server.");
 		}
 
 		public void Disconnect() {

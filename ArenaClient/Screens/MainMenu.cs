@@ -12,17 +12,22 @@ namespace ArenaClient {
 		public MainMenu() : base("arena", false) {
 			ShowCancel = false;
 			MenuEntry e1 = new MenuEntry("Find lobby");
-			e1.Enabled = false;
-			MenuEntry e2 = new MenuEntry("Settings");
-			e2.Selected += Settings;
-			MenuEntry e3 = new MenuEntry("Quit");
-			e3.IsCancel = true;
+			e1.Selected += delegate(object sender, PlayerIndexEventArgs e) {
+				ScreenManager.AddScreen(new ConnectMenu(), null);
+			};
+			MenuEntry e2 = new MenuEntry("Practice with bots");
+			e2.Selected += delegate(object sender, PlayerIndexEventArgs e) {
+				ScreenManager.AddScreen(new ConnectionScreen(true), null);
+			};
+			MenuEntry e3 = new MenuEntry("Settings");
+			e3.Selected += delegate(object sender, PlayerIndexEventArgs e) {
+				ScreenManager.AddScreen(new SettingsMenu(), null);
+			};
+			CancelEntry e4 = new CancelEntry("Quit");
 			Entries.Add(e1);
 			Entries.Add(e2);
 			Entries.Add(e3);
-		}
-		public void Settings(object sender, PlayerIndexEventArgs e) {
-			ScreenManager.AddScreen(new SettingsScreen(), ControllingPlayer);
+			Entries.Add(e4);
 		}
 		protected override void OnCancel() {
 			GameSession.Current.Exit();
