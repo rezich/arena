@@ -11,7 +11,9 @@ namespace ArenaClient {
 	public class MainMenu : GenericMenu {
 		public MainMenu() : base("arena", false) {
 			ShowCancel = false;
-			MenuEntry e1 = new MenuEntry("Find lobby");
+			MenuEntry e0 = new MenuEntry("Browse servers");
+			e0.Enabled = false;
+			MenuEntry e1 = new MenuEntry("Connect to server");
 			e1.Selected += delegate(object sender, PlayerIndexEventArgs e) {
 				ScreenManager.AddScreen(new ConnectMenu(), null);
 			};
@@ -24,6 +26,7 @@ namespace ArenaClient {
 				ScreenManager.AddScreen(new SettingsMenu(), null);
 			};
 			CancelEntry e4 = new CancelEntry("Quit");
+			Entries.Add(e0);
 			Entries.Add(e1);
 			Entries.Add(e2);
 			Entries.Add(e3);

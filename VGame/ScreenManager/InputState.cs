@@ -284,6 +284,36 @@ namespace VGame {
 			if (IsNewKeyPress(Keys.Space))
 				chars.Add(' ');
 
+			if (IsNewKeyPress(Keys.NumPad0))
+				chars.Add('0');
+			if (IsNewKeyPress(Keys.NumPad1))
+				chars.Add('1');
+			if (IsNewKeyPress(Keys.NumPad2))
+				chars.Add('2');
+			if (IsNewKeyPress(Keys.NumPad3))
+				chars.Add('3');
+			if (IsNewKeyPress(Keys.NumPad4))
+				chars.Add('4');
+			if (IsNewKeyPress(Keys.NumPad5))
+				chars.Add('5');
+			if (IsNewKeyPress(Keys.NumPad6))
+				chars.Add('6');
+			if (IsNewKeyPress(Keys.NumPad7))
+				chars.Add('7');
+			if (IsNewKeyPress(Keys.NumPad8))
+				chars.Add('8');
+			if (IsNewKeyPress(Keys.NumPad9))
+				chars.Add('9');
+			if (IsNewKeyPress(Keys.Decimal))
+				chars.Add('.');
+			if (IsNewKeyPress(Keys.Add))
+				chars.Add('+');
+			if (IsNewKeyPress(Keys.Multiply))
+				chars.Add('*');
+			if (IsNewKeyPress(Keys.Subtract))
+				chars.Add('-');
+			if (IsNewKeyPress(Keys.Divide))
+				chars.Add('/');
 			return chars;
 		}
 

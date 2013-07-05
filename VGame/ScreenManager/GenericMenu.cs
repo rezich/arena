@@ -13,6 +13,7 @@ namespace VGame {
 		public string Description;
 		public bool Cancelable = true;
 		public bool ShowCancel = true;
+		public int Width = 400;
 		bool initialized = false;
 		private List<MenuEntry> entries = new List<MenuEntry>();
 		private int selectedIndex = 0;
@@ -21,6 +22,28 @@ namespace VGame {
 				return entries;
 			}
 		}
+		/*public int SelectedIndex {
+			get {
+				return selectedIndex;
+			}
+			set {
+				int oldSelectedIndex = selectedIndex;
+				selectedIndex = value;
+				if (value > oldSelectedIndex) {
+					do {
+						if (selectedIndex >= entries.Count)
+							selectedIndex -= entries.Count;
+					} while (!entries[selectedIndex].Enabled);
+				}
+				else {
+					do {
+						selectedIndex--;
+						if (selectedIndex < 0)
+							selectedIndex += entries.Count;
+					} while (!entries[selectedIndex].Enabled);
+				}
+			}
+		}*/
 
 		public GenericMenu(string title) {
 			Title = title;
@@ -83,10 +106,10 @@ namespace VGame {
 			Cairo.Context g = Renderer.Context;
 
 			Vector2 midTop = new Vector2(Renderer.Width / 2, 0);
-			g.MoveTo((midTop + new Vector2(-150, 0)).ToPointD());
-			g.LineTo((midTop + new Vector2(150, 0)).ToPointD());
-			g.LineTo((midTop + new Vector2(150, Renderer.Height)).ToPointD());
-			g.LineTo((midTop + new Vector2(-150, Renderer.Height)).ToPointD());
+			g.MoveTo((midTop + new Vector2(-(Width / 2), 0)).ToPointD());
+			g.LineTo((midTop + new Vector2(Width / 2, 0)).ToPointD());
+			g.LineTo((midTop + new Vector2(Width / 2, Renderer.Height)).ToPointD());
+			g.LineTo((midTop + new Vector2(-(Width / 2), Renderer.Height)).ToPointD());
 			g.ClosePath();
 			g.Color = new Cairo.Color(0.5, 0.5, 0.5);
 			g.Fill();
@@ -94,8 +117,11 @@ namespace VGame {
 			Vector2 origin = new Vector2(Renderer.Width / 2, 8);
 			Vector2 offset = new Vector2();
 			if (Title != null) {
-				Util.DrawText(g, origin + offset, Title, 20, TextAlign.Center, TextAlign.Top, new Cairo.Color(0.75, 0.75, 0.75), new Cairo.Color(0, 0, 0), new Cairo.Color(0.25, 0.25, 0.25), 0, null);
-				offset.Y += 24;
+				string titleFont = "04b20";
+				int titleTextSize = 16;
+				int titleHeight = 24;
+				Util.DrawText(g, origin + offset, Title, titleTextSize, TextAlign.Center, TextAlign.Top, new Cairo.Color(0.75, 0.75, 0.75), new Cairo.Color(0, 0, 0), new Cairo.Color(0.25, 0.25, 0.25), 0, titleFont);
+				offset.Y += titleHeight;
 			}
 			foreach (MenuEntry e in entries) {
 				e.Draw(g, gameTime, origin + offset, 1f);
@@ -130,6 +156,14 @@ namespace VGame {
 		public string Text;
 		public string Text2;
 		public string Content;
+		public Cairo.Color DisabledFillColor = new Cairo.Color(0.25, 0.25, 0.25);
+		public Cairo.Color NormalFillColor = new Cairo.Color(1, 1, 1);
+		public Cairo.Color SelectedFillColor = new Cairo.Color(0, 1, 1);
+		public virtual Cairo.Color FillColor {
+			get {
+				return Enabled ? IsSelected ? SelectedFillColor : NormalFillColor : DisabledFillColor;
+			}
+		}
 		public bool IsSelected = false;
 		public bool Enabled {
 			get {
@@ -144,7 +178,8 @@ namespace VGame {
 		protected bool selectable = true;
 
 		public int Height = 22;
-		public int FontSize = 20;
+		public string Font = "04b_19";
+		public int TextSize = 20;
 
 		public event EventHandler<PlayerIndexEventArgs> Selected;
 		public event EventHandler<PlayerIndexEventArgs> SwipeLeft;
@@ -180,11 +215,11 @@ namespace VGame {
 
 		public virtual void Draw(Cairo.Context g, GameTime gameTime, Vector2 origin, float alpha) {
 			if (Text2 != null) {
-				Util.DrawText(g, origin + new Vector2(-4, 0), Text, FontSize, TextAlign.Right, TextAlign.Top, IsSelected ? new Cairo.Color(0, 1, 1) : new Cairo.Color(1, 1, 1), new Cairo.Color(0, 0, 0), null, 0, null);
-				Util.DrawText(g, origin + new Vector2(4, 0), Text2, FontSize, TextAlign.Left, TextAlign.Top, IsSelected ? new Cairo.Color(0, 1, 1) : new Cairo.Color(1, 1, 1), new Cairo.Color(0, 0, 0), null, 0, null);
+				Util.DrawText(g, origin + new Vector2(-4, 0), Text.ToUpper(), TextSize, TextAlign.Right, TextAlign.Top, FillColor, new Cairo.Color(0, 0, 0), null, 0, null);
+				Util.DrawText(g, origin + new Vector2(4, 0), Text2.ToUpper(), TextSize, TextAlign.Left, TextAlign.Top, FillColor, new Cairo.Color(0, 0, 0), null, 0, null);
 			}
 			else {
-				Util.DrawText(g, origin, Text, FontSize, TextAlign.Center, TextAlign.Top, IsSelected ? new Cairo.Color(0, 1, 1) : new Cairo.Color(1, 1, 1), new Cairo.Color(0, 0, 0), null, 0, null);
+				Util.DrawText(g, origin, Text.ToUpper(), TextSize, TextAlign.Center, TextAlign.Top, FillColor, new Cairo.Color(0, 0, 0), null, 0, null);
 			}
 		}
 	}
@@ -198,6 +233,9 @@ namespace VGame {
 		public virtual bool IsCharValid(char c) {
 			return true;
 		}
+		public virtual bool IsStringValid(string s) {
+			return true;
+		}
 		public override void OnTextInputEntry(List<char> ascii, bool backspace) {
 			if (backspace && Text2.Length > 0) {
 				Text2 = Text2.Substring(0, Text2.Length - 1);
@@ -208,17 +246,53 @@ namespace VGame {
 						Text2 += c;
 				}
 			}
-			if (Text2 != Text2Last) {
-				OnTextChanged();
+			if (IsStringValid(Text2)) {
+				if (Text2 != Text2Last) {
+					OnTextChanged();
+				}
+				Text2Last = Text2;
 			}
-			Text2Last = Text2;
+			else {
+				Text2 = Text2Last;
+			}
 		}
 	}
 	public class NumberInputEntry : TextInputEntry {
+		public int? Maximum = 49;
 		public NumberInputEntry(string text, int number) : base(text, number.ToString()) {
+			TextChanged += delegate(object sender, TextChangeArgs e) {
+				if (e.Text == "") {
+					Text2 = "0";
+					e.Text = "0";
+				}
+			};
+		}
+		public override void OnTextInputEntry(List<char> ascii, bool backspace) {
+			if (Text2 == "0") {
+				bool okay = true;
+				if (ascii.Count > 0) {
+					foreach (char c in ascii) {
+						if (!IsCharValid(c))
+							okay = false;
+					}
+				}
+				if (okay)
+					Text2 = "";
+			}
+			base.OnTextInputEntry(ascii, backspace);
 		}
 		public override bool IsCharValid(char c) {
 			return char.IsDigit(c);
+		}
+		public override bool IsStringValid(string s) {
+			if (Text2 == "")
+				Text2 = "0";
+			if (Maximum.HasValue) {
+				if (int.Parse(Text2) > Maximum) {
+					Text2 = Maximum.ToString();
+				}
+			}
+			return true;
 		}
 	}
 	public class AddressInputEntry : TextInputEntry {
@@ -230,10 +304,16 @@ namespace VGame {
 		}
 	}
 	public class HeadingEntry : MenuEntry {
+		public static Cairo.Color HeadingColor = new Cairo.Color(0.65, 0.65, 0.65);
 		public HeadingEntry(string text) : base(text) {
 			selectable = false;
-			FontSize = 14;
+			TextSize = 14;
 			Height = 16;
+		}
+		public override Cairo.Color FillColor {
+			get {
+				return HeadingColor;
+			}
 		}
 	}
 	public class SpacerEntry : MenuEntry {

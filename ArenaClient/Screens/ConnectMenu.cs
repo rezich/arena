@@ -3,7 +3,7 @@ using VGame;
 
 namespace ArenaClient {
 	public class ConnectMenu : GenericMenu {
-		public ConnectMenu() : base("Connect to a server") {
+		public ConnectMenu() : base("CONNECT TO SERVER") {
 			AddressInputEntry e1 = new AddressInputEntry("Address", Arena.Config.LastServerAddress);
 			e1.TextChanged += delegate(object sender, TextChangeArgs e) {
 				Arena.Config.LastServerAddress = e.Text;
