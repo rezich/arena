@@ -23,7 +23,6 @@ namespace ArenaClient {
         /// and initialize them as well.
         /// </summary>
 		protected override void Initialize() {
-
 			IsMouseVisible = false;
 
 			Role.Initialize();

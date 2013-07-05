@@ -50,6 +50,8 @@
     <Compile Include="Screens\ConnectionScreen.cs" />
     <Compile Include="Screens\LobbyScreen.cs" />
     <Compile Include="Screens\MatchLoadingScreen.cs" />
+    <Compile Include="Screens\MenuScreen.cs" />
+    <Compile Include="Screens\MainMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

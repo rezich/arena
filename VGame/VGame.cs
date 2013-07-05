@@ -11,12 +11,16 @@ namespace VGame {
 		GraphicsDeviceManager graphics;
 
 		public VectorGameSession() {
+			IsFixedTimeStep = false;
 			graphics = new GraphicsDeviceManager(this);
 			screenManager = new ScreenManager(this);
 			Components.Add(screenManager);
+			//System.Diagnostics.Process.GetCurrentProcess().ProcessorAffinity = (IntPtr)1;
 		}
 		protected override void Initialize() {
 			Resolution.Initialize(graphics);
+			graphics.PreferMultiSampling = false;
+			graphics.SynchronizeWithVerticalRetrace = false;
 			int w = 1280;
 			int h = 720;
 			Resolution.Set(w, h, false);

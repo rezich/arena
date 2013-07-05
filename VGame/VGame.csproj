@@ -47,6 +47,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="ScreenManager\InputState.cs" />
     <Compile Include="Resolution.cs" />
+    <Compile Include="ScreenManager\GenericMenu.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -100,6 +100,9 @@ namespace Arena {
 						case PacketType.ChangeTeam:
 							ReceiveChangeTeam((int)incoming.ReadByte(), (Teams)incoming.ReadByte());
 							break;
+						case PacketType.ChangeRole:
+							ReceiveChangeRole((int)incoming.ReadByte(), (Roles)incoming.ReadByte());
+							break;
 						case PacketType.Ready:
 							ReceiveReady((int)incoming.ReadByte(), (bool)(incoming.ReadByte() > 0));
 							break;
