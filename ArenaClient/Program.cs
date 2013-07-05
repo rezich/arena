@@ -13,7 +13,7 @@ namespace ArenaClient {
         /// </summary>
 		//[STAThread]
         static void Main() {
-			string readLine;
+			/*string readLine;
 			Console.Write("Enter name: ");
 			readLine = Console.ReadLine();
 			Arena.Config.PlayerName = (readLine == "" ? "UNNAMED" : readLine);
@@ -33,8 +33,7 @@ namespace ArenaClient {
 			if (readLine == "")
 				Arena.Config.LocalServer = true;
 			else
-				Arena.Config.ServerAddress = readLine;
-			Console.WriteLine("Loading...");
+				Arena.Config.ServerAddress = readLine;*/
 			game = new GameSession();
 			//try {
 				game.Run();

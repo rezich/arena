@@ -52,6 +52,8 @@
     <Compile Include="Screens\MatchLoadingScreen.cs" />
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\MainMenu.cs" />
+    <Compile Include="Screens\SettingsScreen.cs" />
+    <Compile Include="Screens\ConnectScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

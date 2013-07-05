@@ -7,14 +7,6 @@ using Cairo;
 using Arena;
 
 namespace ArenaClient {
-	public enum TextAlign {
-		Left,
-		Center,
-		Right,
-		Top,
-		Middle,
-		Bottom
-	}
 	public static class HUD {
 		public static List<Vector2> LeftBox;
 		public static List<Vector2> RightBox;
@@ -61,19 +53,19 @@ namespace ArenaClient {
 			// SCOREBOARD
 			int sbTop = 3;
 			if (ScoreboardScale > 0) {
-				DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), "HOME", 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, Config.HomeColor2, 0, null);
+				Util.DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), "HOME", 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, Config.HomeColor2, 0, null);
 				sbTop++;
 				foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
 					if (kvp.Value.Team == Teams.Home) {
-						DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), kvp.Value.Name.ToUpper(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+						Util.DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), kvp.Value.Name.ToUpper(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 						sbTop++;
 					}
 				}
-				DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), "AWAY", 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, Config.AwayColor2, 0, null);
+				Util.DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), "AWAY", 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, Config.AwayColor2, 0, null);
 				sbTop++;
 				foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
 					if (kvp.Value.Team == Teams.Away) {
-						DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), kvp.Value.Name.ToUpper(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+						Util.DrawText(g, new Vector2(BoxWidth + Margin - 400 + (float)(400 * ScoreboardScale), Margin + sbTop * 22), kvp.Value.Name.ToUpper(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 						sbTop++;
 					}
 				}
@@ -139,7 +131,7 @@ namespace ArenaClient {
 
 			// minimap
 			DrawBox(g, MinimapBackground, new Cairo.Color(0, 0, 0), null);
-			DrawText(g, MinimapBackground[0] + new Vector2((float)(MinimapSize / 2), (float)(MinimapSize / 2)), "MINIMAP", 14, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0, null);
+			Util.DrawText(g, MinimapBackground[0] + new Vector2((float)(MinimapSize / 2), (float)(MinimapSize / 2)), "MINIMAP", 14, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0, null);
 
 			// RIGHT
 			DrawBox(g, RightBox, Arena.Config.HUDBackground, null);
@@ -152,10 +144,10 @@ namespace ArenaClient {
 			}
 
 			if (player.CurrentUnit != null) {
-				DrawText(g, new Vector2(Margin, Margin), "MOVE SPEED: " + player.CurrentUnit.MoveSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-				DrawText(g, new Vector2(Margin, Margin + 14), "TURN SPEED: " + player.CurrentUnit.TurnSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-				DrawText(g, new Vector2(Margin, Margin + 28), "ATTACK SPEED: " + player.CurrentUnit.AttackSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-				DrawText(g, new Vector2(Margin, Margin + 42), "ATTACK RANGE: " + player.CurrentUnit.AttackRange.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+				Util.DrawText(g, new Vector2(Margin, Margin), "MOVE SPEED: " + player.CurrentUnit.MoveSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+				Util.DrawText(g, new Vector2(Margin, Margin + 14), "TURN SPEED: " + player.CurrentUnit.TurnSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+				Util.DrawText(g, new Vector2(Margin, Margin + 28), "ATTACK SPEED: " + player.CurrentUnit.AttackSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+				Util.DrawText(g, new Vector2(Margin, Margin + 42), "ATTACK RANGE: " + player.CurrentUnit.AttackRange.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 				for (int i = 0; i < Math.Min(Client.Local.ChatMessages.Count, 10); i++) {
 					ChatMessage msg = Client.Local.ChatMessages[Client.Local.ChatMessages.Count - 1 - i];
 					string str = "<" + msg.Sender.ToUpper() + "> " + msg.Message.ToUpper();
@@ -164,7 +156,7 @@ namespace ArenaClient {
 						col = Config.HomeColor2;
 					if (msg.Team == Teams.Away)
 						col = Config.AwayColor2;
-					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
+					Util.DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
 				}
 				if (Client.Local.IsChatting) {
 					Cairo.Color? col = null;
@@ -172,16 +164,16 @@ namespace ArenaClient {
 						col = Config.HomeColor2;
 					if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
 						col = Config.AwayColor2;
-					DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer.ToUpper(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
+					Util.DrawText(g, new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer.ToUpper(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
 				}
 				for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
 					if (!player.CurrentUnit.Buffs[i].Hidden) {
 						string str = (player.CurrentUnit.Buffs[i].Permanent ? "" : "  " + Math.Round(((double)(player.CurrentUnit.Buffs[i].ExpirationTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal());
-						DrawText(g, new Vector2(Renderer.Width - BoxWidth - Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name + str, 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 0.5, 0) : new Cairo.Color(0, 0, 0.5)), 0, null);
+						Util.DrawText(g, new Vector2(Renderer.Width - BoxWidth - Margin, Renderer.Height -Margin - 20 * i), player.CurrentUnit.Buffs[i].Name + str, 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, (player.CurrentUnit.Buffs[i].Type == BuffAlignment.Positive ? new Cairo.Color(0, 0.5, 0) : new Cairo.Color(0, 0, 0.5)), 0, null);
 					}
 				}
 			}
-			DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			Util.DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 20), "P " + Client.Local.Players.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 40), "U " + Client.Local.Units.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 60), "A " + Client.Local.Actors.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
@@ -225,15 +217,15 @@ namespace ArenaClient {
 				else
 					VGame.Util.StrokeAndFill(g, new Cairo.Color(0.25, 0.4, 0.25), null);
 			}
-			DrawText(g, Ability[ability][0] + new Vector2(Padding, Padding), player.CurrentUnit.Abilities[ability].Name.ToUpper(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, AbilityNameBackground, 0, null);
+			Util.DrawText(g, Ability[ability][0] + new Vector2(Padding, Padding), player.CurrentUnit.Abilities[ability].Name.ToUpper(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, AbilityNameBackground, 0, null);
 			if (player.CurrentUnit.Abilities[ability].ActivationType != AbilityActivationType.Passive) {
-				DrawText(g, Ability[ability][1] + new Vector2(-Padding, Padding), TemporaryKeyList[ability], 19, TextAlign.Right, TextAlign.Top, MainTextFill, MainTextStroke, AbilityKeyBackground, 0, null);
-				DrawText(g, Ability[ability][2] + new Vector2(-Padding, -Padding), player.CurrentUnit.Abilities[ability].Cooldown.ToString(), 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityCooldownBackground, 0, null);
-				DrawText(g, Ability[ability][3] + new Vector2(Padding, -Padding), player.CurrentUnit.Abilities[ability].EnergyCost.ToString(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityEnergyBackground, 0, null);
+				Util.DrawText(g, Ability[ability][1] + new Vector2(-Padding, Padding), TemporaryKeyList[ability], 19, TextAlign.Right, TextAlign.Top, MainTextFill, MainTextStroke, AbilityKeyBackground, 0, null);
+				Util.DrawText(g, Ability[ability][2] + new Vector2(-Padding, -Padding), player.CurrentUnit.Abilities[ability].Cooldown.ToString(), 14, TextAlign.Right, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityCooldownBackground, 0, null);
+				Util.DrawText(g, Ability[ability][3] + new Vector2(Padding, -Padding), player.CurrentUnit.Abilities[ability].EnergyCost.ToString(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, AbilityEnergyBackground, 0, null);
 			}
 			if (!player.CurrentUnit.Abilities[ability].Ready && player.CurrentUnit.Abilities[ability].ActivationType != AbilityActivationType.Passive) {
 				string str = Math.Round(((double)(player.CurrentUnit.Abilities[ability].ReadyTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal();
-				DrawText(g, Ability[ability][0] + new Vector2((float)(AbilitySize / 2), (float)(AbilitySize / 2)), str, 32, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0, null);
+				Util.DrawText(g, Ability[ability][0] + new Vector2((float)(AbilitySize / 2), (float)(AbilitySize / 2)), str, 32, TextAlign.Center, TextAlign.Middle, MainTextFill, MainTextStroke, null, 0, null);
 			}
 			Vector2 levelOrigin = Ability[ability][1] + new Vector2(-Padding - LevelBoxSize, (float)((AbilitySize / 2) - (LevelBoxSize * player.CurrentUnit.Abilities[ability].Levels) / 2 - (LevelBoxPadding * (player.CurrentUnit.Abilities[ability].Levels) / 2) + LevelBoxPadding / 2));
 			for (var i = 0; i < player.CurrentUnit.Abilities[ability].Levels; i++) {
@@ -244,63 +236,6 @@ namespace ArenaClient {
 					levelOrigin + new Vector2(0, LevelBoxSize * i + LevelBoxSize + LevelBoxPadding * i)
 				}, (player.CurrentUnit.Abilities[ability].Level >= i + 1 ? new Cairo.Color(1, 1, 1) : new Cairo.Color(0, 0, 0)), new Cairo.Color(1, 1, 1));
 			}
-		}
-		public static void DrawText(Cairo.Context g, Vector2 position, string text, double scale, TextAlign hAlign, TextAlign vAlign, Cairo.Color? fillColor, Cairo.Color? strokeColor, Cairo.Color? backgroundColor, double angle, string font) {
-			if (font == null)
-				font = "04b_19";
-			g.SelectFontFace(font, FontSlant.Normal, FontWeight.Normal);
-			g.SetFontSize(scale);
-			TextExtents ext = g.TextExtents(text);
-			TextExtents ext2 = g.TextExtents("|");
-			Vector2 offset = new Vector2(0, 0);
-			switch (hAlign) {
-				case TextAlign.Left:
-					break;
-				case TextAlign.Center:
-					offset.X = -(float)(ext.Width / 2);
-					break;
-				case TextAlign.Right:
-					offset.X = -(float)(ext.Width);
-					break;
-			}
-			switch (vAlign) {
-				case TextAlign.Top:
-					break;
-					case TextAlign.Middle:
-					offset.Y = -(float)(ext2.Height / 2);
-					break;
-					case TextAlign.Bottom:
-					offset.Y = -(float)(ext2.Height);
-					break;
-			}
-			Vector2 textPos = position - new Vector2((float)(ext.XBearing), (float)(ext2.YBearing)) + offset;
-			Vector2 boxOffset = new Vector2((float)(ext.XBearing), (float)(-ext2.Height));
-			if (backgroundColor.HasValue) {
-				g.MoveTo((textPos + boxOffset + new Vector2(-TextBoxPadding, -TextBoxPadding)).ToPointD());
-				g.LineTo((textPos + boxOffset + new Vector2((float)ext.Width, 0) + new Vector2(TextBoxPadding, -TextBoxPadding)).ToPointD());
-				g.LineTo((textPos + boxOffset + new Vector2((float)ext.Width, (float)ext.Height) + new Vector2(TextBoxPadding, TextBoxPadding)).ToPointD());
-				g.LineTo((textPos + boxOffset + new Vector2(0, (float)ext.Height) + new Vector2(-TextBoxPadding, TextBoxPadding)).ToPointD());
-				g.ClosePath();
-				g.Color = (Cairo.Color)backgroundColor;
-				g.Fill();
-			}
-			if (fillColor.HasValue) {
-				g.MoveTo(textPos.ToPointD());
-				g.Color = (Cairo.Color)fillColor;
-				if (angle != 0) g.Rotate(angle);
-				g.ShowText(text);
-			}
-			if (strokeColor.HasValue) {
-				g.Antialias = Antialias.None;
-				g.MoveTo(textPos.ToPointD());
-				g.Color = (Cairo.Color)strokeColor;
-				g.LineWidth = 1;
-				g.TextPath(text);
-				if (angle != 0) g.Rotate(angle);
-				g.Stroke();
-				g.LineWidth = 2;
-			}
-			VGame.Renderer.EnableAntialiasing(g);
 		}
 		private static void DrawBox(Cairo.Context g, List<Vector2> points, Cairo.Color? fillColor, Cairo.Color? strokeColor) {
 			g.MoveTo(points[0].ToPointD());

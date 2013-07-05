@@ -4,6 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Cairo;
 
 namespace VGame {
+	public static class Extensions {
+		public static PointD ToPointD(this Vector2 v) {
+			return new PointD(v.X, v.Y);
+		}
+	}
 	public static class SpriteBatchHelper {
 		public static Texture2D Blank;
 		public static bool IsInitialized = false;

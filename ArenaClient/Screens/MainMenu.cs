@@ -8,14 +8,25 @@ using VGame;
 using Arena;
 
 namespace ArenaClient {
-	public class MainScreen : GenericMenu {
-		public MainScreen() : base("", false) {
+	public class MainMenu : GenericMenu {
+		public MainMenu() : base("arena", false) {
 			ShowCancel = false;
 			MenuEntry e1 = new MenuEntry("Find lobby");
+			e1.Enabled = false;
 			MenuEntry e2 = new MenuEntry("Settings");
+			e2.Selected += Settings;
 			MenuEntry e3 = new MenuEntry("Quit");
+			e3.IsCancel = true;
+			Entries.Add(e1);
+			Entries.Add(e2);
+			Entries.Add(e3);
 		}
-
+		public void Settings(object sender, PlayerIndexEventArgs e) {
+			ScreenManager.AddScreen(new SettingsScreen(), ControllingPlayer);
+		}
+		protected override void OnCancel() {
+			GameSession.Current.Exit();
+		}
 	}
 }
 

@@ -23,6 +23,7 @@ namespace ArenaClient {
         /// and initialize them as well.
         /// </summary>
 		protected override void Initialize() {
+			Current = this;
 			IsMouseVisible = false;
 
 			Role.Initialize();
@@ -30,7 +31,8 @@ namespace ArenaClient {
 			HUD.Recalculate();
 
 			//screenManager.AddScreen(new MatchScreen(), PlayerIndex.One);
-			screenManager.AddScreen(new ConnectionScreen(), PlayerIndex.One);
+			//screenManager.AddScreen(new ConnectionScreen(), PlayerIndex.One);
+			screenManager.AddScreen(new MainMenu(), null);
 
 			base.Initialize();
 		}

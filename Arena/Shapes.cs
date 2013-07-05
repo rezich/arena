@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Cairo;
+using VGame;
 
 namespace Arena.Shapes {
 	public class Runner : VGame.Shape {

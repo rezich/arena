@@ -6,6 +6,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Cairo;
 
 namespace VGame {
+	public enum TextAlign {
+		Left,
+		Center,
+		Right,
+		Top,
+		Middle,
+		Bottom
+	}
 	public class VectorGameSession : Game {
 		protected ScreenManager screenManager;
 		GraphicsDeviceManager graphics;
@@ -137,6 +145,7 @@ namespace VGame {
 		}
 	}
 	public static class Util {
+		public static int TextBoxPadding = 4;
 		public static Cairo.Color MakeColor(int r, int g, int b, double a) {
 			return new Cairo.Color((double)b / 256, (double)g / 256, (double)r / 256, a);
 		}
@@ -152,6 +161,63 @@ namespace VGame {
 				g.Color = (Cairo.Color)strokeColor;
 				g.Stroke();
 			}
+		}
+		public static void DrawText(Cairo.Context g, Vector2 position, string text, double scale, TextAlign hAlign, TextAlign vAlign, Cairo.Color? fillColor, Cairo.Color? strokeColor, Cairo.Color? backgroundColor, double angle, string font) {
+			if (font == null)
+				font = "04b_19";
+			g.SelectFontFace(font, FontSlant.Normal, FontWeight.Normal);
+			g.SetFontSize(scale);
+			TextExtents ext = g.TextExtents(text);
+			TextExtents ext2 = g.TextExtents("|");
+			Vector2 offset = new Vector2(0, 0);
+			switch (hAlign) {
+				case TextAlign.Left:
+					break;
+					case TextAlign.Center:
+					offset.X = -(float)(ext.Width / 2);
+					break;
+					case TextAlign.Right:
+					offset.X = -(float)(ext.Width);
+					break;
+			}
+			switch (vAlign) {
+				case TextAlign.Top:
+					break;
+					case TextAlign.Middle:
+					offset.Y = -(float)(ext2.Height / 2);
+					break;
+					case TextAlign.Bottom:
+					offset.Y = -(float)(ext2.Height);
+					break;
+			}
+			Vector2 textPos = position - new Vector2((float)(ext.XBearing), (float)(ext2.YBearing)) + offset;
+			Vector2 boxOffset = new Vector2((float)(ext.XBearing), (float)(-ext2.Height));
+			if (backgroundColor.HasValue) {
+				g.MoveTo((textPos + boxOffset + new Vector2(-TextBoxPadding, -TextBoxPadding)).ToPointD());
+				g.LineTo((textPos + boxOffset + new Vector2((float)ext.Width, 0) + new Vector2(TextBoxPadding, -TextBoxPadding)).ToPointD());
+				g.LineTo((textPos + boxOffset + new Vector2((float)ext.Width, (float)ext.Height) + new Vector2(TextBoxPadding, TextBoxPadding)).ToPointD());
+				g.LineTo((textPos + boxOffset + new Vector2(0, (float)ext.Height) + new Vector2(-TextBoxPadding, TextBoxPadding)).ToPointD());
+				g.ClosePath();
+				g.Color = (Cairo.Color)backgroundColor;
+				g.Fill();
+			}
+			if (fillColor.HasValue) {
+				g.MoveTo(textPos.ToPointD());
+				g.Color = (Cairo.Color)fillColor;
+				if (angle != 0) g.Rotate(angle);
+				g.ShowText(text);
+			}
+			if (strokeColor.HasValue) {
+				g.Antialias = Antialias.None;
+				g.MoveTo(textPos.ToPointD());
+				g.Color = (Cairo.Color)strokeColor;
+				g.LineWidth = 1;
+				g.TextPath(text);
+				if (angle != 0) g.Rotate(angle);
+				g.Stroke();
+				g.LineWidth = 2;
+			}
+			VGame.Renderer.EnableAntialiasing(g);
 		}
 	}
 	public interface IShape {
