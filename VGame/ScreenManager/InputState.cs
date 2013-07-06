@@ -43,6 +43,8 @@ namespace VGame {
 
 		public static InputMethods InputMethod;
 
+		public List<char> TypedCharacters = new List<char>();
+
 		public readonly bool[] GamePadWasConnected;
 
 		public InputState() {
@@ -180,141 +182,16 @@ namespace VGame {
 		}
 
 		public List<char> GetAscii() {
-			List<char> chars = new List<char>();
-			// This is super fucking shitty but neither XNA nor Monogame provides
-			// a platform-agnostic way of getting ASCII text input.
-			// I'll probably eventually do a keyboard layout thing or something
-			// fuck I don't know.
-			if (IsNewKeyPress(Keys.OemTilde))
-				chars.Add(IsShiftKeyDown ? '~' : '`');
-			if (IsNewKeyPress(Keys.D1))
-				chars.Add(IsShiftKeyDown ? '!' : '1');
-			if (IsNewKeyPress(Keys.D2))
-				chars.Add(IsShiftKeyDown ? '@' : '2');
-			if (IsNewKeyPress(Keys.D3))
-				chars.Add(IsShiftKeyDown ? '#' : '3');
-			if (IsNewKeyPress(Keys.D4))
-				chars.Add(IsShiftKeyDown ? '$' : '4');
-			if (IsNewKeyPress(Keys.D5))
-				chars.Add(IsShiftKeyDown ? '%' : '5');
-			if (IsNewKeyPress(Keys.D6))
-				chars.Add(IsShiftKeyDown ? '^' : '6');
-			if (IsNewKeyPress(Keys.D7))
-				chars.Add(IsShiftKeyDown ? '&' : '7');
-			if (IsNewKeyPress(Keys.D8))
-				chars.Add(IsShiftKeyDown ? '*' : '8');
-			if (IsNewKeyPress(Keys.D9))
-				chars.Add(IsShiftKeyDown ? '(' : '9');
-			if (IsNewKeyPress(Keys.D0))
-				chars.Add(IsShiftKeyDown ? ')' : '0');
-			if (IsNewKeyPress(Keys.OemMinus))
-				chars.Add(IsShiftKeyDown ? '_' : '-');
-			if (IsNewKeyPress(Keys.OemPlus))
-				chars.Add(IsShiftKeyDown ? '+' : '=');
-			if (IsNewKeyPress(Keys.OemOpenBrackets))
-				chars.Add(IsShiftKeyDown ? '{' : '[');
-			if (IsNewKeyPress(Keys.OemCloseBrackets))
-				chars.Add(IsShiftKeyDown ? '}' : ']');
-			if (IsNewKeyPress(Keys.OemBackslash))
-				chars.Add(IsShiftKeyDown ? '|' : '\\');
+			return TypedCharacters;
+		}
 
-			if (IsNewKeyPress(Keys.A))
-				chars.Add(IsShiftKeyDown ? 'A' : 'a');
-			if (IsNewKeyPress(Keys.B))
-				chars.Add(IsShiftKeyDown ? 'B' : 'b');
-			if (IsNewKeyPress(Keys.C))
-				chars.Add(IsShiftKeyDown ? 'C' : 'c');
-			if (IsNewKeyPress(Keys.D))
-				chars.Add(IsShiftKeyDown ? 'D' : 'd');
-			if (IsNewKeyPress(Keys.E))
-				chars.Add(IsShiftKeyDown ? 'E' : 'e');
-			if (IsNewKeyPress(Keys.F))
-				chars.Add(IsShiftKeyDown ? 'F' : 'f');
-			if (IsNewKeyPress(Keys.G))
-				chars.Add(IsShiftKeyDown ? 'G' : 'g');
-			if (IsNewKeyPress(Keys.H))
-				chars.Add(IsShiftKeyDown ? 'H' : 'h');
-			if (IsNewKeyPress(Keys.I))
-				chars.Add(IsShiftKeyDown ? 'I' : 'i');
-			if (IsNewKeyPress(Keys.J))
-				chars.Add(IsShiftKeyDown ? 'J' : 'j');
-			if (IsNewKeyPress(Keys.K))
-				chars.Add(IsShiftKeyDown ? 'K' : 'k');
-			if (IsNewKeyPress(Keys.L))
-				chars.Add(IsShiftKeyDown ? 'L' : 'l');
-			if (IsNewKeyPress(Keys.M))
-				chars.Add(IsShiftKeyDown ? 'M' : 'm');
-			if (IsNewKeyPress(Keys.N))
-				chars.Add(IsShiftKeyDown ? 'N' : 'n');
-			if (IsNewKeyPress(Keys.O))
-				chars.Add(IsShiftKeyDown ? 'O' : 'o');
-			if (IsNewKeyPress(Keys.P))
-				chars.Add(IsShiftKeyDown ? 'P' : 'p');
-			if (IsNewKeyPress(Keys.Q))
-				chars.Add(IsShiftKeyDown ? 'Q' : 'q');
-			if (IsNewKeyPress(Keys.R))
-				chars.Add(IsShiftKeyDown ? 'R' : 'r');
-			if (IsNewKeyPress(Keys.S))
-				chars.Add(IsShiftKeyDown ? 'S' : 's');
-			if (IsNewKeyPress(Keys.T))
-				chars.Add(IsShiftKeyDown ? 'T' : 't');
-			if (IsNewKeyPress(Keys.U))
-				chars.Add(IsShiftKeyDown ? 'U' : 'u');
-			if (IsNewKeyPress(Keys.V))
-				chars.Add(IsShiftKeyDown ? 'V' : 'v');
-			if (IsNewKeyPress(Keys.W))
-				chars.Add(IsShiftKeyDown ? 'W' : 'w');
-			if (IsNewKeyPress(Keys.X))
-				chars.Add(IsShiftKeyDown ? 'X' : 'x');
-			if (IsNewKeyPress(Keys.Y))
-				chars.Add(IsShiftKeyDown ? 'Y' : 'y');
-			if (IsNewKeyPress(Keys.Z))
-				chars.Add(IsShiftKeyDown ? 'Z' : 'z');
+		public void ClearAscii() {
+			TypedCharacters.Clear();
+		}
 
-			if (IsNewKeyPress(Keys.OemSemicolon))
-				chars.Add(IsShiftKeyDown ? ':' : ';');
-			if (IsNewKeyPress(Keys.OemQuotes))
-				chars.Add(IsShiftKeyDown ? '"' : '\'');
-			if (IsNewKeyPress(Keys.OemComma))
-				chars.Add(IsShiftKeyDown ? '<' : ',');
-			if (IsNewKeyPress(Keys.OemPeriod))
-			    chars.Add(IsShiftKeyDown ? '>' : '.');
-			if (IsNewKeyPress(Keys.OemQuestion))
-				chars.Add(IsShiftKeyDown ? '?' : '/');
-			if (IsNewKeyPress(Keys.Space))
-				chars.Add(' ');
-
-			if (IsNewKeyPress(Keys.NumPad0))
-				chars.Add('0');
-			if (IsNewKeyPress(Keys.NumPad1))
-				chars.Add('1');
-			if (IsNewKeyPress(Keys.NumPad2))
-				chars.Add('2');
-			if (IsNewKeyPress(Keys.NumPad3))
-				chars.Add('3');
-			if (IsNewKeyPress(Keys.NumPad4))
-				chars.Add('4');
-			if (IsNewKeyPress(Keys.NumPad5))
-				chars.Add('5');
-			if (IsNewKeyPress(Keys.NumPad6))
-				chars.Add('6');
-			if (IsNewKeyPress(Keys.NumPad7))
-				chars.Add('7');
-			if (IsNewKeyPress(Keys.NumPad8))
-				chars.Add('8');
-			if (IsNewKeyPress(Keys.NumPad9))
-				chars.Add('9');
-			if (IsNewKeyPress(Keys.Decimal))
-				chars.Add('.');
-			if (IsNewKeyPress(Keys.Add))
-				chars.Add('+');
-			if (IsNewKeyPress(Keys.Multiply))
-				chars.Add('*');
-			if (IsNewKeyPress(Keys.Subtract))
-				chars.Add('-');
-			if (IsNewKeyPress(Keys.Divide))
-				chars.Add('/');
-			return chars;
+		public void AddTypedCharacter(char character) {
+			if (!char.IsControl(character))
+				TypedCharacters.Add(character);
 		}
 
 		/*public bool IsInput(Inputs input, PlayerIndex? controllingPlayer) {

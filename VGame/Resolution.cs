@@ -12,6 +12,7 @@ namespace VGame {
 		private static int _y = 0;
 		private static bool _fullscreen = false;
 		private static GraphicsDeviceManager _graphics;
+		private static Game _game;
 		public static int Width {
 			get {
 				return _width;
@@ -20,36 +21,6 @@ namespace VGame {
 		public static int Height {
 			get {
 				return _height;
-			}
-		}
-		public static int X {
-			get {
-				return _x;
-			}
-		}
-		public static int Y {
-			get {
-				return _y;
-			}
-		}
-		public static int Top {
-			get {
-				return _x;
-			}
-		}
-		public static int Right {
-			get {
-				return _x + _width;
-			}
-		}
-		public static int Bottom {
-			get {
-				return _y + _height;
-			}
-		}
-		public static int Left {
-			get {
-				return _y;
 			}
 		}
 		public static bool Fullscreen {
@@ -62,8 +33,20 @@ namespace VGame {
 				return new Rectangle(_x, _y, _width, _height);
 			}
 		}
-		public static void Initialize(GraphicsDeviceManager graphics) {
+		public static void Initialize(Game game, GraphicsDeviceManager graphics) {
+			_game = game;
 			_graphics = graphics;
+		}
+		public static bool Set(int width, int height, bool fullscreen, bool borderless, bool multisampling, bool vsync) {
+			if (borderless)
+				fullscreen = false;
+			_graphics.PreferMultiSampling = multisampling;
+			_graphics.SynchronizeWithVerticalRetrace = vsync;
+			bool ret = Set(width, height, fullscreen);
+			if (!_graphics.IsFullScreen) {
+				_game.Window.IsBorderless = borderless;
+			}
+			return ret;
 		}
 		public static bool Set(int width, int height, bool fullscreen) {
 			int oldWidth = _width;
@@ -76,7 +59,9 @@ namespace VGame {
 					if (dm.Width == _width && dm.Height == _height) {
 						_graphics.PreferredBackBufferWidth = _width;
 						_graphics.PreferredBackBufferHeight = _height;
-						_graphics.IsFullScreen = _fullscreen;
+						//_graphics.IsFullScreen = _fullscreen;
+						if (_fullscreen != _graphics.IsFullScreen)
+							_graphics.ToggleFullScreen();
 						_graphics.ApplyChanges();
 						return true;
 					}
@@ -89,7 +74,8 @@ namespace VGame {
 				if (_width <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width && _height <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height) {
 					_graphics.PreferredBackBufferWidth = _width;
 					_graphics.PreferredBackBufferHeight = _height;
-					_graphics.IsFullScreen = _fullscreen;
+					if (_fullscreen != _graphics.IsFullScreen)
+						_graphics.ToggleFullScreen();
 					_graphics.ApplyChanges();
 					return true;
 				}

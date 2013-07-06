@@ -76,55 +76,55 @@ namespace ArenaClient {
 			DrawBox(g, LeftBox, Arena.Config.HUDBackground, null);
 
 			// health background
-			g.MoveTo(new Vector2(Resolution.Left + Margin, Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2(Resolution.Left + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+			g.MoveTo(new Vector2(0 + Margin, 0 + Margin * 2 + (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin + BarWidth), 0 + Margin * 2 + (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2(0 + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.ClosePath();
 			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
 
 			// health foreground
 			if (player.CurrentUnit != null) {
-				g.MoveTo(new Vector2(Resolution.Left + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
-				g.LineTo(new Vector2(Resolution.Left + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+				g.MoveTo(new Vector2(0 + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+				g.LineTo(new Vector2(0 + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();
 				VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 128, 0), null);
 			}
 
 			// energy background
-			g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+			g.MoveTo(new Vector2((float)(0 + Margin * 2 + BarWidth), 0 + Margin * 2 + (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), 0 + Margin * 2 + (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.ClosePath();
 			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
 
 			// energy foreground
 			if (player.CurrentUnit != null) {
-				g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+				g.MoveTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();
 				VGame.Util.StrokeAndFill(g, new Cairo.Color(128, 0, 0), null);
 			}
 
 			// experience background
-			g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Resolution.Top + Margin * 2 + (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
-			g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+			g.MoveTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), 0 + Margin * 2 + (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), 0 + Margin * 2 + (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+			g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 			g.ClosePath();
 			VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 0), null);
 
 			// experience foreground
 			if (player.CurrentUnit != null) {
-				g.MoveTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
-				g.LineTo(new Vector2((float)(Resolution.Left + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+				g.MoveTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();
 				VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 128, 128), null);
 			}
@@ -173,10 +173,10 @@ namespace ArenaClient {
 					}
 				}
 			}
-			Util.DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 20), "P " + Client.Local.Players.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 40), "U " + Client.Local.Units.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-			//DrawText(g, new Vector2(Resolution.Left + BoxWidth + Margin, Resolution.Top + Margin + 60), "A " + Client.Local.Actors.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			Util.DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin + 20), "P " + Client.Local.Players.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin + 40), "U " + Client.Local.Units.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin + 60), "A " + Client.Local.Actors.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 		}
 		private static void DrawAbility(GameTime gameTime, Cairo.Context g, Player player, int ability) {
 			DrawBox(g, Ability[ability], new Cairo.Color(0, 0, 0), null);
@@ -275,10 +275,10 @@ namespace ArenaClient {
 				new Vector2(Renderer.Width, Renderer.Height)
 			};
 			MinimapBackground = new List<Vector2>() {
-				new Vector2((float)(Resolution.Left + Margin), (float)(Renderer.Height - Margin - MinimapSize)),
-				new Vector2((float)(Resolution.Left + Margin), (float)(Renderer.Height - Margin)),
-				new Vector2((float)(Resolution.Left + Margin + MinimapSize), (float)(Renderer.Height - Margin)),
-				new Vector2((float)(Resolution.Left + Margin + MinimapSize), (float)(Renderer.Height - Margin - MinimapSize))
+				new Vector2((float)(0 + Margin), (float)(Renderer.Height - Margin - MinimapSize)),
+				new Vector2((float)(0 + Margin), (float)(Renderer.Height - Margin)),
+				new Vector2((float)(0 + Margin + MinimapSize), (float)(Renderer.Height - Margin)),
+				new Vector2((float)(0 + Margin + MinimapSize), (float)(Renderer.Height - Margin - MinimapSize))
 			};
 			Ability.Add(new List<Vector2>() {
 				new Vector2((float)(Renderer.Width - Margin - AbilitySize), (float)(Renderer.Height / 2 - 3 * Margin / 2 - AbilitySize * 2)),

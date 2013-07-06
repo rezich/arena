@@ -66,7 +66,7 @@ namespace VGame {
 			}
 			if (cursorPosition != cursorPositionLast)
 				mousing = true;
-			if (input.IsNewKeyPress(Keys.Down) && cursorPosition == cursorPositionLast) {
+			if ((input.IsNewKeyPress(Keys.Down) || (input.IsNewKeyPress(Keys.Tab) && !input.IsShiftKeyDown)) && cursorPosition == cursorPositionLast) {
 				mousing = false;
 				if (selectedIndex == null)
 					selectedIndex = 0;
@@ -76,7 +76,7 @@ namespace VGame {
 						selectedIndex -= entries.Count;
 				} while (!entries[(int)selectedIndex].Enabled);
 			}
-			if (input.IsNewKeyPress(Keys.Up) && cursorPosition == cursorPositionLast) {
+			if ((input.IsNewKeyPress(Keys.Up) || (input.IsNewKeyPress(Keys.Tab) && input.IsShiftKeyDown)) && cursorPosition == cursorPositionLast) {
 				mousing = false;
 				if (selectedIndex == null)
 					selectedIndex = 0;
@@ -178,8 +178,10 @@ namespace VGame {
 				e.Draw(g, gameTime, origin + offset, Width, 1f);
 				offset.Y += e.Height;
 			}
-			if (this.TopActive)
+			if (this.TopActive) {
 				cursor.Draw(g, new Vector2(cursorPosition.X, cursorPosition.Y), 0, new Cairo.Color(1, 1, 1), new Cairo.Color(0.1, 0.1, 0.1), 22);
+				Util.DrawText(g, Vector2.Zero, Resolution.Width.ToString() + "x" + Resolution.Height.ToString(), 20, TextAlign.Left, TextAlign.Top, new Cairo.Color(1, 1, 1), new Cairo.Color(0, 0, 0), null, 0, null);
+			}
 		}
 
 		protected virtual void OnSelectEntry(int entryIndex) {

@@ -35,6 +35,9 @@ namespace Arena {
 		public static string PlayerName = "UNNAMED";
 		public static int PlayerNumber = 0;
 		public static string LastServerAddress = "localhost";
+		public static bool Fullscreen = false;
+		public static bool Borderless = false;
+
 		public static int ReadyCountdown = 5;
 		public static int PostLoadingCountdown = 5;
 		public static Microsoft.Xna.Framework.Point Resolution = new Microsoft.Xna.Framework.Point(1280, 720);

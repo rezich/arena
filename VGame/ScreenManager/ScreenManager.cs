@@ -21,6 +21,9 @@ namespace VGame {
 			#else
 			InputState.InputMethod = InputMethods.KeyboardMouse;
 			#endif
+			game.Window.TextInput += delegate(object sender, TextInputEventArgs e) {
+				input.AddTypedCharacter(e.Character);
+			};
 		}
 
 		public SpriteBatch SpriteBatch {
@@ -125,6 +128,7 @@ namespace VGame {
 					}
 				}
 			}
+			input.ClearAscii();
 		}
 
 		public override void Draw(GameTime gameTime) {

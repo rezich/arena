@@ -23,12 +23,12 @@ namespace VGame {
 			graphics = new GraphicsDeviceManager(this);
 			screenManager = new ScreenManager(this);
 			Components.Add(screenManager);
+			//this.Window.Position = new Microsoft.Xna.Framework.Point(100, 100);
+
 			//System.Diagnostics.Process.GetCurrentProcess().ProcessorAffinity = (IntPtr)1;
 		}
 		protected override void Initialize() {
-			Resolution.Initialize(graphics);
-			graphics.PreferMultiSampling = false;
-			graphics.SynchronizeWithVerticalRetrace = false;
+			Resolution.Initialize(this, graphics);
 			int w = 1280;
 			int h = 720;
 			Resolution.Set(w, h, false);
