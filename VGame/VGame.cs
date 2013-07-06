@@ -54,7 +54,7 @@ namespace VGame {
 		}
 		public void DrawVectors(GameTime gameTime) {
 			screenManager.SpriteBatch.Begin();
-			screenManager.SpriteBatch.Draw(VGame.Renderer.DisplayRenderTarget, Resolution.Rectangle, Microsoft.Xna.Framework.Color.White);
+			screenManager.SpriteBatch.Draw(VGame.Renderer.DisplayRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Resolution.Width, Resolution.Height), Microsoft.Xna.Framework.Color.White);
 			screenManager.SpriteBatch.End();
 		}
 	}
@@ -116,9 +116,12 @@ namespace VGame {
 		public static void Resize(int width, int height) {
 			Width = width;
 			Height = height;
+			if (Context != null) ((IDisposable)Context).Dispose();
+			if (Surface != null) ((IDisposable)Surface).Dispose();
 			Surface = new Cairo.ImageSurface(Cairo.Format.Rgb24, Width, Height);
 			Context = new Cairo.Context(Surface);
 			EnableAntialiasing(Context);
+			RenderTargets.Clear();
 			RenderTargets.Add(new Texture2D(graphics, Width, Height));
 			RenderTargets.Add(new Texture2D(graphics, Width, Height));
 		}

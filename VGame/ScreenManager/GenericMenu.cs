@@ -14,8 +14,10 @@ namespace VGame {
 		public bool Cancelable = true;
 		public bool ShowCancel = true;
 		public int Width = 400;
+		public static int Margin = 8;
 		private List<MenuEntry> entries = new List<MenuEntry>();
 		private int? selectedIndex = 0;
+		private bool mousing = false;
 		private Shapes.Cursor cursor = new VGame.Shapes.Cursor();
 		private Microsoft.Xna.Framework.Point cursorPosition = new Microsoft.Xna.Framework.Point();
 		private Microsoft.Xna.Framework.Point cursorPositionLast = new Microsoft.Xna.Framework.Point();
@@ -59,7 +61,13 @@ namespace VGame {
 		public override void HandleInput(GameTime gameTime, InputState input) {
 			cursorPosition.X = input.CurrentMouseState.X;
 			cursorPosition.Y = input.CurrentMouseState.Y;
+			if (input.IsNewKeyPress(Keys.Scroll)) {
+				ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
+			}
+			if (cursorPosition != cursorPositionLast)
+				mousing = true;
 			if (input.IsNewKeyPress(Keys.Down) && cursorPosition == cursorPositionLast) {
+				mousing = false;
 				if (selectedIndex == null)
 					selectedIndex = 0;
 				do {
@@ -69,6 +77,7 @@ namespace VGame {
 				} while (!entries[(int)selectedIndex].Enabled);
 			}
 			if (input.IsNewKeyPress(Keys.Up) && cursorPosition == cursorPositionLast) {
+				mousing = false;
 				if (selectedIndex == null)
 					selectedIndex = 0;
 				do {
@@ -80,20 +89,23 @@ namespace VGame {
 
 			if (input.IsNewMousePress(MouseButtons.Left)) {
 				UpdateSelected();
-				if (selectedIndex.HasValue)
+				if (selectedIndex.HasValue && entries[(int)selectedIndex].Enabled)
 					OnSelectEntry((int)selectedIndex);
 			}
 
 			if (input.IsNewKeyPress(Keys.Space) || input.IsNewKeyPress(Keys.Enter)) {
-				if (selectedIndex.HasValue)
+				mousing = false;
+				if (selectedIndex.HasValue && entries[(int)selectedIndex].Enabled)
 					OnSelectEntry((int)selectedIndex);
 			}
 			if (input.IsNewKeyPress(Keys.Left)) {
-				if (selectedIndex.HasValue)
+				mousing = false;
+				if (selectedIndex.HasValue && entries[(int)selectedIndex].Enabled)
 					OnSwipeLeftEntry((int)selectedIndex);
 			}
 			if (input.IsNewKeyPress(Keys.Right)) {
-				if (selectedIndex.HasValue)
+				mousing = false;
+				if (selectedIndex.HasValue && entries[(int)selectedIndex].Enabled)
 					OnSwipeRightEntry((int)selectedIndex);
 			}
 			if (input.IsNewKeyPress(Keys.Escape)) {
@@ -101,21 +113,24 @@ namespace VGame {
 			}
 			List<char> ascii = input.GetAscii();
 			if (ascii.Count > 0 || input.IsNewKeyPress(Keys.Back)) {
-				if (selectedIndex.HasValue)
+				mousing = false;
+				if (selectedIndex.HasValue && entries[(int)selectedIndex].Enabled)
 					OnTextEntry((int)selectedIndex, ascii, input.IsNewKeyPress(Keys.Back));
 			}
 		}
 		protected void UpdateSelected() {
 			bool foundGoodOne = false;
+			if (mousing)
+				selectedIndex = null;
 			foreach (MenuEntry e in entries) {
-				if (selectedIndex == null && cursorPosition == cursorPositionLast) {
+				if (selectedIndex == null && !mousing) {
 					if (!foundGoodOne && e.Enabled) {
 						foundGoodOne = true;
 						selectedIndex = entries.IndexOf(e);
 					}
 				}
 				e.IsSelected = false;
-				if (cursorPosition != cursorPositionLast && e.Rectangle.Contains(cursorPosition)) {
+				if (mousing && e.Rectangle.Contains(cursorPosition)) {
 					selectedIndex = entries.IndexOf(e);
 				}
 				if (selectedIndex == entries.IndexOf(e))
@@ -125,6 +140,8 @@ namespace VGame {
 		public override void Update(GameTime gameTime) {
 			base.Update(gameTime);
 			UpdateSelected();
+			foreach (MenuEntry e in entries)
+				e.Update(gameTime);
 			cursorPositionLast.X = cursorPosition.X;
 			cursorPositionLast.Y = cursorPosition.Y;
 		}
@@ -156,11 +173,13 @@ namespace VGame {
 				Util.DrawText(g, origin + offset, Title, titleTextSize, TextAlign.Center, TextAlign.Top, new Cairo.Color(0.75, 0.75, 0.75), new Cairo.Color(0, 0, 0), null, 0, titleFont);
 				offset.Y += titleHeight;
 			}
+			offset.Y += Margin;
 			foreach (MenuEntry e in entries) {
 				e.Draw(g, gameTime, origin + offset, Width, 1f);
 				offset.Y += e.Height;
 			}
-			cursor.Draw(g, new Vector2(cursorPosition.X, cursorPosition.Y), 0, new Cairo.Color(1, 1, 1), new Cairo.Color(0.1, 0.1, 0.1), 22);
+			if (this.TopActive)
+				cursor.Draw(g, new Vector2(cursorPosition.X, cursorPosition.Y), 0, new Cairo.Color(1, 1, 1), new Cairo.Color(0.1, 0.1, 0.1), 22);
 		}
 
 		protected virtual void OnSelectEntry(int entryIndex) {
@@ -193,6 +212,7 @@ namespace VGame {
 		public Cairo.Color DisabledFillColor = new Cairo.Color(0.25, 0.25, 0.25);
 		public Cairo.Color NormalFillColor = new Cairo.Color(1, 1, 1);
 		public Cairo.Color SelectedFillColor = new Cairo.Color(0, 1, 1);
+		public Cairo.Color LabelFillColor = new Cairo.Color(0.75, 0.75, 0.75);
 		public virtual Cairo.Color FillColor {
 			get {
 				return Enabled ? IsSelected ? SelectedFillColor : NormalFillColor : DisabledFillColor;
@@ -242,12 +262,10 @@ namespace VGame {
 			if (Selected != null)
 				Selected(this, new PlayerIndexEventArgs());
 		}
-
 		public virtual void OnSwipeLeftEntry() {
 			if (SwipeLeft != null)
 				SwipeLeft(this, new PlayerIndexEventArgs());
 		}
-
 		public virtual void OnSwipeRightEntry() {
 			if (SwipeRight != null)
 				SwipeRight(this, new PlayerIndexEventArgs());
@@ -260,6 +278,8 @@ namespace VGame {
 			TextChanged(this, new TextChangeArgs(Text2));
 		}
 
+		public virtual void Update(GameTime gameTime) {
+		}
 		public virtual void Draw(Cairo.Context g, GameTime gameTime, Vector2 origin, int width, float alpha) {
 			Rectangle.X = (int)(origin.X - width / 2);
 			Rectangle.Y = (int)origin.Y;
@@ -294,7 +314,7 @@ namespace VGame {
 		}
 		public override Cairo.Color FillColor {
 			get {
-				return Enabled ? NormalFillColor : DisabledFillColor;
+				return Enabled ? LabelFillColor : DisabledFillColor;
 			}
 		}
 		public override Cairo.Color FillColor2 {
@@ -375,6 +395,31 @@ namespace VGame {
 			return regex.IsMatch(c.ToString());
 		}
 	}
+	public class SelectManyEntry : MenuEntry {
+		public List<string> Options;
+		public int SelectedIndex = 0;
+		public SelectManyEntry(string text, List<string> options) : base(text) {
+			Options = options;
+			SwipeLeft += delegate(object sender, PlayerIndexEventArgs e) {
+				SelectedIndex--;
+				if (SelectedIndex < 0)
+					SelectedIndex += Options.Count;
+			};
+			SwipeRight += delegate(object sender, PlayerIndexEventArgs e) {
+				SelectedIndex++;
+				if (SelectedIndex >= Options.Count)
+					SelectedIndex -= Options.Count;
+			};
+			Selected += delegate(object sender, PlayerIndexEventArgs e) {
+				SelectedIndex++;
+				if (SelectedIndex >= Options.Count)
+					SelectedIndex -= Options.Count;
+			};
+		}
+		public override void Update(GameTime gameTime) {
+			Text2 = Options[SelectedIndex];
+		}
+	}
 	public class HeadingEntry : MenuEntry {
 		public static Cairo.Color HeadingColor = new Cairo.Color(0.65, 0.65, 0.65);
 		public HeadingEntry(string text) : base(text) {
@@ -392,7 +437,7 @@ namespace VGame {
 	public class SpacerEntry : MenuEntry {
 		public SpacerEntry() : base("") {
 			Enabled = false;
-			Height = 8;
+			Height = GenericMenu.Margin;
 		}
 	}
 	public class CancelEntry : MenuEntry {

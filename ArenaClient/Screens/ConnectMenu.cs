@@ -13,6 +13,12 @@ namespace ArenaClient {
 				address = e.Text;
 				connectEntry.Enabled = e.Text != "";
 			};
+
+			Entries.Add(new NumberInputEntry("PORT", Arena.Config.Port));
+			Entries.Last().Enabled = false;
+
+			Entries.Add(new SpacerEntry());
+
 			connectEntry = new MenuEntry("CONNECT");
 			connectEntry.Selected += delegate(object sender, PlayerIndexEventArgs e) {
 				Arena.Config.LastServerAddress = address;

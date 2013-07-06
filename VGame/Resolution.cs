@@ -59,7 +59,7 @@ namespace VGame {
 		}
 		public static Rectangle Rectangle {
 			get {
-				return new Rectangle(X, Y, Width, Height);
+				return new Rectangle(_x, _y, _width, _height);
 			}
 		}
 		public static void Initialize(GraphicsDeviceManager graphics) {
