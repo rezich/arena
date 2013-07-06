@@ -46,7 +46,6 @@
     <Compile Include="Actor.cs" />
     <Compile Include="Buff.cs" />
     <Compile Include="Effect.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Match.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Role.cs" />

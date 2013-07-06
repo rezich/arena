@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Lidgren.Network;
+using VGame;
 
 namespace Arena {
 	public enum PacketType {
