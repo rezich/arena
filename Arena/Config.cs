@@ -36,7 +36,7 @@ namespace Arena {
 		public static int PlayerNumber = 0;
 		public static string LastServerAddress = "localhost";
 		public static bool Fullscreen = false;
-		public static bool Borderless = false;
+		//public static bool Borderless = false;
 
 		public static int ReadyCountdown = 5;
 		public static int PostLoadingCountdown = 5;

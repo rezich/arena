@@ -35,6 +35,8 @@ namespace ArenaClient {
 			screenManager.AddScreen(new MainMenu(), null);
 
 			base.Initialize();
+			Arena.Config.Resolution = new Point(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
+			Arena.Config.Fullscreen = true;
 		}
         /// <summary>
         /// LoadContent will be called once per game and is the place to load

@@ -31,7 +31,10 @@ namespace VGame {
 			Resolution.Initialize(this, graphics);
 			int w = 1280;
 			int h = 720;
+			/*w = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+			h = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;*/
 			Resolution.Set(w, h, false);
+			graphics.GraphicsDevice.PresentationParameters.MultiSampleCount = 0;
 			VGame.Renderer.Initialize(graphics.GraphicsDevice, w, h);
 			if (!SpriteBatchHelper.IsInitialized)
 				SpriteBatchHelper.Initialize(graphics.GraphicsDevice);
@@ -53,6 +56,9 @@ namespace VGame {
 			base.Draw(gameTime);
 		}
 		public void DrawVectors(GameTime gameTime) {
+
+			//graphics.GraphicsDevice.Present();
+
 			screenManager.SpriteBatch.Begin();
 			screenManager.SpriteBatch.Draw(VGame.Renderer.DisplayRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Resolution.Width, Resolution.Height), Microsoft.Xna.Framework.Color.White);
 			screenManager.SpriteBatch.End();
@@ -61,7 +67,7 @@ namespace VGame {
 	public static class Renderer {
 		private static GraphicsDevice graphics;
 		public static ImageSurface Surface;
-		public static List<Texture2D> RenderTargets = new List<Texture2D>();
+		public static List<RenderTarget2D> RenderTargets = new List<RenderTarget2D>();
 		public static Context Context;
 		public static int Width;
 		public static int Height;
@@ -79,7 +85,7 @@ namespace VGame {
 			set {
 				if (value) {
 					if (RenderTargets.Count == 1)
-						RenderTargets.Add(new Texture2D(graphics, Width, Height));
+						RenderTargets.Add(new RenderTarget2D(graphics, Width, Height));
 				}
 				else {
 					if (RenderTargets.Count == 2) {
@@ -91,7 +97,7 @@ namespace VGame {
 				_doubleBuffered = value;
 			}
 		}
-		public static Texture2D DisplayRenderTarget {
+		public static RenderTarget2D DisplayRenderTarget {
 			get {
 				if (DoubleBuffered)
 					return RenderTargets[Renderer.CurrentBuffer == 0 ? 1 : 0];
@@ -99,7 +105,7 @@ namespace VGame {
 					return RenderTargets[0];
 			}
 		}
-		public static Texture2D DrawRenderTarget {
+		public static RenderTarget2D DrawRenderTarget {
 			get {
 				if (DoubleBuffered)
 					return RenderTargets[Renderer.CurrentBuffer];
@@ -122,8 +128,8 @@ namespace VGame {
 			Context = new Cairo.Context(Surface);
 			EnableAntialiasing(Context);
 			RenderTargets.Clear();
-			RenderTargets.Add(new Texture2D(graphics, Width, Height));
-			RenderTargets.Add(new Texture2D(graphics, Width, Height));
+			RenderTargets.Add(new RenderTarget2D(graphics, Width, Height));
+			RenderTargets.Add(new RenderTarget2D(graphics, Width, Height));
 		}
 		public static void EnableAntialiasing(Cairo.Context g) {
 			g.Antialias = Antialiasing ? Cairo.Antialias.Subpixel : Cairo.Antialias.None;

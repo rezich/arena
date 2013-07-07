@@ -58,7 +58,7 @@ namespace VGame {
 			IsInitialized = true;
 		}
 	}
-	public class Tuple<T1, T2> {
+	/*public class Tuple<T1, T2> {
 		public T1 Item1 { get; set; }
 		public T2 Item2 { get; set; }
 
@@ -76,6 +76,6 @@ namespace VGame {
 			Item2 = item2;
 			Item3 = item3;
 		}
-	}
+	}*/
 }
 

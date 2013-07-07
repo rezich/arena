@@ -37,15 +37,10 @@ namespace VGame {
 			_game = game;
 			_graphics = graphics;
 		}
-		public static bool Set(int width, int height, bool fullscreen, bool borderless, bool multisampling, bool vsync) {
-			if (borderless)
-				fullscreen = false;
+		public static bool Set(int width, int height, bool fullscreen, bool multisampling, bool vsync) {
 			_graphics.PreferMultiSampling = multisampling;
 			_graphics.SynchronizeWithVerticalRetrace = vsync;
 			bool ret = Set(width, height, fullscreen);
-			if (!_graphics.IsFullScreen) {
-				_game.Window.IsBorderless = borderless;
-			}
 			return ret;
 		}
 		public static bool Set(int width, int height, bool fullscreen) {

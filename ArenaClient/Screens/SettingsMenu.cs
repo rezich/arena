@@ -50,16 +50,18 @@ namespace ArenaClient {
 			resolutionEntry.SwipeLeft += CheckForChanges;
 			resolutionEntry.SwipeRight += CheckForChanges;
 			resolutionEntry.Selected += CheckForChanges;
+			resolutionEntry.Enabled = false;
 			Entries.Add(resolutionEntry);
 
-			fullscreenEntry = new SelectManyEntry("FULLSCREEN", new List<string>() { "NO", "YES", "BORDERLESS" });
+			fullscreenEntry = new SelectManyEntry("FULLSCREEN", new List<string>() { "NO", "YES" });
 			if (Arena.Config.Fullscreen)
 				fullscreenEntry.SelectedIndex = 1;
-			if (Arena.Config.Borderless)
-				fullscreenEntry.SelectedIndex = 2;
+			/*if (Arena.Config.Borderless)
+				fullscreenEntry.SelectedIndex = 2;*/
 			fullscreenEntry.SwipeLeft += CheckForChanges;
 			fullscreenEntry.SwipeRight += CheckForChanges;
 			fullscreenEntry.Selected += CheckForChanges;
+			fullscreenEntry.Enabled = false;
 			Entries.Add(fullscreenEntry);
 
 			Entries.Add(new TextInputEntry("VSYNC", "OFF"));
@@ -75,12 +77,11 @@ namespace ArenaClient {
 			saveEntry.Selected += delegate(object sender, PlayerIndexEventArgs e) {
 				Arena.Config.PlayerName = newName;
 				Arena.Config.PlayerNumber = newNumber;
-				if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2)) {
-					if (!Resolution.Set(displayModes[resolutionEntry.SelectedIndex].X, displayModes[resolutionEntry.SelectedIndex].Y, fullscreenEntry.SelectedIndex == 1, fullscreenEntry.SelectedIndex == 2, false, false))
+				if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1)) {
+					if (!Resolution.Set(displayModes[resolutionEntry.SelectedIndex].X, displayModes[resolutionEntry.SelectedIndex].Y, fullscreenEntry.SelectedIndex == 1, false, false))
 						throw new Exception("oops");
 					Arena.Config.Resolution = displayModes[resolutionEntry.SelectedIndex];
 					Arena.Config.Fullscreen = fullscreenEntry.SelectedIndex == 1;
-					Arena.Config.Borderless = fullscreenEntry.SelectedIndex == 2;
 					Renderer.Resize(displayModes[resolutionEntry.SelectedIndex].X, displayModes[resolutionEntry.SelectedIndex].Y);
 				}
 				ExitScreen();
@@ -92,7 +93,7 @@ namespace ArenaClient {
 
 		}
 		protected void CheckForChanges(object sender, EventArgs e) {
-			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution|| Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2));
+			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution|| Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1));
 		}
 		protected override void OnCancel() {
 			ExitScreen();
