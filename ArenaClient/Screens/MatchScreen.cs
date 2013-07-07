@@ -35,9 +35,12 @@ namespace ArenaClient {
 
 		bool isLocalGame = false;
 
-		public MatchScreen() {
+		public override void Initialize() {
 			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate(Renderer);
+		}
+		public override void OnFocus() {
+			Game.ConstrainMouse = true;
 		}
 		public override void HandleInput(GameTime gameTime) {
 			cursorPosition = new Vector2(InputManager.MousePosition.X, InputManager.MousePosition.Y);
@@ -183,6 +186,7 @@ namespace ArenaClient {
 		public override void Draw(GameTime gameTime) {
 			if (Client.Local.LocalPlayer == null || Client.Local.LocalPlayer.CurrentUnit == null)
 				return;
+			Renderer.Clear(new Color(0.83, 0.83, 0.83));
 			Cairo.Context g = Renderer.Context;
 
 			viewOrigin = new Vector2(Renderer.Width / 10, 0);

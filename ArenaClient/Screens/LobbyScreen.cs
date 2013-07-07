@@ -53,6 +53,8 @@ namespace ArenaClient {
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = Renderer.Context;
 
+			Renderer.Clear(new Color(0.83, 0.83, 0.83));
+
 			Vector2 neutralOrigin = new Vector2(Renderer.Width / 2, 8);
 			Vector2 homeOrigin = neutralOrigin - new Vector2(Renderer.Width / 3, 0);
 			Vector2 awayOrigin = neutralOrigin + new Vector2(Renderer.Width / 3, 0);

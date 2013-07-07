@@ -54,7 +54,8 @@
     <Compile Include="Screens\MainMenu.cs" />
     <Compile Include="Screens\ConnectMenu.cs" />
     <Compile Include="Screens\SettingsMenu.cs" />
-    <Compile Include="c:\Users\Adam\Documents\Projects\Arena\ArenaClient\ArenaGame.cs" />
+    <Compile Include="ArenaGame.cs" />
+    <Compile Include="Screens\TitleScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />

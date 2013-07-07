@@ -34,6 +34,7 @@ namespace ArenaClient {
 			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
+			Renderer.Clear(new Color(0.83, 0.83, 0.83));
 			Cairo.Context g = Renderer.Context;
 			Vector2 origin = new Vector2(Renderer.Width / 2, 8);
 			int offset = 0;
