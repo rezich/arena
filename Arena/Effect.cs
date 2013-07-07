@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Cairo;
+using VGame;
 
 namespace Arena {
 	public enum EffectPosition {
@@ -36,7 +36,7 @@ namespace Arena {
 		public TimeSpan ExpirationTime;
 		public double LifePercent = 0;
 
-		public Effect(GameTime gameTime, Vector2 position, EffectPosition height, VGame.IShape shape) {
+		public Effect(GameTime gameTime, Vector2 position, EffectPosition height, VGame.Shape shape) {
 			_position = position;
 			Height = height;
 			Shape = shape;

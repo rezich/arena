@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArenaClient", "ArenaClient\ArenaClient.csproj", "{2473B1FE-9DAB-4C8D-983C-1F7F6C57E222}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VGame", "VGame\VGame.csproj", "{FD10DD4F-74C8-466D-A7A6-A714423E316F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2CC177E0-DEDD-4F61-9B0B-9D2EF8F1CC1F}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -13,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arena", "Arena\Arena.csproj", "{311E3CA0-7773-4704-B852-C5A611146499}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArenaServer", "ArenaServer\ArenaServer.csproj", "{425B1B61-35EB-4393-BF19-C3C30483319D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VGame", "..\VGame\VGame\VGame.csproj", "{56AF2697-89DC-4732-A0E9-8BB904BC2811}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +32,10 @@ Global
 		{425B1B61-35EB-4393-BF19-C3C30483319D}.Debug|x86.Build.0 = Debug|x86
 		{425B1B61-35EB-4393-BF19-C3C30483319D}.Release|x86.ActiveCfg = Release|x86
 		{425B1B61-35EB-4393-BF19-C3C30483319D}.Release|x86.Build.0 = Release|x86
-		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Debug|x86.Build.0 = Debug|Any CPU
-		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Release|x86.ActiveCfg = Release|Any CPU
-		{FD10DD4F-74C8-466D-A7A6-A714423E316F}.Release|x86.Build.0 = Release|Any CPU
+		{56AF2697-89DC-4732-A0E9-8BB904BC2811}.Debug|x86.ActiveCfg = Debug|x86
+		{56AF2697-89DC-4732-A0E9-8BB904BC2811}.Debug|x86.Build.0 = Debug|x86
+		{56AF2697-89DC-4732-A0E9-8BB904BC2811}.Release|x86.ActiveCfg = Release|x86
+		{56AF2697-89DC-4732-A0E9-8BB904BC2811}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

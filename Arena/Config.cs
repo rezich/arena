@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Cairo;
 using VGame;
-using Microsoft.Xna.Framework.Input;
 
 namespace Arena {
 	public enum KeyCommand {
@@ -40,7 +39,7 @@ namespace Arena {
 
 		public static int ReadyCountdown = 5;
 		public static int PostLoadingCountdown = 5;
-		public static Microsoft.Xna.Framework.Point Resolution = new Microsoft.Xna.Framework.Point(1280, 720);
+		public static VGame.Point Resolution = new VGame.Point(1280, 720);
 
 		public static Dictionary<KeyCommand, Keys> KeyBindings = new Dictionary<KeyCommand, Keys>();
 

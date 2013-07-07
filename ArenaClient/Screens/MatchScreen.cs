@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Cairo;
 using VGame;
 using Arena;
 
 namespace ArenaClient {
-	public class MatchScreen : GameScreen {
+	public class MatchScreen : State {
 		Vector2 cursorPosition;
 		Arena.Shapes.Cursor cursor = new Arena.Shapes.Cursor();
 		Vector2 viewPosition = Vector2.Zero;
@@ -20,12 +18,12 @@ namespace ArenaClient {
 
 		int viewportWidth {
 			get {
-				return Resolution.Width - HUD.BoxWidth * 2;
+				return Renderer.Width - HUD.BoxWidth * 2;
 			}
 		}
 		int viewportHeight {
 			get {
-				return Resolution.Height;
+				return Renderer.Height;
 			}
 		}
 		Vector2 cursorWorldPosition {
@@ -39,20 +37,19 @@ namespace ArenaClient {
 
 		public MatchScreen() {
 			viewPosition = new Vector2(0, 0);
-			HUD.Recalculate();
-			Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)(Resolution.Width / 2), (int)(Resolution.Height / 2));
+			HUD.Recalculate(Renderer);
 		}
-		public override void HandleInput(GameTime gameTime, InputState input) {
-			cursorPosition = new Vector2(input.CurrentMouseState.X, input.CurrentMouseState.Y);
-			if (cursorPosition.X < viewOrigin.X + edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
+		public override void HandleInput(GameTime gameTime) {
+			cursorPosition = new Vector2(InputManager.MousePosition.X, InputManager.MousePosition.Y);
+			if (cursorPosition.X < viewOrigin.X + edgeScrollSize && !StateManager.Game.CursorVisible)
 				viewPosition.X -= viewMoveSpeed;
-			if (cursorPosition.X > viewOrigin.X + viewportWidth - edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
+			if (cursorPosition.X > viewOrigin.X + viewportWidth - edgeScrollSize && !StateManager.Game.CursorVisible)
 				viewPosition.X += viewMoveSpeed;
-			if (cursorPosition.Y < viewOrigin.Y + edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
+			if (cursorPosition.Y < viewOrigin.Y + edgeScrollSize && !StateManager.Game.CursorVisible)
 				viewPosition.Y -= viewMoveSpeed;
-			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize && !ScreenManager.Game.IsMouseVisible)
+			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize && !StateManager.Game.CursorVisible)
 				viewPosition.Y += viewMoveSpeed;
-			if (input.IsNewMousePress(MouseButtons.Right) && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Resolution.Width - HUD.BoxWidth) {
+			if (InputManager.MouseButtonState(MouseButton.Right) == ButtonState.Pressed && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Renderer.Width - HUD.BoxWidth) {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
 				foreach (Actor a in Client.Local.Actors) {
@@ -71,7 +68,7 @@ namespace ArenaClient {
 			}
 
 			if (Client.Local.IsChatting) {
-				if (input.IsNewKeyPress(Keys.Tab)) {
+				if (InputManager.KeyState(Keys.Tab) == ButtonState.Pressed) {
 					string[] split = Client.Local.ChatBuffer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 					if (split.Length > 0) {
 						List<Player> found = new List<Player>();
@@ -91,16 +88,16 @@ namespace ArenaClient {
 						}
 					}
 				}
-				if (input.IsNewKeyPress(Keys.Back) && Client.Local.ChatBuffer.Length > 0)
+				if (InputManager.KeyState(Keys.Backspace) == ButtonState.Pressed && Client.Local.ChatBuffer.Length > 0)
 					Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - 1);
-				foreach (char c in input.GetAscii()) {
+				foreach (char c in InputManager.GetTextInput()) {
 					Client.Local.ChatBuffer = Client.Local.ChatBuffer + c;
 				}
-				if (input.IsNewKeyPress(Keys.Escape)) {
+				if (InputManager.KeyState(Keys.Escape) == ButtonState.Pressed) {
 					Client.Local.ChatBuffer = "";
 					Client.Local.IsChatting = false;
 				}
-				if (input.IsNewKeyPress(Keys.Enter)) {
+				if (InputManager.KeyState(Keys.Enter) == ButtonState.Pressed) {
 					if (Client.Local.IsAllChatting)
 						Client.Local.SendAllChat(Client.Local.ChatBuffer);
 					else
@@ -110,56 +107,56 @@ namespace ArenaClient {
 				}
 			}
 			else {
-				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.Scoreboard])) {
+				if (InputManager.KeyState(Keys.Tab) == ButtonState.Pressed) {
 					Client.Local.IsShowingScoreboard = true;
 				}
 				else
 					Client.Local.IsShowingScoreboard = false;
-				if (input.IsNewKeyPress(Keys.Escape)) {
-					ScreenManager.Game.Exit();
+				if (InputManager.KeyState(Keys.Escape) == ButtonState.Pressed) {
+					StateManager.Game.Exit();
 				}
-				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraUp]))
+				if (InputManager.KeyState(Keys.Up) == ButtonState.Pressed)
 					viewPosition.Y -= viewMoveSpeed;
-				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraLeft]))
+				if (InputManager.KeyState(Keys.Left) == ButtonState.Pressed)
 					viewPosition.X -= viewMoveSpeed;
-				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraRight]))
+				if (InputManager.KeyState(Keys.Right) == ButtonState.Pressed)
 					viewPosition.X += viewMoveSpeed;
-				if (input.IsKeyDown(Config.KeyBindings[KeyCommand.CameraDown]))
+				if (InputManager.KeyState(Keys.Down) == ButtonState.Pressed)
 					viewPosition.Y += viewMoveSpeed;
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability1])) {
-					if (input.IsKeyDown(Keys.LeftShift))
+				if (InputManager.KeyState(Keys.Q) == ButtonState.Pressed) {
+					if (InputManager.IsShiftKeyDown)
 						Client.Local.LevelUp(gameTime, 0);
 					else {
 						Client.Local.BeginUsingAbility(gameTime, 0);
 					}
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability2])) {
-					if (input.IsKeyDown(Keys.LeftShift))
+				if (InputManager.KeyState(Keys.W) == ButtonState.Pressed) {
+					if (InputManager.IsShiftKeyDown)
 						Client.Local.LevelUp(gameTime, 1);
 					else {
 						Client.Local.BeginUsingAbility(gameTime, 1);
 					}
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability3])) {
-					if (input.IsKeyDown(Keys.LeftShift))
+				if (InputManager.KeyState(Keys.E) == ButtonState.Pressed) {
+					if (InputManager.IsShiftKeyDown)
 						Client.Local.LevelUp(gameTime, 2);
 					else {
 						Client.Local.BeginUsingAbility(gameTime, 2);
 					}
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Ability4])) {
-					if (input.IsKeyDown(Keys.LeftShift))
+				if (InputManager.KeyState(Keys.R) == ButtonState.Pressed) {
+					if (InputManager.IsShiftKeyDown)
 						Client.Local.LevelUp(gameTime, 3);
 					else {
 						Client.Local.BeginUsingAbility(gameTime, 3);
 					}
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ChatWheel])) {
+				if (InputManager.KeyState(Keys.T) == ButtonState.Pressed) {
 					// Chatwheel
 					Client.Local.SendTeamChat("Well played!");
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.Chat])) {
-					if (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)) {
+				if (InputManager.KeyState(Keys.Enter) == ButtonState.Pressed) {
+					if (InputManager.IsShiftKeyDown) {
 						// All chat
 						Client.Local.IsAllChatting = true;
 					}
@@ -169,22 +166,10 @@ namespace ArenaClient {
 					}
 					Client.Local.IsChatting = true;
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.CenterView])) {
+				if (InputManager.KeyState(Keys.Space) == ButtonState.Pressed) {
 					viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.UnlockCursor])) {
-					ScreenManager.Game.IsMouseVisible = !ScreenManager.Game.IsMouseVisible;
-				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ToggleAntialiasing])) {
-					Renderer.Antialiasing = !Renderer.Antialiasing;
-					Console.WriteLine("[C] Antialiasing is now " + (Renderer.Antialiasing ? "on" : "off"));
-				}
-				if (input.IsNewKeyPress(Config.KeyBindings[KeyCommand.ToggleDoubleBuffering])) {
-					Renderer.DoubleBuffered = !Renderer.DoubleBuffered;
-					Console.WriteLine("[C] Double-buffering is now " + (Renderer.DoubleBuffered ? "on" : "off"));
-				}
 			}
-			base.HandleInput(gameTime, input);
 		}
 		public override void Update(GameTime gameTime) {
 			if (isLocalGame)
@@ -198,17 +183,17 @@ namespace ArenaClient {
 		public override void Draw(GameTime gameTime) {
 			if (Client.Local.LocalPlayer == null || Client.Local.LocalPlayer.CurrentUnit == null)
 				return;
-			Cairo.Context g = VGame.Renderer.Context;
+			Cairo.Context g = Renderer.Context;
 
 			viewOrigin = new Vector2(Renderer.Width / 10, 0);
 			Vector2 gridOffset = new Vector2((float)(viewPosition.X % Arena.Config.ActorScale), (float)(viewPosition.Y % Arena.Config.ActorScale));
 			int gridSize = Convert.ToInt32(Arena.Config.ActorScale);
 			int gridWidth = viewportWidth + 2 * gridSize;
-			int gridHeight = Resolution.Height + 2 * gridSize;
+			int gridHeight = Renderer.Height + 2 * gridSize;
 
 			for (int i = 0; i < ((int)Math.Floor((double)gridWidth / (double)gridSize)); i++) {
 				g.MoveTo((viewOrigin - gridOffset - new Vector2(0, gridSize) + new Vector2(i * gridSize, 0)).ToPointD());
-				g.LineTo((viewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize, Resolution.Height)).ToPointD());
+				g.LineTo((viewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize, Renderer.Height)).ToPointD());
 				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
 				g.Stroke();
 			}
@@ -236,7 +221,7 @@ namespace ArenaClient {
 					e.Draw(gameTime, g, LocalPlayer);
 					*/
 
-			HUD.Draw(gameTime, g, Client.Local.LocalPlayer);
+			HUD.Draw(gameTime, Renderer, Client.Local.LocalPlayer);
 
 			if (Client.Local.LocalPlayer.CurrentUnit != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition && Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null) {
 				g.Save();

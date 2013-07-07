@@ -30,9 +30,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="MonoGame.Framework, Version=3.0.0.0, Culture=neutral">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Lidgren.Network, Version=2011.3.12.0, Culture=neutral">
       <Private>False</Private>
     </Reference>
@@ -58,8 +55,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\VGame\VGame.csproj">
-      <Project>{FD10DD4F-74C8-466D-A7A6-A714423E316F}</Project>
+    <ProjectReference Include="..\..\VGame\VGame\VGame.csproj">
+      <Project>{56AF2697-89DC-4732-A0E9-8BB904BC2811}</Project>
       <Name>VGame</Name>
     </ProjectReference>
   </ItemGroup>

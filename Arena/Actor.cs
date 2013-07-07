@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Cairo;
 using VGame;
 
@@ -24,7 +22,7 @@ namespace Arena {
 		}
 		public Unit Unit;
 		
-		public Actor(Unit unit, VGame.IShape shape) {
+		public Actor(Unit unit, VGame.Shape shape) {
 			Unit = unit;
 			Shape = shape;
 		}
@@ -130,7 +128,7 @@ namespace Arena {
 		}
 		public abstract Vector2 WorldPosition { get; set; }
 		public abstract double Direction { get; set; }
-		public VGame.IShape Shape;
+		public VGame.Shape Shape;
 		protected Vector2 _viewPosition;
 		protected Vector2 _viewOrigin;
 		public bool ToBeRemoved;

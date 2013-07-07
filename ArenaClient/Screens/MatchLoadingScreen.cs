@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Cairo;
 using VGame;
 using Arena;
 
 namespace ArenaClient {
-	public class MatchLoadingScreen : GameScreen {
+	public class MatchLoadingScreen : State {
 		TimeSpan FakeLoadingTime;
 		TimeSpan? FakeLoadingDone = null;
 		TimeSpan UpdateLoadingTime = TimeSpan.FromSeconds(0.5);
@@ -31,7 +29,7 @@ namespace ArenaClient {
 			Client.Local.Update(gameTime, Vector2.Zero, Vector2.Zero);
 			if (Client.Local.Match.Started) {
 				Console.WriteLine("[C] Moving to MatchScreen...");
-				ScreenManager.ReplaceScreen(new MatchScreen(), PlayerIndex.One);
+				StateManager.ReplaceState(new MatchScreen());
 			}
 			base.Update(gameTime);
 		}
@@ -58,7 +56,7 @@ namespace ArenaClient {
 				g.LineTo((pOrigin + new Vector2(-100, 20)).ToPointD());
 				g.ClosePath();
 				VGame.Util.StrokeAndFill(g, null, HUD.MainTextStroke);
-				Util.DrawText(g, pOrigin + new Vector2(0, 2), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
+				Renderer.DrawText(pOrigin + new Vector2(0, 2), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
 			base.Draw(gameTime);

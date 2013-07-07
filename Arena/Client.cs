@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
 using Lidgren.Network;
+using VGame;
 
 namespace Arena {
 	public class Client {
@@ -191,7 +191,7 @@ namespace Arena {
 			Role.SetUpUnit(ref u, player.Role);
 			player.PlayerUnit = u;
 
-			VGame.IShape shape = Role.MakeShape(player.Role);
+			VGame.Shape shape = Role.MakeShape(player.Role);
 			u.Actor = new Actor(u, shape);
 			u.Actor.Unit = u;
 

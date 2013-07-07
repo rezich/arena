@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Cairo;
 using VGame;
 using Arena;
 
 namespace ArenaClient {
-	public class ConnectionScreen : GameScreen {
+	public class ConnectionScreen : State {
 		public ConnectionScreen(string serverAddress) {
 			Client.Local = new Client(false);
 			Client.Local.Connect(serverAddress);
@@ -26,7 +24,7 @@ namespace ArenaClient {
 			Client.Local.Update(gameTime, Vector2.Zero, Vector2.Zero);
 			if (Client.Local.IsConnected && Client.Local.LocalPlayer != null) {
 				// TODO: Add support to move straight to MatchScreen if reconnecting
-				ScreenManager.ReplaceAllScreens(new LobbyScreen(), null);
+				StateManager.ReplaceAllStates(new LobbyScreen());
 			}
 			// TODO: Add retries and timeouts and stuff
 			base.Update(gameTime);

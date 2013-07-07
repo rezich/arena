@@ -7,48 +7,12 @@ using System.Linq;
 namespace ArenaClient {
 	static class Program {
 
-		private static GameSession game;
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-		//[STAThread]
+		private static ArenaGame game;
         static void Main() {
-			/*string readLine;
-			Console.Write("Enter name: ");
-			readLine = Console.ReadLine();
-			Arena.Config.PlayerName = (readLine == "" ? "UNNAMED" : readLine);
-			bool validNumber = false;
-			while (!validNumber) {
-				Console.Write("Enter number: ");
-				readLine = Console.ReadLine();
-				if (readLine == "") {
-					Arena.Config.PlayerNumber = 0;
-					validNumber = true;
-				}
-				else
-					validNumber = int.TryParse(readLine, out Arena.Config.PlayerNumber);
-			}
-			Console.Write("Server IP (leave blank for single-player): ");
-			readLine = Console.ReadLine();
-			if (readLine == "")
-				Arena.Config.LocalServer = true;
-			else
-				Arena.Config.ServerAddress = readLine;*/
-			game = new GameSession();
-			//try {
+			game = new ArenaGame();
 				game.Run();
-			//}
-			/*catch(Exception e) {
-				Console.Write(e.Message);
-				System.IO.File.WriteAllText("log.txt", e.StackTrace);
-				System.Threading.Thread.Sleep(2000);
-				Console.ReadKey();
-			}
-			finally {*/
 				if (Arena.Client.Local != null)
 					Arena.Client.Local.Disconnect();
-				VGame.Renderer.Dispose();
-			//}
 		}
 	}
 }
