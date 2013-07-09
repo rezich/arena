@@ -249,9 +249,9 @@ namespace ArenaClient {
 			MainTextFill = new Cairo.Color(1, 1, 1);
 			MainTextStroke = new Cairo.Color(0, 0, 0);
 			AbilityNameBackground = new Cairo.Color(0.5, 0.5, 0.5);
-			AbilityEnergyBackground = new Cairo.Color(0.9, 0, 0);
+			AbilityEnergyBackground = new Cairo.Color(0, 0, 0.9);
 			AbilityCooldownBackground = new Cairo.Color(0.9, 0, 0.9);
-			AbilityKeyBackground = new Cairo.Color(0.4, 0.4, 0);
+			AbilityKeyBackground = new Cairo.Color(0, 0.4, 0.4);
 
 			TextBoxPadding = Padding;
 			BoxWidth = Renderer.Width / 10;

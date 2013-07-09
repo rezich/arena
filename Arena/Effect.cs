@@ -82,7 +82,7 @@ namespace Arena.Effects {
 		}
 		public override Cairo.Color? StrokeColor {
 			get {
-				return new Cairo.Color(0, 0, 0.5, LifePercent);
+				return new Cairo.Color(0.5, 0, 0, LifePercent);
 			}
 		}
 

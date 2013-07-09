@@ -246,7 +246,7 @@ namespace ArenaClient {
 					continue;
 				if (Vector2.Distance(a.Position, cursorPosition) < Arena.Config.ActorScale) {
 					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy)
-						cursorColor = new Cairo.Color(0, 0, 1);
+						cursorColor = new Cairo.Color(1, 0, 0);
 					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)
 						cursorColor = new Cairo.Color(0, 1, 0);
 				}
