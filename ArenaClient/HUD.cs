@@ -30,15 +30,10 @@ namespace ArenaClient {
 		public static Cairo.Color AbilityEnergyBackground;
 		public static Cairo.Color AbilityCooldownBackground;
 		public static Cairo.Color AbilityKeyBackground;
-		
-		public static double IsChattingScale = 0;
+
 		public static double ScoreboardScale = 0;
 
 		public static void Update(GameTime gameTime, Player player) {
-			if (Client.Local.IsChatting)
-				IsChattingScale = Math.Min(IsChattingScale + 0.4, 1);
-			else
-				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
 			if (Client.Local.IsShowingScoreboard)
 				ScoreboardScale = Math.Min(ScoreboardScale + 0.1, 1);
 			else
@@ -147,24 +142,9 @@ namespace ArenaClient {
 				Renderer.DrawText(new Vector2(Margin, Margin + 14), "TURN SPEED: " + player.CurrentUnit.TurnSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 				Renderer.DrawText(new Vector2(Margin, Margin + 28), "ATTACK SPEED: " + player.CurrentUnit.AttackSpeed.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 				Renderer.DrawText(new Vector2(Margin, Margin + 42), "ATTACK RANGE: " + player.CurrentUnit.AttackRange.ToString(), 14, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
-				for (int i = 0; i < Math.Min(Client.Local.ChatMessages.Count, 10); i++) {
-					ChatMessage msg = Client.Local.ChatMessages[Client.Local.ChatMessages.Count - 1 - i];
-					string str = "<" + msg.Sender.ToUpper() + "> " + msg.Message.ToUpper();
-					Cairo.Color? col = null;
-					if (msg.Team == Teams.Home)
-						col = Config.HomeColor2;
-					if (msg.Team == Teams.Away)
-						col = Config.AwayColor2;
-					Renderer.DrawText(new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
-				}
-				if (Client.Local.IsChatting) {
-					Cairo.Color? col = null;
-					if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Home)
-						col = Config.HomeColor2;
-					if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
-						col = Config.AwayColor2;
-					Renderer.DrawText(new Vector2(BoxWidth + Margin, Renderer.Height - Margin - 20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer.ToUpper(), 14, TextAlign.Left, TextAlign.Bottom, MainTextFill, MainTextStroke, col, 0, null);
-				}
+
+				Client.Local.DrawChat(Renderer, new Vector2(BoxWidth + Margin, Renderer.Height - Margin), 10);
+
 				for (int i = 0; i < player.CurrentUnit.Buffs.Count; i++) {
 					if (!player.CurrentUnit.Buffs[i].Hidden) {
 						string str = (player.CurrentUnit.Buffs[i].Permanent ? "" : "  " + Math.Round(((double)(player.CurrentUnit.Buffs[i].ExpirationTime - gameTime.TotalGameTime).TotalMilliseconds) / (double)1000, 1).ToString().MakeDecimal());

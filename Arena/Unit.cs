@@ -6,10 +6,10 @@ using VGame;
 
 namespace Arena {
 	public enum Teams {
+		None,
 		Home,
 		Away,
-		Neutral,
-		Spectator
+		Neutral
 	}
 	public enum Attitude {
 		Neutral,

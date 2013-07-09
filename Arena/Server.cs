@@ -40,7 +40,7 @@ namespace Arena {
 		public SortedDictionary<int, Unit> Units = new SortedDictionary<int, Unit>();
 		protected int unitIndex = 0;
 		protected SortedDictionary<int, RemoteClient> RemoteClients = new SortedDictionary<int, RemoteClient>();
-		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
+		public List<Message> Messages = new List<Message>();
 		public Match Match = null;
 		public TimeSpan? StartTime = null;
 
@@ -296,7 +296,7 @@ namespace Arena {
 					r.SendTeamChat(player, message.Trim());
 		}
 		public void ReceiveChangeTeam(Player player, Teams team) {
-			if (player.Team == team)
+			if (player.Team == team || player.Ready)
 				return;
 			player.Team = team;
 			Console.WriteLine("[S] {0} moving to {1}", player.Name, team);
@@ -305,7 +305,7 @@ namespace Arena {
 			}
 		}
 		public void ReceiveChangeRole(Player player, Roles role) {
-			if (player.Role == role || (player.Team != Teams.Home && player.Team != Teams.Away))
+			if (player.Role == role || (player.Team != Teams.Home && player.Team != Teams.Away) || player.Ready)
 				return;
 			player.Role = role;
 			Console.WriteLine("[S] {0} is now a {1}", player.Name, role);

@@ -12,7 +12,10 @@ namespace ArenaClient {
 		TimeSpan UpdateLoadingTime = TimeSpan.FromSeconds(0.5);
 		TimeSpan NextUpdate = TimeSpan.Zero;
 		public MatchLoadingScreen() {
-			FakeLoadingTime = TimeSpan.FromSeconds(4 + Config.Random.Next(1));
+			if (Client.Local.IsLocalServer)
+				FakeLoadingTime = TimeSpan.FromSeconds(0.1);
+			else
+				FakeLoadingTime = TimeSpan.FromSeconds(4 + Config.Random.Next(1));
 		}
 		public override void Update(GameTime gameTime) {
 			if (!FakeLoadingDone.HasValue)

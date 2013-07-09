@@ -70,46 +70,7 @@ namespace ArenaClient {
 
 			}
 
-			if (Client.Local.IsChatting) {
-				if (InputManager.KeyState(Keys.Tab) == ButtonState.Pressed) {
-					string[] split = Client.Local.ChatBuffer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					if (split.Length > 0) {
-						List<Player> found = new List<Player>();
-						foreach (KeyValuePair<int, Player> kvp in Client.Local.Players) {
-							if (kvp.Value.Name.Length >= split[split.Length - 1].Length && kvp.Value.Name.Substring(0, split[split.Length - 1].Length).ToLower() == split[split.Length - 1].ToLower()) {
-								found.Add(kvp.Value);
-							}
-						}
-						if (found.Count == 1) {
-							Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - split[split.Length - 1].Length);
-							string toAdd = found[0].Name;
-							if (Client.Local.ChatBuffer.Length == 0 && (Client.Local.IsAllChatting || found[0].Team == Client.Local.LocalPlayer.Team))
-								toAdd += ": ";
-							else
-								toAdd += " ";
-							Client.Local.ChatBuffer += toAdd;
-						}
-					}
-				}
-				if (InputManager.KeyState(Keys.Backspace) == ButtonState.Pressed && Client.Local.ChatBuffer.Length > 0)
-					Client.Local.ChatBuffer = Client.Local.ChatBuffer.Substring(0, Client.Local.ChatBuffer.Length - 1);
-				foreach (char c in InputManager.GetTextInput()) {
-					Client.Local.ChatBuffer = Client.Local.ChatBuffer + c;
-				}
-				if (InputManager.KeyState(Keys.Escape) == ButtonState.Pressed) {
-					Client.Local.ChatBuffer = "";
-					Client.Local.IsChatting = false;
-				}
-				if (InputManager.KeyState(Keys.Enter) == ButtonState.Pressed) {
-					if (Client.Local.IsAllChatting)
-						Client.Local.SendAllChat(Client.Local.ChatBuffer);
-					else
-						Client.Local.SendTeamChat(Client.Local.ChatBuffer);
-					Client.Local.ChatBuffer = "";
-					Client.Local.IsChatting = false;
-				}
-			}
-			else {
+			if (!Client.Local.HandleChatInput(InputManager)) {
 				if (InputManager.KeyState(Keys.Tab) == ButtonState.Pressed) {
 					Client.Local.IsShowingScoreboard = true;
 				}
@@ -157,17 +118,6 @@ namespace ArenaClient {
 				if (InputManager.KeyState(Keys.T) == ButtonState.Pressed) {
 					// Chatwheel
 					Client.Local.SendTeamChat("Well played!");
-				}
-				if (InputManager.KeyState(Keys.Enter) == ButtonState.Pressed) {
-					if (InputManager.IsShiftKeyDown) {
-						// All chat
-						Client.Local.IsAllChatting = true;
-					}
-					else {
-						// Team chat
-						Client.Local.IsAllChatting = false;
-					}
-					Client.Local.IsChatting = true;
 				}
 				if (InputManager.KeyState(Keys.Space) == ButtonState.Pressed) {
 					viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);

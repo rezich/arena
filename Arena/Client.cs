@@ -17,12 +17,14 @@ namespace Arena {
 		public SortedDictionary<int, Unit> Units = new SortedDictionary<int, Unit>();
 		public List<Actor> Actors = new List<Actor>();
 		public List<Effect> Effects = new List<Effect>();
-		public List<ChatMessage> ChatMessages = new List<ChatMessage>();
+		public List<Message> Messages = new List<Message>();
 
 		public string ChatBuffer = "";
 		public bool IsChatting = false;
 		public bool IsAllChatting = false;
 		public bool IsShowingScoreboard = false;
+		public double IsChattingScale = 0;
+		public bool AllPlayersReady = false;
 
 		public int? CurrentAbility = null;
 
@@ -172,6 +174,7 @@ namespace Arena {
 		}
 		public void ReceiveNewPlayer(int index, string name, int number, byte team, byte role) {
 			Console.WriteLine("[C] Recieving new player: " + name + " | " + number + " | " + (Teams)team + " | " + (Roles)role);
+			Messages.Add(new Message(string.Format("{0} has connected.", name)));
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
 			Players.Add(index, new Player(name, number, (Teams)team, (Roles)role));
@@ -298,6 +301,7 @@ namespace Arena {
 		}
 		public void ReceiveDisconnect(int playerIndex) {
 			Console.WriteLine("[C] Receiving player disconnect for " + Players[playerIndex]);
+			Messages.Add(new Message(string.Format("{0} has disconnected.", Players[playerIndex].Name)));
 			List<Unit> units = new List<Unit>(Units.Values.ToList());
 			List<int> keys = new List<int>(Units.Keys.ToList());
 			for (int j = 0; j < Units.Count; j++) {
@@ -331,7 +335,7 @@ namespace Arena {
 			if (message.Length == 0)
 				return;
 			Console.WriteLine("[C] {0}: {1}", Players[playerIndex].Name, message);
-			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Teams.Neutral));
+			Messages.Add(new Message(Players[playerIndex].Name, message, Teams.Neutral));
 		}
 		public void SendTeamChat(string message) {
 			if (IsLocalServer) {
@@ -346,9 +350,11 @@ namespace Arena {
 		}
 		public void ReceiveTeamChat(int playerIndex, string message) {
 			Console.WriteLine("[C] {0} ({1}): {2}", Players[playerIndex].Name, Players[playerIndex].Team, message);
-			ChatMessages.Add(new ChatMessage(Players[playerIndex].Name, message, Players[playerIndex].Team));
+			Messages.Add(new Message(Players[playerIndex].Name, message, Players[playerIndex].Team));
 		}
 		public void ChangeTeam(Teams team) {
+			if (LocalPlayer.Ready)
+				return;
 			Console.WriteLine("[C] Moving to " + team);
 			if (IsLocalServer) {
 				Server.Local.ReceiveChangeTeam(Server.Local.Players[GetPlayerID(LocalPlayer)], team);
@@ -361,6 +367,8 @@ namespace Arena {
 			}
 		}
 		public void ChangeRole(Roles role) {
+			if (LocalPlayer.Ready)
+				return;
 			if (LocalPlayer.Team != Teams.Home && LocalPlayer.Team != Teams.Away)
 				return;
 			Console.WriteLine("[C] Changing role to " + role);
@@ -394,10 +402,22 @@ namespace Arena {
 				msg.Write((byte)(LocalPlayer.Ready ? 1 : 0));
 				client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
 			}
+			ShowReadyMessage();
 		}
 		public void ReceiveReady(int playerIndex, bool ready) {
 			Players[playerIndex].Ready = ready;
+			ShowReadyMessage();
 		}
+
+		void ShowReadyMessage() {
+			bool allPlayersReadyLast = AllPlayersReady;
+			AllPlayersReady = Players.Where(x => x.Value.Ready == false).Count() == 0;
+			if (AllPlayersReady && !allPlayersReadyLast)
+				Messages.Add(new Message(string.Format("All players are ready! Loading begins in {0} seconds.", Arena.Config.ReadyCountdown)));
+			if (!AllPlayersReady && allPlayersReadyLast)
+				Messages.Add(new Message(string.Format("Somebody unreadied! Loading suspended.")));
+		}
+
 		public void ReceiveStartLoading() {
 			Match = new Match();
 		}
@@ -433,6 +453,83 @@ namespace Arena {
 			Console.WriteLine("[C] Received match start notification with an offset of {0}", offset);
 			StartTime = NetTime.Now + offset + Config.PostLoadingCountdown;
 		}
+		public bool HandleChatInput(InputManager inputManager) {
+			if (IsChatting) {
+				if (inputManager.KeyState(Keys.Tab) == ButtonState.Pressed) {
+					string[] split = ChatBuffer.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+					if (split.Length > 0) {
+						List<Player> found = new List<Player>();
+						foreach (KeyValuePair<int, Player> kvp in Players) {
+							if (kvp.Value.Name.Length >= split[split.Length - 1].Length && kvp.Value.Name.Substring(0, split[split.Length - 1].Length).ToLower() == split[split.Length - 1].ToLower()) {
+								found.Add(kvp.Value);
+							}
+						}
+						if (found.Count == 1) {
+							ChatBuffer = ChatBuffer.Substring(0, ChatBuffer.Length - split[split.Length - 1].Length);
+							string toAdd = found[0].Name;
+							if (ChatBuffer.Length == 0 && (IsAllChatting || found[0].Team == LocalPlayer.Team))
+								toAdd += ": ";
+							else
+								toAdd += " ";
+							ChatBuffer += toAdd;
+						}
+					}
+				}
+				if (inputManager.KeyState(Keys.Backspace) == ButtonState.Pressed && ChatBuffer.Length > 0)
+					ChatBuffer = ChatBuffer.Substring(0, ChatBuffer.Length - 1);
+				foreach (char c in inputManager.GetTextInput()) {
+					ChatBuffer = ChatBuffer + c;
+				}
+				if (inputManager.KeyState(Keys.Escape) == ButtonState.Pressed) {
+					ChatBuffer = "";
+					IsChatting = false;
+				}
+				if (inputManager.KeyState(Keys.Enter) == ButtonState.Pressed) {
+					if (IsAllChatting)
+						SendAllChat(ChatBuffer);
+					else
+						SendTeamChat(ChatBuffer);
+					ChatBuffer = "";
+					IsChatting = false;
+				}
+				return true;
+			}
+			else {
+				if (inputManager.KeyState(Keys.Enter) == ButtonState.Pressed) {
+					if (inputManager.IsShiftKeyDown) {
+						// All chat
+						IsAllChatting = true;
+					}
+					else {
+						// Team chat
+						IsAllChatting = false;
+					}
+					IsChatting = true;
+				}
+			}
+			return false;
+		}
+		public void DrawChat(Renderer renderer, Vector2 position, int entries) {
+			for (int i = 0; i < Math.Min(Client.Local.Messages.Count, entries); i++) {
+				Message msg = Client.Local.Messages[Client.Local.Messages.Count - 1 - i];
+				//string str = "<" + msg.Sender.ToUpper() + "> " + msg.Contents.ToUpper();
+				string str = msg.ToString();
+				Cairo.Color? col = null;
+				if (msg.Team == Teams.Home)
+					col = Config.HomeColor2;
+				if (msg.Team == Teams.Away)
+					col = Config.AwayColor2;
+				renderer.DrawText(position + new Vector2(0, -20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, null);
+			}
+			if (Client.Local.IsChatting) {
+				Cairo.Color? col = null;
+				if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Home)
+					col = Config.HomeColor2;
+				if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
+					col = Config.AwayColor2;
+				renderer.DrawText(position + new Vector2(0, -20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer.ToUpper(), 14, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, null);
+			}
+		}
 
 		public void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
 			Tick();
@@ -447,6 +544,10 @@ namespace Arena {
 			foreach (Effect e in Effects)
 				e.Update(gameTime, viewPosition, viewOrigin);
 			Effect.Cleanup(ref Effects);
+			if (Client.Local.IsChatting)
+				IsChattingScale = Math.Min(IsChattingScale + 0.4, 1);
+			else
+				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
 		}
 		public void Draw(GameTime gameTime, Cairo.Context g) {
 			foreach (Actor a in Actors)

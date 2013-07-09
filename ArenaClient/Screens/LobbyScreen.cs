@@ -11,9 +11,7 @@ namespace ArenaClient {
 		public LobbyScreen() {
 		}
 		public override void HandleInput(GameTime gameTime) {
-			if (Client.Local.IsChatting) {
-			}
-			else {
+			if (!Client.Local.HandleChatInput(InputManager)) {
 				if (InputManager.KeyState(Keys.Q) == ButtonState.Pressed) {
 					Client.Local.ChangeTeam(Teams.Home);
 				}
@@ -21,7 +19,7 @@ namespace ArenaClient {
 					Client.Local.ChangeTeam(Teams.Away);
 				}
 				if (InputManager.KeyState(Keys.E) == ButtonState.Pressed) {
-					Client.Local.ChangeTeam(Teams.Spectator);
+					Client.Local.ChangeTeam(Teams.None);
 				}
 				if (InputManager.KeyState(Keys.R) == ButtonState.Pressed) {
 					Client.Local.ToggleReady();
@@ -48,7 +46,6 @@ namespace ArenaClient {
 				Console.WriteLine("[C] Moving to MatchLoadingScreen...");
 				StateManager.ReplaceState(new MatchLoadingScreen());
 			}
-			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
 			Cairo.Context g = Renderer.Context;
@@ -98,11 +95,13 @@ namespace ArenaClient {
 			// SPECTATOR
 			Renderer.DrawText(spectatorOrigin, "SPECTATOR", 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, Config.NeutralColor2, 0, null);
 			offset = 0;
-			foreach (KeyValuePair<int, Player> kvp in Client.Local.Players.Where(x => x.Value.Team == Teams.Spectator)) {
+			foreach (KeyValuePair<int, Player> kvp in Client.Local.Players.Where(x => x.Value.Team == Teams.None)) {
 				Renderer.DrawText(spectatorOrigin + new Vector2(0, 20 * (offset + 1)), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, kvp.Value.Ready ? Config.NeutralColor1 : HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
-			base.Draw(gameTime);
+
+			// CHAT
+			Client.Local.DrawChat(Renderer, new Vector2(8, Renderer.Height - 8), 10);
 		}
 	}
 }
