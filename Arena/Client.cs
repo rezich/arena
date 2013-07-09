@@ -449,8 +449,8 @@ namespace Arena {
 			}
 		}
 		public void ReceiveStartMatch(double offset) {
-			//int now = DateTime.UtcNow.Millisecond
 			Console.WriteLine("[C] Received match start notification with an offset of {0}", offset);
+			Messages.Add(new Message(string.Format("All players loaded, the game will begin in {0} seconds.", Arena.Config.PostLoadingCountdown)));
 			StartTime = NetTime.Now + offset + Config.PostLoadingCountdown;
 		}
 		public bool HandleChatInput(InputManager inputManager) {
@@ -510,6 +510,7 @@ namespace Arena {
 			return false;
 		}
 		public void DrawChat(Renderer renderer, Vector2 position, int entries) {
+			int chatHeight = 12;
 			for (int i = 0; i < Math.Min(Client.Local.Messages.Count, entries); i++) {
 				Message msg = Client.Local.Messages[Client.Local.Messages.Count - 1 - i];
 				//string str = "<" + msg.Sender.ToUpper() + "> " + msg.Contents.ToUpper();
@@ -519,7 +520,7 @@ namespace Arena {
 					col = Config.HomeColor2;
 				if (msg.Team == Teams.Away)
 					col = Config.AwayColor2;
-				renderer.DrawText(position + new Vector2(0, -20 * (float)((double)i + IsChattingScale)), str, 14, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, null);
+				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)i + IsChattingScale)), str, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25");
 			}
 			if (Client.Local.IsChatting) {
 				Cairo.Color? col = null;
@@ -527,7 +528,7 @@ namespace Arena {
 					col = Config.HomeColor2;
 				if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
 					col = Config.AwayColor2;
-				renderer.DrawText(position + new Vector2(0, -20 * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer.ToUpper(), 14, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, null);
+				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25");
 			}
 		}
 

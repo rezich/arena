@@ -34,13 +34,14 @@ namespace Arena {
 		public static string PlayerName = "UNNAMED";
 		public static int PlayerNumber = 0;
 		public static string LastServerAddress = "localhost";
+
 		public static bool Fullscreen = false;
-		//public static bool Borderless = false;
+		public static bool Borderless = false;
 		public static bool Antialiasing = true;
+		public static VGame.Rectangle Resolution = new VGame.Rectangle(0, 0, 1280, 720);
 
 		public static int ReadyCountdown = 5;
 		public static int PostLoadingCountdown = 5;
-		public static VGame.Point Resolution = new VGame.Point(1280, 720);
 
 		public static Dictionary<KeyCommand, Keys> KeyBindings = new Dictionary<KeyCommand, Keys>();
 

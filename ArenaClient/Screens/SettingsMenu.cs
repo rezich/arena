@@ -7,23 +7,18 @@ namespace ArenaClient {
 	public class SettingsMenu : Menu  {
 		string newName = Arena.Config.PlayerName;
 		int newNumber = Arena.Config.PlayerNumber;
-		//List<Point> displayModes = new List<Point>();
+		List<Rectangle> displayModes = new List<Rectangle>();
 		SelectManyEntry resolutionEntry;
 		SelectManyEntry fullscreenEntry;
 		SelectManyEntry antialiasingEntry;
 		MenuEntry saveEntry;
 		public SettingsMenu() : base("SETTINGS") {
-			List<string> convertedDisplayModes = new List<string>() { "-----------" };
-			/*foreach (DisplayMode mode in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes) {
-				bool found = false;
-				foreach (Point p in displayModes)
-					if (p.X == mode.Width && p.Y == mode.Height)
-						found = true;
-				if (!found) {
-					displayModes.Add(new Point(mode.Width, mode.Height));
-					convertedDisplayModes.Add(mode.Width + "x" + mode.Height);
-				}
-			}*/
+			List<string> convertedDisplayModes = new List<string>();
+			foreach (Rectangle r in Renderer.Current.Resolutions) {
+				displayModes.Add(r);
+				convertedDisplayModes.Add(r.Width + "x" + r.Height);
+				Console.WriteLine(r.Width + "x" + r.Height);
+			}
 
 			Entries.Add(new HeadingEntry(this, "PLAYER"));
 
@@ -44,38 +39,31 @@ namespace ArenaClient {
 			Entries.Add(new HeadingEntry(this, "GRAPHICS"));
 
 			resolutionEntry = new SelectManyEntry(this, "RESOLUTION", convertedDisplayModes);
-			/*if (displayModes.Contains(Arena.Config.Resolution))
-				resolutionEntry.SelectedIndex = displayModes.IndexOf(Arena.Config.Resolution);*/
+			if (displayModes.Contains(Arena.Config.Resolution))
+				resolutionEntry.SelectedIndex = displayModes.IndexOf(Arena.Config.Resolution);
 			resolutionEntry.SwipeLeft += CheckForChanges;
 			resolutionEntry.SwipeRight += CheckForChanges;
 			resolutionEntry.Selected += CheckForChanges;
-			resolutionEntry.Enabled = false;
 			Entries.Add(resolutionEntry);
 
-			fullscreenEntry = new SelectManyEntry(this, "FULLSCREEN", new List<string>() { "NO", "YES" });
+			fullscreenEntry = new SelectManyEntry(this, "FULLSCREEN", new List<string>() { "NO", "YES", "BORDERLESS" });
 			if (Arena.Config.Fullscreen)
 				fullscreenEntry.SelectedIndex = 1;
-			/*if (Arena.Config.Borderless)
-				fullscreenEntry.SelectedIndex = 2;*/
+			if (Arena.Config.Borderless)
+				fullscreenEntry.SelectedIndex = 2;
 			fullscreenEntry.SwipeLeft += CheckForChanges;
 			fullscreenEntry.SwipeRight += CheckForChanges;
 			fullscreenEntry.Selected += CheckForChanges;
-			fullscreenEntry.Enabled = false;
 			Entries.Add(fullscreenEntry);
 
 			Entries.Add(new TextInputEntry(this, "VSYNC", "OFF"));
 			Entries.Last().Enabled = false;
 			antialiasingEntry = new SelectManyEntry(this, "ANTIALIASING", new List<string>() { "OFF", "ON" });
-			if (Arena.Config.Antialiasing) {
-				antialiasingEntry.SelectedIndex = 1;
-			}
+			antialiasingEntry.SelectedIndex = Arena.Config.Antialiasing ? 1 : 0;
 			antialiasingEntry.SwipeLeft += CheckForChanges;
 			antialiasingEntry.SwipeRight += CheckForChanges;
 			antialiasingEntry.Selected += CheckForChanges;
 			Entries.Add(antialiasingEntry);
-
-			Entries.Add(new TextInputEntry(this, "DOUBLE-BUFFERING", "ON"));
-			Entries.Last().Enabled = false;
 
 			Entries.Add(new SpacerEntry(this));
 
@@ -86,13 +74,11 @@ namespace ArenaClient {
 				Arena.Config.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
 				Renderer.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
 
-				/*if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1)) {
-					if (!Resolution.Set(displayModes[resolutionEntry.SelectedIndex].X, displayModes[resolutionEntry.SelectedIndex].Y, fullscreenEntry.SelectedIndex == 1, false, false))
-						throw new Exception("oops");
-					Arena.Config.Resolution = displayModes[resolutionEntry.SelectedIndex];
-					Arena.Config.Fullscreen = fullscreenEntry.SelectedIndex == 1;
-					Renderer.Resize(displayModes[resolutionEntry.SelectedIndex].X, displayModes[resolutionEntry.SelectedIndex].Y);
-				}*/
+				if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2)) {
+					Arena.Config.Fullscreen = (fullscreenEntry.SelectedIndex == 1);
+					Arena.Config.Borderless = (fullscreenEntry.SelectedIndex == 2);
+					StateManager.Game.ChangeResolution(displayModes[resolutionEntry.SelectedIndex], Arena.Config.Fullscreen, Arena.Config.Borderless);
+				}
 				Exit();
 			};
 			saveEntry.Enabled = false;
@@ -102,7 +88,7 @@ namespace ArenaClient {
 
 		}
 		protected void CheckForChanges(object sender, EventArgs e) {
-			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || (antialiasingEntry.SelectedIndex == 1) != Arena.Config.Antialiasing/* || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution|| Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1)*/);
+			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || (antialiasingEntry.SelectedIndex == 1) != Arena.Config.Antialiasing || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2));
 		}
 		protected override void OnCancel() {
 			Exit();

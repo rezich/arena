@@ -34,7 +34,6 @@ namespace ArenaClient {
 				Console.WriteLine("[C] Moving to MatchScreen...");
 				StateManager.ReplaceState(new MatchScreen());
 			}
-			base.Update(gameTime);
 		}
 		public override void Draw(GameTime gameTime) {
 			Renderer.Clear(new Color(0.83, 0.83, 0.83));
@@ -63,7 +62,7 @@ namespace ArenaClient {
 				Renderer.DrawText(pOrigin + new Vector2(0, 2), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
 				offset++;
 			}
-			base.Draw(gameTime);
+			Client.Local.DrawChat(Renderer, new Vector2(8, Renderer.Height - 8), 10);
 		}
 	}
 }
