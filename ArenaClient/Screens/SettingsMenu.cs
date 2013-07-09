@@ -10,6 +10,7 @@ namespace ArenaClient {
 		//List<Point> displayModes = new List<Point>();
 		SelectManyEntry resolutionEntry;
 		SelectManyEntry fullscreenEntry;
+		SelectManyEntry antialiasingEntry;
 		MenuEntry saveEntry;
 		public SettingsMenu() : base("SETTINGS") {
 			List<string> convertedDisplayModes = new List<string>() { "-----------" };
@@ -64,8 +65,15 @@ namespace ArenaClient {
 
 			Entries.Add(new TextInputEntry(this, "VSYNC", "OFF"));
 			Entries.Last().Enabled = false;
-			Entries.Add(new TextInputEntry(this, "ANTIALIASING", "ON"));
-			Entries.Last().Enabled = false;
+			antialiasingEntry = new SelectManyEntry(this, "ANTIALIASING", new List<string>() { "OFF", "ON" });
+			if (Arena.Config.Antialiasing) {
+				antialiasingEntry.SelectedIndex = 1;
+			}
+			antialiasingEntry.SwipeLeft += CheckForChanges;
+			antialiasingEntry.SwipeRight += CheckForChanges;
+			antialiasingEntry.Selected += CheckForChanges;
+			Entries.Add(antialiasingEntry);
+
 			Entries.Add(new TextInputEntry(this, "DOUBLE-BUFFERING", "ON"));
 			Entries.Last().Enabled = false;
 
@@ -75,6 +83,9 @@ namespace ArenaClient {
 			saveEntry.Selected += delegate(object sender, EventArgs e) {
 				Arena.Config.PlayerName = newName;
 				Arena.Config.PlayerNumber = newNumber;
+				Arena.Config.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
+				Renderer.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
+
 				/*if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1)) {
 					if (!Resolution.Set(displayModes[resolutionEntry.SelectedIndex].X, displayModes[resolutionEntry.SelectedIndex].Y, fullscreenEntry.SelectedIndex == 1, false, false))
 						throw new Exception("oops");
@@ -91,7 +102,7 @@ namespace ArenaClient {
 
 		}
 		protected void CheckForChanges(object sender, EventArgs e) {
-			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber/* || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution|| Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1)*/);
+			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || (antialiasingEntry.SelectedIndex == 1) != Arena.Config.Antialiasing/* || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution|| Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1)*/);
 		}
 		protected override void OnCancel() {
 			Exit();
