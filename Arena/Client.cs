@@ -510,10 +510,9 @@ namespace Arena {
 			return false;
 		}
 		public void DrawChat(Renderer renderer, Vector2 position, int entries) {
-			int chatHeight = 12;
+			int chatHeight = 18;
 			for (int i = 0; i < Math.Min(Client.Local.Messages.Count, entries); i++) {
 				Message msg = Client.Local.Messages[Client.Local.Messages.Count - 1 - i];
-				//string str = "<" + msg.Sender.ToUpper() + "> " + msg.Contents.ToUpper();
 				string str = msg.ToString();
 				Cairo.Color? col = null;
 				if (msg.Team == Teams.Home)

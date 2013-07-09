@@ -75,10 +75,12 @@ namespace ArenaClient {
 				Renderer.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
 
 				if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2)) {
+					Arena.Config.Resolution = displayModes[resolutionEntry.SelectedIndex];
 					Arena.Config.Fullscreen = (fullscreenEntry.SelectedIndex == 1);
 					Arena.Config.Borderless = (fullscreenEntry.SelectedIndex == 2);
 					StateManager.Game.ChangeResolution(displayModes[resolutionEntry.SelectedIndex], Arena.Config.Fullscreen, Arena.Config.Borderless);
 				}
+				Arena.Config.Write();
 				Exit();
 			};
 			saveEntry.Enabled = false;

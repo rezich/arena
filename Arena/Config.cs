@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 using Cairo;
 using VGame;
 
@@ -87,6 +89,33 @@ namespace Arena {
 			KeyBindings.Add(KeyCommand.CameraLeft, Keys.Left);
 			KeyBindings.Add(KeyCommand.CameraRight, Keys.Right);
 			KeyBindings.Add(KeyCommand.Scoreboard, Keys.Tab);
+		}
+		public static void Write() {
+			List<string> conf = new List<string>();
+			conf.Add(PlayerName);
+			conf.Add(PlayerNumber.ToString());
+			conf.Add(LastServerAddress);
+			conf.Add(Fullscreen.ToString());
+			conf.Add(Borderless.ToString());
+			conf.Add(Antialiasing.ToString());
+			conf.Add(Resolution.Width.ToString());
+			conf.Add(Resolution.Height.ToString());
+			File.WriteAllLines("settings", conf);
+		}
+		public static void Read() {
+			if (!File.Exists("settings"))
+				return;
+			List<string> conf = File.ReadAllLines("settings").ToList();
+			PlayerName = conf[0];
+			PlayerNumber = int.Parse(conf[1]);
+			LastServerAddress = conf[2];
+			Fullscreen = bool.Parse(conf[3]);
+			Borderless = bool.Parse(conf[4]);
+			Antialiasing = bool.Parse(conf[5]);
+			int w, h;
+			w = int.Parse(conf[6]);
+			h = int.Parse(conf[7]);
+			Resolution = new VGame.Rectangle(0, 0, w, h);
 		}
 	}
 }
