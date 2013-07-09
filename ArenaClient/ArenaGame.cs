@@ -12,7 +12,7 @@ namespace ArenaClient {
 			Role.Initialize();
 			Config.Initialize();
 			Config.Read();
-			Renderer = new Renderer(this, Config.Resolution.Width, Config.Resolution.Height, Config.Fullscreen, Config.Borderless);
+			ChangeResolution(Config.Resolution, Config.Fullscreen, Config.Borderless);
 			HUD.Recalculate(Renderer);
 			CursorVisible = false;
 
