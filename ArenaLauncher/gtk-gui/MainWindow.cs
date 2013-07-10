@@ -66,7 +66,7 @@ public partial class MainWindow
 		this.hpaned1 = new global::Gtk.HPaned ();
 		this.hpaned1.CanFocus = true;
 		this.hpaned1.Name = "hpaned1";
-		this.hpaned1.Position = 500;
+		this.hpaned1.Position = 550;
 		// Container child hpaned1.Gtk.Paned+PanedChild
 		this.frameChangelog = new global::Gtk.Frame ();
 		this.frameChangelog.Name = "frameChangelog";
@@ -167,7 +167,6 @@ public partial class MainWindow
 		this.pbCurrent = new global::Gtk.ProgressBar ();
 		this.pbCurrent.WidthRequest = 250;
 		this.pbCurrent.Name = "pbCurrent";
-		this.pbCurrent.Fraction = 0.5D;
 		this.table3.Add (this.pbCurrent);
 		global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table3 [this.pbCurrent]));
 		w12.TopAttach = ((uint)(1));

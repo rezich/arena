@@ -102,7 +102,7 @@ namespace ArenaClient {
 				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();
-				VGame.Util.StrokeAndFill(g, new Cairo.Color(128, 0, 0), null);
+				VGame.Util.StrokeAndFill(g, new Cairo.Color(0, 0, 128), null);
 			}
 
 			// experience background
