@@ -122,6 +122,18 @@ namespace ArenaClient {
 				if (InputManager.KeyState(Keys.Space) == ButtonState.Pressed) {
 					viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 				}
+				if (InputManager.KeyState(Keys.D1) == ButtonState.Pressed) {
+					Client.Local.LevelUp(gameTime, 0);
+				}
+				if (InputManager.KeyState(Keys.D2) == ButtonState.Pressed) {
+					Client.Local.LevelUp(gameTime, 1);
+				}
+				if (InputManager.KeyState(Keys.D3) == ButtonState.Pressed) {
+					Client.Local.LevelUp(gameTime, 2);
+				}
+				if (InputManager.KeyState(Keys.D4) == ButtonState.Pressed) {
+					Client.Local.LevelUp(gameTime, 3);
+				}
 			}
 		}
 		public override void Update(GameTime gameTime) {
@@ -158,22 +170,6 @@ namespace ArenaClient {
 				g.Stroke();
 			}
 			Client.Local.Draw(gameTime, g);
-			/*foreach (Effect e in Effect.List)
-				if (e.Height == EffectPosition.BelowActor)
-					e.Draw(gameTime, g, LocalPlayer);
-			foreach (Actor a in Actor.List) {
-				a.DrawUIBelow(gameTime, g, LocalPlayer);
-			}
-			foreach (Actor a in Actor.List) {
-				a.Draw(gameTime, g, LocalPlayer);
-			}
-			foreach (Actor a in Actor.List) {
-				a.DrawUIAbove(gameTime, g, LocalPlayer);
-			}
-			foreach (Effect e in Effect.List)
-				if (e.Height == EffectPosition.AboveActor)
-					e.Draw(gameTime, g, LocalPlayer);
-					*/
 
 			HUD.Draw(gameTime, Renderer, Client.Local.LocalPlayer);
 
@@ -201,7 +197,6 @@ namespace ArenaClient {
 						cursorColor = new Cairo.Color(0, 1, 0);
 				}
 			}
-
 
 			cursor.Draw(g, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
 			base.Draw(gameTime);

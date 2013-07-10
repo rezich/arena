@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VGame;
+using Arena;
 
 #endregion
 namespace ArenaClient {
@@ -10,9 +12,9 @@ namespace ArenaClient {
 		private static ArenaGame game;
         static void Main() {
 			game = new ArenaGame();
-				game.Run();
-				if (Arena.Client.Local != null)
-					Arena.Client.Local.Disconnect();
+			game.Run();
+			if (Arena.Client.Local != null)
+				Arena.Client.Local.Disconnect();
 		}
 	}
 }

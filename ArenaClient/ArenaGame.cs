@@ -9,6 +9,7 @@ namespace ArenaClient {
 		public ArenaGame() : base(false) {
 		}
 		protected override void Initialize() {
+			Arena.Commands.Load();
 			Role.Initialize();
 			Config.Initialize();
 			Config.Read();
