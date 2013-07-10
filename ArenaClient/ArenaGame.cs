@@ -10,6 +10,7 @@ namespace ArenaClient {
 		}
 		protected override void Initialize() {
 			Arena.Commands.Load();
+			ArenaClient.Commands.Load();
 			Role.Initialize();
 			Config.Initialize();
 			Config.Read();

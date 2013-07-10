@@ -56,6 +56,8 @@
     <Compile Include="States\ConnectMenu.cs" />
     <Compile Include="States\SettingsMenu.cs" />
     <Compile Include="States\TitleScreen.cs" />
+    <Compile Include="States\PauseMenu.cs" />
+    <Compile Include="Commands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
