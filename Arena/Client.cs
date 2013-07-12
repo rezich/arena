@@ -8,6 +8,7 @@ using VGame;
 namespace Arena {
 	public class Client {
 		public static Client Local = null;
+		public Game Game;
 		public Player LocalPlayer = null;
 		public bool IsConnected = false;
 		public bool IsLocalServer = false;
@@ -32,7 +33,8 @@ namespace Arena {
 
 		protected NetClient client;
 
-		public Client(bool isLocalServer) {
+		public Client(Game game, bool isLocalServer) {
+			Game = game;
 			IsLocalServer = isLocalServer;
 			if (!IsLocalServer) {
 				NetPeerConfiguration config = new NetPeerConfiguration(Arena.Config.ApplicationID);
@@ -119,6 +121,7 @@ namespace Arena {
 							break;
 					}
 				}
+				client.Recycle(incoming);
 			}
 		}
 
@@ -510,7 +513,13 @@ namespace Arena {
 			return false;
 		}
 		public void DrawChat(Renderer renderer, Vector2 position, int entries) {
-			int chatHeight = 18;
+			string font = "04b25";
+			int textSize = 12;
+
+			renderer.Context.SelectFontFace(font, Cairo.FontSlant.Normal, Cairo.FontWeight.Normal);
+			renderer.Context.SetFontSize(textSize);
+			float chatHeight = (float)renderer.Context.FontExtents.Height;
+
 			for (int i = 0; i < Math.Min(Client.Local.Messages.Count, entries); i++) {
 				Message msg = Client.Local.Messages[Client.Local.Messages.Count - 1 - i];
 				string str = msg.ToString();
@@ -519,7 +528,7 @@ namespace Arena {
 					col = Config.HomeColor2;
 				if (msg.Team == Teams.Away)
 					col = Config.AwayColor2;
-				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)i + IsChattingScale)), str, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25");
+				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)i + IsChattingScale)), str, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25", 0);
 			}
 			if (Client.Local.IsChatting) {
 				Cairo.Color? col = null;
@@ -527,7 +536,7 @@ namespace Arena {
 					col = Config.HomeColor2;
 				if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
 					col = Config.AwayColor2;
-				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25");
+				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25", 0);
 			}
 		}
 

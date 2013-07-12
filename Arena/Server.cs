@@ -175,6 +175,7 @@ namespace Arena {
 						}
 						break;
 				}
+				server.Recycle(incoming);
 			}
 		}
 		

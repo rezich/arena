@@ -17,7 +17,6 @@ namespace ArenaClient {
 			foreach (Rectangle r in Renderer.Current.Resolutions) {
 				displayModes.Add(r);
 				convertedDisplayModes.Add(r.Width + "x" + r.Height);
-				Console.WriteLine(r.Width + "x" + r.Height);
 			}
 
 			Entries.Add(new HeadingEntry(this, "PLAYER"));

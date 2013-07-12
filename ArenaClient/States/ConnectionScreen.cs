@@ -8,13 +8,13 @@ using Arena;
 namespace ArenaClient {
 	public class ConnectionScreen : State {
 		public ConnectionScreen(string serverAddress) {
-			Client.Local = new Client(false);
+			Client.Local = new Client(Game, false);
 			Client.Local.Connect(serverAddress);
 		}
 		public ConnectionScreen(bool localServer) {
 			if (localServer)
 				new Server(true);
-			Client.Local = new Client(localServer);
+			Client.Local = new Client(Game, localServer);
 			Client.Local.Connect();
 		}
 
