@@ -20,7 +20,7 @@ namespace ArenaClient {
 
 			Entries.Add(new MenuEntry(this, "PRACTICE WITH BOTS"));
 			Entries.Last().Selected += delegate(object sender, EventArgs e) {
-				StateManager.AddState(new ConnectionScreen(true));
+				StateManager.AddState(new ConnectionScreen(""));
 			};
 
 			Entries.Add(new SpacerEntry(this));

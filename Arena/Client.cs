@@ -46,11 +46,11 @@ namespace Arena {
 			if (IsLocalServer)
 				return;
 			if (client.ConnectionStatus == NetConnectionStatus.Connected && !IsConnected) {
-				Console.WriteLine("[C] Connected successfully.");
+				Console.WriteLine("Connected successfully.");
 				IsConnected = true;
 			}
 			if (IsConnected && client.ConnectionStatus == NetConnectionStatus.Disconnected) {
-				Console.WriteLine("[C] Disconnected from server.");
+				Console.WriteLine("Disconnected from server.");
 				IsConnected = false;
 			}
 			NetIncomingMessage incoming;
@@ -129,14 +129,14 @@ namespace Arena {
 			if (IsLocalServer) {
 				IsConnected = true;
 				Server.Local.AddPlayer(Arena.Config.PlayerName, Arena.Config.PlayerNumber, Teams.Neutral, Roles.Runner);
-				Console.WriteLine("[C] Connected to local single-player server.");
+				Game.Cmd.Console.WriteLine("Connected to local single-player server.");
 			}
 			else
 				throw new Exception("Can't local-connect to remote server.");
 		}
 		public void Connect(string address) {
 			if (!IsLocalServer) {
-				Console.WriteLine("[C] Connecting to server... ");
+				Game.Cmd.Console.WriteLine("Connecting to server... ");
 				NetOutgoingMessage msg = client.CreateMessage();
 				client.Start();
 				msg.Write((byte)PacketType.Connect);
@@ -176,19 +176,19 @@ namespace Arena {
 			}
 		}
 		public void ReceiveNewPlayer(int index, string name, int number, byte team, byte role) {
-			Console.WriteLine("[C] Recieving new player: " + name + " | " + number + " | " + (Teams)team + " | " + (Roles)role);
+			Game.Cmd.Console.WriteLine("Recieving new player: " + name + " | " + number + " | " + (Teams)team + " | " + (Roles)role);
 			Messages.Add(new Message(string.Format("{0} has connected.", name)));
 			if (Players.ContainsKey(index))
 				Players.Remove(index);
 			Players.Add(index, new Player(name, number, (Teams)team, (Roles)role));
 			if (Players.Count == 1) {
-				Console.WriteLine("[C] I didn't have any other players, so this new player is the local player.");
+				Game.Cmd.Console.WriteLine("I didn't have any other players, so this new player is the local player.");
 				LocalPlayer = Players[index];
 			}
-			Console.WriteLine("[C] I now have " + Players.Count + " players.");
+			Game.Cmd.Console.WriteLine("I now have " + Players.Count + " players.");
 		}
 		public void ReceiveNewPlayerUnit(int unitIndex, int playerIndex, float x, float y, double direction) {
-			Console.WriteLine("[C] Recieving new player unit for " + Players[playerIndex].Name + " at (" + x + ", " + y + ")");
+			Game.Cmd.Console.WriteLine("Recieving new player unit for " + Players[playerIndex].Name + " at (" + x + ", " + y + ")");
 			Player player = Players[playerIndex];
 			Unit u = new Unit(player, Role.List[player.Role].Health, Role.List[player.Role].Energy);
 			u.Owner = player;
@@ -215,7 +215,7 @@ namespace Arena {
 				Server.Local.ReceiveAttackOrder(Units.FirstOrDefault(x => x.Value == LocalPlayer.CurrentUnit).Key, Units.FirstOrDefault(x => x.Value == unit).Key);
 			}
 			else {
-				Console.WriteLine("[C] Sending attack order: " + LocalPlayer.Name + " -> " + unit.Owner.Name);
+				Game.Cmd.Console.WriteLine("Sending attack order: " + LocalPlayer.Name + " -> " + unit.Owner.Name);
 				NetOutgoingMessage msg = client.CreateMessage();
 				msg.Write((byte)PacketType.AttackOrder);
 				msg.Write(GetUnitID(LocalPlayer.CurrentUnit));
@@ -224,7 +224,7 @@ namespace Arena {
 			}
 		}
 		public void SendMoveOrder(Vector2 position) {
-			Console.WriteLine("[C] Sending move order for unit " + GetUnitID(LocalPlayer.CurrentUnit) + " to (" + position.X + ", " + position.Y + ")");
+			Game.Cmd.Console.WriteLine("Sending move order for unit " + GetUnitID(LocalPlayer.CurrentUnit) + " to (" + position.X + ", " + position.Y + ")");
 			LocalPlayer.CurrentUnit.AttackTarget = null;
 			LocalPlayer.CurrentUnit.IntendedPosition = position;
 			if (IsLocalServer) {
@@ -240,7 +240,7 @@ namespace Arena {
 			}
 		}
 		public void ReceiveAttackOrder(int attackerIndex, int victimIndex) {
-			Console.WriteLine("[C] Receiving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
+			Game.Cmd.Console.WriteLine("Receiving attack order: " + Units[attackerIndex].Owner.Name + " -> " + Units[victimIndex].Owner.Name);
 			Units[attackerIndex].AttackTarget = Units[victimIndex];
 		}
 		public void ReceiveMoveOrder(int unitIndex, float x, float y) {
@@ -252,7 +252,7 @@ namespace Arena {
 		}
 		public void LevelUp(GameTime gameTime, int ability) {
 			if (LocalPlayer.CurrentUnit.CanLevelUp(ability)) {
-				Console.WriteLine("[C] Sending level up for player " + LocalPlayer.Name);
+				Game.Cmd.Console.WriteLine("Sending level up for player " + LocalPlayer.Name);
 				if (IsLocalServer) {
 					Server.Local.ReceiveLevelUp(GetUnitID(LocalPlayer.CurrentUnit), ability);
 				}
@@ -266,7 +266,7 @@ namespace Arena {
 			}
 		}
 		public void ReceiveLevelUp(int unitIndex, int ability) {
-			Console.WriteLine("[C] Receiving level up for " + Units[unitIndex].Owner.Name);
+			Game.Cmd.Console.WriteLine("Receiving level up for " + Units[unitIndex].Owner.Name);
 			Units[unitIndex].LevelUp(ability);
 		}
 		public void BeginUsingAbility(GameTime gameTime, int ability) {
@@ -281,7 +281,7 @@ namespace Arena {
 			if (!CurrentAbility.HasValue)
 				return;
 			if (LocalPlayer.CurrentUnit.CanUseAbility((int)CurrentAbility)) {
-				Console.WriteLine("[C] Sending ability use for " + LocalPlayer.Name);
+				Game.Cmd.Console.WriteLine("Sending ability use for " + LocalPlayer.Name);
 				if (IsLocalServer) {
 					Server.Local.ReceiveUseAbility(GetUnitID(LocalPlayer.CurrentUnit), (int)CurrentAbility, null, null);
 				}
@@ -299,11 +299,11 @@ namespace Arena {
 			CurrentAbility = null;
 		}
 		public void ReceiveUseAbility(int unitIndex, int ability, float? val1, float? val2) {
-			Console.WriteLine("[C] Receiving ability use for " + Units[unitIndex].Owner.Name + ", ability " + ability);
+			Game.Cmd.Console.WriteLine("Receiving ability use for " + Units[unitIndex].Owner.Name + ", ability " + ability);
 			Units[unitIndex].UseAbility(ability, val1, val2);
 		}
 		public void ReceiveDisconnect(int playerIndex) {
-			Console.WriteLine("[C] Receiving player disconnect for " + Players[playerIndex]);
+			Game.Cmd.Console.WriteLine("Receiving player disconnect for " + Players[playerIndex]);
 			Messages.Add(new Message(string.Format("{0} has disconnected.", Players[playerIndex].Name)));
 			List<Unit> units = new List<Unit>(Units.Values.ToList());
 			List<int> keys = new List<int>(Units.Keys.ToList());
@@ -337,7 +337,7 @@ namespace Arena {
 		public void ReceiveAllChat(int playerIndex, string message) {
 			if (message.Length == 0)
 				return;
-			Console.WriteLine("[C] {0}: {1}", Players[playerIndex].Name, message);
+			Game.Cmd.Console.WriteLine(string.Format("{0}: {1}", Players[playerIndex].Name, message));
 			Messages.Add(new Message(Players[playerIndex].Name, message, Teams.Neutral));
 		}
 		public void SendTeamChat(string message) {
@@ -352,13 +352,13 @@ namespace Arena {
 			}
 		}
 		public void ReceiveTeamChat(int playerIndex, string message) {
-			Console.WriteLine("[C] {0} ({1}): {2}", Players[playerIndex].Name, Players[playerIndex].Team, message);
+			Game.Cmd.Console.WriteLine(string.Format("{0} ({1}): {2}", Players[playerIndex].Name, Players[playerIndex].Team, message));
 			Messages.Add(new Message(Players[playerIndex].Name, message, Players[playerIndex].Team));
 		}
 		public void ChangeTeam(Teams team) {
 			if (LocalPlayer.Ready)
 				return;
-			Console.WriteLine("[C] Moving to " + team);
+			Game.Cmd.Console.WriteLine("Moving to " + team);
 			if (IsLocalServer) {
 				Server.Local.ReceiveChangeTeam(Server.Local.Players[GetPlayerID(LocalPlayer)], team);
 			}
@@ -374,7 +374,7 @@ namespace Arena {
 				return;
 			if (LocalPlayer.Team != Teams.Home && LocalPlayer.Team != Teams.Away)
 				return;
-			Console.WriteLine("[C] Changing role to " + role);
+			Game.Cmd.Console.WriteLine("Changing role to " + role);
 			if (IsLocalServer) {
 				Server.Local.ReceiveChangeRole(Server.Local.Players[GetPlayerID(LocalPlayer)], role);
 			}
@@ -394,7 +394,7 @@ namespace Arena {
 		public void ToggleReady() {
 			if (LocalPlayer.Team == Teams.Neutral)
 				return;
-			Console.WriteLine("[C] Setting READY to " + !LocalPlayer.Ready);
+			Game.Cmd.Console.WriteLine("Setting READY to " + !LocalPlayer.Ready);
 			LocalPlayer.Ready = !LocalPlayer.Ready;
 			if (IsLocalServer) {
 				Server.Local.ReceiveReady(Server.Local.Players[GetPlayerID(LocalPlayer)], LocalPlayer.Ready);
@@ -452,7 +452,7 @@ namespace Arena {
 			}
 		}
 		public void ReceiveStartMatch(double offset) {
-			Console.WriteLine("[C] Received match start notification with an offset of {0}", offset);
+			Game.Cmd.Console.WriteLine(string.Format("Received match start notification with an offset of {0}", offset));
 			Messages.Add(new Message(string.Format("All players loaded, the game will begin in {0} seconds.", Arena.Config.PostLoadingCountdown)));
 			StartTime = NetTime.Now + offset + Config.PostLoadingCountdown;
 		}

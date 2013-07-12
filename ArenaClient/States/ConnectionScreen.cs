@@ -7,15 +7,22 @@ using Arena;
 
 namespace ArenaClient {
 	public class ConnectionScreen : State {
-		public ConnectionScreen(string serverAddress) {
-			Client.Local = new Client(Game, false);
-			Client.Local.Connect(serverAddress);
+		string address;
+
+		public ConnectionScreen(string address) : base() {
+			this.address = address;
 		}
-		public ConnectionScreen(bool localServer) {
-			if (localServer)
+
+		public override void Initialize() {
+			if (address == "") {
 				new Server(true);
-			Client.Local = new Client(Game, localServer);
-			Client.Local.Connect();
+				Client.Local = new Client(StateManager.Game, true);
+				Client.Local.Connect();
+			}
+			else {
+				Client.Local = new Client(StateManager.Game, false);
+				Client.Local.Connect(address);
+			}
 		}
 
 		public override void Update(GameTime gameTime) {

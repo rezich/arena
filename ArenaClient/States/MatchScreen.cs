@@ -42,6 +42,9 @@ namespace ArenaClient {
 		public override void OnFocus() {
 			Game.ConstrainMouse = true;
 		}
+		public override void OnEscape() {
+			Game.Cmd.Run("pausemenu");
+		}
 		public override void HandleInput(GameTime gameTime) {
 			cursorPosition = new Vector2(InputManager.MousePosition.X, InputManager.MousePosition.Y);
 			if (cursorPosition.X < viewOrigin.X + edgeScrollSize && !StateManager.Game.CursorVisible)
@@ -76,9 +79,6 @@ namespace ArenaClient {
 				}
 				if (InputManager.KeyState(Keys.Tab) == ButtonState.Released) {
 					Game.Cmd.Run("-scoreboard");
-				}
-				if (InputManager.KeyState(Keys.Escape) == ButtonState.Pressed) {
-					Game.Cmd.Run("pausemenu");
 				}
 				if (InputManager.KeyDown(Keys.Up))
 					viewPosition.Y -= viewMoveSpeed;

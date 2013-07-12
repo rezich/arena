@@ -8,13 +8,8 @@ using Arena;
 
 namespace ArenaClient {
 	public class LobbyScreen : State {
-		public LobbyScreen() {
-		}
 		public override void HandleInput(GameTime gameTime) {
 			if (!Client.Local.HandleChatInput(InputManager)) {
-				if (InputManager.KeyState(Keys.Escape) == ButtonState.Pressed) {
-					StateManager.ReplaceAllStates(new TitleScreen());
-				}
 				if (InputManager.KeyState(Keys.Q) == ButtonState.Pressed) {
 					Client.Local.ChangeTeam(Teams.Home);
 				}
@@ -105,6 +100,9 @@ namespace ArenaClient {
 
 			// CHAT
 			Client.Local.DrawChat(Renderer, new Vector2(8, Renderer.Height - 8), 10);
+		}
+		public override void OnEscape() {
+			StateManager.ReplaceAllStates(new TitleScreen());
 		}
 	}
 }
