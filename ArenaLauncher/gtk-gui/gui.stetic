@@ -5,7 +5,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Debug/ArenaLauncher.exe" internal="true" />
+    <widget-library name="../bin/Release/ArenaLauncher.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="1017 644">
     <property name="MemberName" />
@@ -561,6 +561,7 @@
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Play</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnBtnPlayClicked" />
               </widget>
               <packing>
                 <property name="PackType">End</property>

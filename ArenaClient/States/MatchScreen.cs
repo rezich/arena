@@ -88,33 +88,17 @@ namespace ArenaClient {
 					viewPosition.X += viewMoveSpeed;
 				if (InputManager.KeyDown(Keys.Down))
 					viewPosition.Y += viewMoveSpeed;
-				if (InputManager.KeyState(Keys.Q) == ButtonState.Pressed) {
-					if (InputManager.IsShiftKeyDown)
-						Client.Local.LevelUp(gameTime, 0);
-					else {
-						Client.Local.BeginUsingAbility(gameTime, 0);
-					}
+				if (InputManager.KeyState(Keys.Q) == ButtonState.Pressed && InputManager.IsShiftKeyDown) {
+					Client.Local.LevelUp(gameTime, 0);
 				}
-				if (InputManager.KeyState(Keys.W) == ButtonState.Pressed) {
-					if (InputManager.IsShiftKeyDown)
-						Client.Local.LevelUp(gameTime, 1);
-					else {
-						Client.Local.BeginUsingAbility(gameTime, 1);
-					}
+				if (InputManager.KeyState(Keys.W) == ButtonState.Pressed && InputManager.IsShiftKeyDown) {
+					Client.Local.LevelUp(gameTime, 1);
 				}
-				if (InputManager.KeyState(Keys.E) == ButtonState.Pressed) {
-					if (InputManager.IsShiftKeyDown)
-						Client.Local.LevelUp(gameTime, 2);
-					else {
-						Client.Local.BeginUsingAbility(gameTime, 2);
-					}
+				if (InputManager.KeyState(Keys.E) == ButtonState.Pressed && InputManager.IsShiftKeyDown) {
+					Client.Local.LevelUp(gameTime, 2);
 				}
-				if (InputManager.KeyState(Keys.R) == ButtonState.Pressed) {
-					if (InputManager.IsShiftKeyDown)
-						Client.Local.LevelUp(gameTime, 3);
-					else {
-						Client.Local.BeginUsingAbility(gameTime, 3);
-					}
+				if (InputManager.KeyState(Keys.R) == ButtonState.Pressed && InputManager.IsShiftKeyDown) {
+					Client.Local.LevelUp(gameTime, 3);
 				}
 				if (InputManager.KeyState(Keys.T) == ButtonState.Pressed) {
 					// Chatwheel

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.IO;
 using Gtk;
@@ -47,6 +48,10 @@ public partial class MainWindow: Gtk.Window {
 		tvConsole.Buffer.Text += string.Format("{0}\n", text);
 	}
 
+	protected void Play() {
+
+	}
+
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a) {
 		downloader.Dispose();
 		Application.Quit();
@@ -55,5 +60,9 @@ public partial class MainWindow: Gtk.Window {
 
 	void DownloadChangelog() {
 
+	}
+
+	protected void OnBtnPlayClicked(object sender, EventArgs e) {
+		Play();
 	}
 }

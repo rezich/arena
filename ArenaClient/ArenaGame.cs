@@ -18,6 +18,11 @@ namespace ArenaClient {
 			HUD.Recalculate(Renderer);
 			CursorVisible = false;
 
+			Binding.Bind(new KeyCombination(Keys.Q, false, false, false), "ability_execute 0");
+			Binding.Bind(new KeyCombination(Keys.W, false, false, false), "ability_execute 1");
+            Binding.Bind(new KeyCombination(Keys.E, false, false, false), "ability_execute 2");
+            Binding.Bind(new KeyCombination(Keys.R, false, false, false), "ability_execute 3");
+
 			StateManager.AddState(new TitleScreen());
 		}
 	}
