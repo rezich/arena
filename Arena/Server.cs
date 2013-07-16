@@ -341,7 +341,7 @@ namespace Arena {
 				r.SendStartLoading();
 			}
 			foreach (KeyValuePair<int, Player> kvp in Players) {
-				Unit u = MakePlayerUnit(kvp.Value, new Vector2(100, 100).AddLengthDir(100, Arena.Config.Random.NextDouble() * MathHelper.TwoPi));
+				/*Unit u = */MakePlayerUnit(kvp.Value, new Vector2(100, 100).AddLengthDir(100, Arena.Config.Random.NextDouble() * MathHelper.TwoPi));
 			}
 		}
 		public void StartMatch() {

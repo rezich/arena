@@ -42,7 +42,7 @@ namespace Arena {
 			double percent = (double)Unit.Health / (double)Unit.MaxHealth;
 			double size = Arena.Config.ActorScale + 10;
 			Vector2 start = Position + new Vector2(0, (float)-size);
-			Vector2 end = Position + new Vector2((float)(Math.Cos(MathHelper.PiOver2) * size), (float)(Math.Sin(MathHelper.PiOver2) * size));
+			/*Vector2 end = Position + new Vector2((float)(Math.Cos(MathHelper.PiOver2) * size), (float)(Math.Sin(MathHelper.PiOver2) * size));*/
 			g.MoveTo(start.X, start.Y);
 			g.ArcNegative(Position.X, Position.Y, size, 3 * MathHelper.PiOver2, 3 * MathHelper.PiOver2 - (MathHelper.TwoPi * percent));
 			if (percent < 1) {

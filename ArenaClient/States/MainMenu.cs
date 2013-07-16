@@ -39,7 +39,7 @@ namespace ArenaClient {
 
 		}
 		protected override void OnCancel() {
-			StateManager.Game.Cmd.Run(new Command<VGame.Commands.Quit>());
+			StateManager.Game.Cmd.Run(new Command(CommandDefinition.List["quit"]));
 		}
 	}
 }
