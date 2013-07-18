@@ -25,6 +25,12 @@ namespace ArenaClient {
 
 			StateManager.AddState(new TitleScreen());
 		}
+		public override bool IsClient() {
+			return Client.Local != null;
+		}
+		public override bool IsServer() {
+			return Server.Local != null;
+		}
 	}
 }
 
