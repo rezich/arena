@@ -31,12 +31,14 @@ namespace Arena {
 		public override void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
 			base.Update(gameTime, viewPosition, viewOrigin);
 		}
-		public override void Draw(GameTime gameTime, Context g, Player localPlayer) {
-			Shape.Draw(g, Position, Direction, (Unit.Team == Teams.Home ? Arena.Config.HomeColor1 : Arena.Config.AwayColor1), (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), Arena.Config.ActorScale);
+		public override void Draw(GameTime gameTime, Renderer renderer, Player localPlayer) {
+			Context g = renderer.Context;
+			Shape.Draw(renderer, Position, Direction, (Unit.Team == Teams.Home ? Arena.Config.HomeColor1 : Arena.Config.AwayColor1), (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), Arena.Config.ActorScale);
 			foreach (Ability a in Unit.Abilities)
 				a.Draw(gameTime, g);
 		}
-		public void DrawUIBelow(GameTime gameTime, Context g, Player localPlayer) {
+		public void DrawUIBelow(GameTime gameTime, Renderer renderer, Player localPlayer) {
+			Context g = renderer.Context;
 			if (Unit.Health < 1)
 				return;
 			double percent = (double)Unit.Health / (double)Unit.MaxHealth;
@@ -49,16 +51,16 @@ namespace Arena {
 				g.LineTo(Position.X, Position.Y);
 				g.LineTo(start.X, start.Y);
 			}
-			g.Color = (Unit.Team == localPlayer.Team ? Arena.Config.HealthColor1 : Arena.Config.EnemyHealthColor1);
+			renderer.SetColor(Unit.Team == localPlayer.Team ? Arena.Config.HealthColor1 : Arena.Config.EnemyHealthColor1);
 			g.FillPreserve();
-			g.Color = (Unit.Team == localPlayer.Team ? Arena.Config.HealthColor2 : Arena.Config.EnemyHealthColor2);
+			renderer.SetColor(Unit.Team == localPlayer.Team ? Arena.Config.HealthColor2 : Arena.Config.EnemyHealthColor2);
 
 			double unit = MathHelper.TwoPi / Unit.MaxHealth;
 			for (int i = 0; i < Unit.Health; i++) {
 				Vector2 dest = Position + new Vector2((float)(Math.Cos(3 * MathHelper.PiOver2 - unit * i) * size), (float)(Math.Sin(3 * MathHelper.PiOver2 - unit * i) * size));
 				g.MoveTo(Position.X, Position.Y);
 				g.LineTo(dest.X, dest.Y);
-				g.Color = (Unit.Team == localPlayer.Team ? Arena.Config.HealthColor2 : Arena.Config.EnemyHealthColor2);
+				renderer.SetColor(Unit.Team == localPlayer.Team ? Arena.Config.HealthColor2 : Arena.Config.EnemyHealthColor2);
 				g.Stroke();
 			}
 
@@ -72,9 +74,9 @@ namespace Arena {
 			g.LineTo(Position.X + Math.Cos(energy) * (energySize + size), Position.Y + Math.Sin(energy) * (size + energySize));
 			g.Arc(Position.X, Position.Y, size + energySize, energy, 3 * MathHelper.PiOver2);
 			g.ClosePath();
-			g.Color = Arena.Config.EnergyColor1;
+			renderer.SetColor(Arena.Config.EnergyColor1);
 			g.FillPreserve();
-			g.Color = Arena.Config.EnergyColor2;
+			renderer.SetColor(Arena.Config.EnergyColor2);
 			g.Stroke();
 
 			unit = MathHelper.TwoPi / Unit.MaxEnergy;
@@ -83,7 +85,7 @@ namespace Arena {
 				Vector2 dest = Position + new Vector2((float)(Math.Cos(3 * MathHelper.PiOver2 - unit * i) * (size + energySize)), (float)(Math.Sin(3 * MathHelper.PiOver2 - unit * i) * (size + energySize)));
 				g.MoveTo(src.X, src.Y);
 				g.LineTo(dest.X, dest.Y);
-				g.Color = Arena.Config.EnergyColor2;
+				renderer.SetColor(Arena.Config.EnergyColor2);
 				g.Stroke();
 			}
 		}
@@ -142,7 +144,7 @@ namespace Arena {
 			_viewOrigin = viewOrigin;
 			Shape.Update(gameTime);
 		}
-		public abstract void Draw(GameTime gameTime, Context g, Player localPlayer);
+		public abstract void Draw(GameTime gameTime, Renderer renderer, Player localPlayer);
 	}
 }
 

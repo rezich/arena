@@ -132,7 +132,7 @@ namespace ArenaClient {
 		public override void Draw(GameTime gameTime) {
 			if (Client.Local.LocalPlayer == null || Client.Local.LocalPlayer.CurrentUnit == null)
 				return;
-			Renderer.Clear(new Color(0.83, 0.83, 0.83));
+			Renderer.Clear(ColorPresets.Gray85);
 			Cairo.Context g = Renderer.Context;
 
 			viewOrigin = new Vector2(Renderer.Width / 10, 0);
@@ -141,19 +141,35 @@ namespace ArenaClient {
 			int gridWidth = viewportWidth + 2 * gridSize;
 			int gridHeight = Renderer.Height + 2 * gridSize;
 
+			// Minor grid
+			for (int i = 0; i < ((int)Math.Floor((double)gridWidth / (double)gridSize)) * 4; i++) {
+				g.MoveTo((viewOrigin - gridOffset - new Vector2(0, gridSize) + new Vector2(i * gridSize / 4, 0)).ToPointD());
+				g.LineTo((viewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize / 4, Renderer.Height)).ToPointD());
+				Renderer.SetColor(ColorPresets.Gray83);
+				g.Stroke();
+			}
+			for (int i = 0; i < ((int)Math.Floor((double)gridHeight / (double)gridSize)) * 4; i++) {
+				g.MoveTo((viewOrigin - gridOffset - new Vector2(gridSize, 0) + new Vector2(0, i * gridSize / 4)).ToPointD());
+				g.LineTo((viewOrigin - gridOffset + new Vector2(gridSize, 0) + new Vector2(viewportWidth, i * gridSize / 4)).ToPointD());
+				Renderer.SetColor(ColorPresets.Gray83);
+				g.Stroke();
+			}
+
+			// Major grid
 			for (int i = 0; i < ((int)Math.Floor((double)gridWidth / (double)gridSize)); i++) {
 				g.MoveTo((viewOrigin - gridOffset - new Vector2(0, gridSize) + new Vector2(i * gridSize, 0)).ToPointD());
 				g.LineTo((viewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize, Renderer.Height)).ToPointD());
-				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
+				Renderer.SetColor(ColorPresets.Gray80);
 				g.Stroke();
 			}
 			for (int i = 0; i < ((int)Math.Floor((double)gridHeight / (double)gridSize)); i++) {
 				g.MoveTo((viewOrigin - gridOffset - new Vector2(gridSize, 0) + new Vector2(0, i * gridSize)).ToPointD());
 				g.LineTo((viewOrigin - gridOffset + new Vector2(gridSize, 0) + new Vector2(viewportWidth, i * gridSize)).ToPointD());
-				g.Color = new Cairo.Color(0.8, 0.8, 0.8);
+				Renderer.SetColor(ColorPresets.Gray80);
 				g.Stroke();
 			}
-			Client.Local.Draw(gameTime, g);
+
+			Client.Local.Draw(gameTime);
 
 			HUD.Draw(gameTime, Renderer, Client.Local.LocalPlayer);
 
@@ -161,10 +177,10 @@ namespace ArenaClient {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null)
-					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(g, Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
+					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(Renderer, Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
 				g.MoveTo(Client.Local.LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
 				g.LineTo(Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null ? (Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin).ToPointD() : Client.Local.LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
-				g.Color = new Cairo.Color(0.1, 0.1, 0.1, 0.1);
+				Renderer.SetColor(new Cairo.Color(0.1, 0.1, 0.1, 0.1));
 				g.Stroke();
 				g.Restore();
 			}
@@ -183,7 +199,7 @@ namespace ArenaClient {
 			}
 
 			if (IsLastActiveState) {
-				cursor.Draw(g, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
+				cursor.Draw(Renderer, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);
 			}
 		}
 	}

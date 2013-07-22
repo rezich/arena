@@ -536,7 +536,7 @@ namespace Arena {
 					col = Config.HomeColor2;
 				if (!Client.Local.IsAllChatting && Client.Local.LocalPlayer.Team == Teams.Away)
 					col = Config.AwayColor2;
-				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25", 0);
+				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)-1 + IsChattingScale)), "> " + Client.Local.ChatBuffer, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "pixel", 0);
 			}
 		}
 
@@ -558,17 +558,17 @@ namespace Arena {
 			else
 				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
 		}
-		public void Draw(GameTime gameTime, Cairo.Context g) {
+		public void Draw(GameTime gameTime) {
 			foreach (Actor a in Actors)
-				a.DrawUIBelow(gameTime, g, LocalPlayer);
+				a.DrawUIBelow(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.BelowActor))
-				e.Draw(gameTime, g, LocalPlayer);
+				e.Draw(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Actor a in Actors)
-				a.Draw(gameTime, g, LocalPlayer);
+				a.Draw(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Actor a in Actors)
 				a.DrawUIAbove(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.AboveActor))
-				e.Draw(gameTime, g, LocalPlayer);
+				e.Draw(gameTime, Game.Renderer, LocalPlayer);
 		}
 	}
 }

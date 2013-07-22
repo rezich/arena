@@ -53,6 +53,7 @@
     <Compile Include="Server.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="Pitch.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
