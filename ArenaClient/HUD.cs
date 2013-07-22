@@ -152,7 +152,7 @@ namespace ArenaClient {
 					}
 				}
 			}
-			Renderer.DrawText(new Vector2(0 + BoxWidth + Margin, 0 + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
+			//Renderer.DrawText(new Vector2(0 + BoxWidth + Margin, 0 + Margin), Renderer.FPS.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 			//DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin + 20), "P " + Client.Local.Players.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 			//DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin + 40), "U " + Client.Local.Units.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
 			//DrawText(g, new Vector2(0 + BoxWidth + Margin, 0 + Margin + 60), "A " + Client.Local.Actors.Count.ToString(), 20, TextAlign.Left, TextAlign.Top, MainTextFill, MainTextStroke, null, 0, null);
