@@ -4,11 +4,15 @@ using VGame;
 
 namespace Arena.Shapes {
 	public class Runner : VGame.Shape {
+		public Runner() : base() {
+			AnimationSpeed = 0.05;
+			AnimationType = AnimationType.Bounce;
+		}
 		public override void Draw(Context g, Vector2 position, double direction, Cairo.Color? fillColor, Cairo.Color? strokeColor, double scale) {
 			Vector2 tip = position.AddLengthDir(scale, direction);
-			Vector2 rightLeg = position.AddLengthDir(scale, direction + 3 * MathHelper.PiOver4);
+			Vector2 rightLeg = position.AddLengthDir(scale, direction + 3 * MathHelper.PiOver4 + (MathHelper.PiOver4 / 7 * AnimationProgress));
 			Vector2 rear = position.AddLengthDir(scale / 3, direction + MathHelper.Pi);
-			Vector2 leftLeg = position.AddLengthDir(scale, direction - 3 * MathHelper.PiOver4);
+			Vector2 leftLeg = position.AddLengthDir(scale, direction - 3 * MathHelper.PiOver4 - (MathHelper.PiOver4 / 7  * AnimationProgress));
 			g.MoveTo(tip.ToPointD());
 			g.LineTo(rightLeg.ToPointD());
 			g.LineTo(rear.ToPointD());

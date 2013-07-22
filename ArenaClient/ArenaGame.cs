@@ -25,6 +25,13 @@ namespace ArenaClient {
 
 			StateManager.AddState(new TitleScreen());
 		}
+		protected override void LoadFonts() {
+			Renderer.LoadFont("console", "ProFontWindows.ttf", true);
+			Renderer.LoadFont("chunky", "04B_19.ttf");
+			Renderer.LoadFont("chunky_aa", "04B_19.ttf", true);
+			Renderer.LoadFont("pixel", "04B_25__.ttf");
+			Renderer.LoadFont("wide", "04B_20_.ttf");
+		}
 		public override bool IsClient() {
 			return Client.Local != null;
 		}

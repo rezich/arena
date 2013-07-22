@@ -87,8 +87,8 @@ namespace Arena {
 				g.Stroke();
 			}
 		}
-		public void DrawUIAbove(GameTime gameTime, Context g, Player localPlayer) {
-			g.SelectFontFace("04b_19", FontSlant.Normal, FontWeight.Bold);
+		public void DrawUIAbove(GameTime gameTime, Renderer renderer, Player localPlayer) {
+			/*g.SelectFontFace("04b_19", FontSlant.Normal, FontWeight.Bold);
 			double textScale = 0.7;
 
 			if (Unit.Owner is Player) {
@@ -105,7 +105,11 @@ namespace Arena {
 				g.TextPath(str);
 				g.Stroke();
 				g.LineWidth = 2.0;
-			}
+			}*/
+			Context g = renderer.Context;
+
+			renderer.DrawText(Position, ((Player)Unit.Owner).Number.ToString(), Arena.Config.ActorScale * 0.7, TextAlign.Center, TextAlign.Middle, ColorPresets.White, (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), null, 0, "chunky_aa");
+
 			g.Save();
 
 			double rangeRadius = Arena.Config.ActorScale * Unit.AttackRange;
@@ -136,6 +140,7 @@ namespace Arena {
 		public virtual void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
 			_viewPosition = viewPosition;
 			_viewOrigin = viewOrigin;
+			Shape.Update(gameTime);
 		}
 		public abstract void Draw(GameTime gameTime, Context g, Player localPlayer);
 	}

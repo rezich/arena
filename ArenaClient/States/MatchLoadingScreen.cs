@@ -59,7 +59,7 @@ namespace ArenaClient {
 				g.LineTo((pOrigin + new Vector2(-100, 20)).ToPointD());
 				g.ClosePath();
 				VGame.Util.StrokeAndFill(g, null, HUD.MainTextStroke);
-				Renderer.DrawText(pOrigin + new Vector2(0, 2), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, null);
+				Renderer.DrawText(pOrigin + new Vector2(0, 2), kvp.Value.Name, 20, TextAlign.Center, TextAlign.Top, HUD.MainTextFill, HUD.MainTextStroke, null, 0, "chunky");
 				offset++;
 			}
 			Client.Local.DrawChat(Renderer, new Vector2(8, Renderer.Height - 8), 10);

@@ -513,7 +513,7 @@ namespace Arena {
 			return false;
 		}
 		public void DrawChat(Renderer renderer, Vector2 position, int entries) {
-			string font = "04b25";
+			string font = "pixel";
 			int textSize = 12;
 
 			renderer.Context.SelectFontFace(font, Cairo.FontSlant.Normal, Cairo.FontWeight.Normal);
@@ -528,7 +528,7 @@ namespace Arena {
 					col = Config.HomeColor2;
 				if (msg.Team == Teams.Away)
 					col = Config.AwayColor2;
-				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)i + IsChattingScale)), str, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, "04b25", 0);
+				renderer.DrawText(position + new Vector2(0, -chatHeight * (float)((double)i + IsChattingScale)), str, 12, TextAlign.Left, TextAlign.Bottom, ColorPresets.White, ColorPresets.Black, col, 0, font, 0);
 			}
 			if (Client.Local.IsChatting) {
 				Cairo.Color? col = null;
@@ -566,7 +566,7 @@ namespace Arena {
 			foreach (Actor a in Actors)
 				a.Draw(gameTime, g, LocalPlayer);
 			foreach (Actor a in Actors)
-				a.DrawUIAbove(gameTime, g, LocalPlayer);
+				a.DrawUIAbove(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.AboveActor))
 				e.Draw(gameTime, g, LocalPlayer);
 		}
