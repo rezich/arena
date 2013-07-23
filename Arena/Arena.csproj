@@ -54,6 +54,7 @@
     <Compile Include="Message.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Pitch.cs" />
+    <Compile Include="GameState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -9,8 +9,6 @@ namespace ArenaClient {
 	public class MatchScreen : State {
 		Vector2 cursorPosition;
 		Arena.Shapes.Cursor cursor = new Arena.Shapes.Cursor();
-		Vector2 viewPosition = Vector2.Zero;
-		Vector2 viewOrigin = Vector2.Zero;
 		int edgeScrollSize = 32;
 		double markerAnimationPercent = 0;
 		TimeSpan markerAnimationDuration = TimeSpan.FromSeconds(0.25);
@@ -28,7 +26,7 @@ namespace ArenaClient {
 		}
 		Vector2 cursorWorldPosition {
 			get {
-				return cursorPosition + viewPosition - viewOrigin;
+				return cursorPosition + Client.Local.ViewPosition - Client.Local.ViewOrigin;
 			}
 		}
 		int viewMoveSpeed = 16;
@@ -36,7 +34,6 @@ namespace ArenaClient {
 		bool isLocalGame = false;
 
 		public override void Initialize() {
-			viewPosition = new Vector2(0, 0);
 			HUD.Recalculate(Renderer);
 		}
 		public override void OnFocus() {
@@ -47,14 +44,14 @@ namespace ArenaClient {
 		}
 		public override void HandleInput(GameTime gameTime) {
 			cursorPosition = new Vector2(InputManager.MousePosition.X, InputManager.MousePosition.Y);
-			if (cursorPosition.X < viewOrigin.X + edgeScrollSize && !StateManager.Game.CursorVisible)
-				viewPosition.X -= viewMoveSpeed;
-			if (cursorPosition.X > viewOrigin.X + viewportWidth - edgeScrollSize && !StateManager.Game.CursorVisible)
-				viewPosition.X += viewMoveSpeed;
-			if (cursorPosition.Y < viewOrigin.Y + edgeScrollSize && !StateManager.Game.CursorVisible)
-				viewPosition.Y -= viewMoveSpeed;
-			if (cursorPosition.Y > viewOrigin.Y + viewportHeight - edgeScrollSize && !StateManager.Game.CursorVisible)
-				viewPosition.Y += viewMoveSpeed;
+			if (cursorPosition.X < Client.Local.ViewOrigin.X + edgeScrollSize && !StateManager.Game.CursorVisible)
+				Client.Local.ViewPosition.X -= viewMoveSpeed;
+			if (cursorPosition.X > Client.Local.ViewOrigin.X + viewportWidth - edgeScrollSize && !StateManager.Game.CursorVisible)
+				Client.Local.ViewPosition.X += viewMoveSpeed;
+			if (cursorPosition.Y < Client.Local.ViewOrigin.Y + edgeScrollSize && !StateManager.Game.CursorVisible)
+				Client.Local.ViewPosition.Y -= viewMoveSpeed;
+			if (cursorPosition.Y > Client.Local.ViewOrigin.Y + viewportHeight - edgeScrollSize && !StateManager.Game.CursorVisible)
+				Client.Local.ViewPosition.Y += viewMoveSpeed;
 			if (InputManager.MouseButtonState(MouseButton.Right) == ButtonState.Pressed && cursorPosition.X > HUD.BoxWidth && cursorPosition.X < Renderer.Width - HUD.BoxWidth) {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
@@ -81,13 +78,13 @@ namespace ArenaClient {
 					Game.Cmd.Run("-scoreboard");
 				}
 				if (InputManager.KeyDown(Keys.Up))
-					viewPosition.Y -= viewMoveSpeed;
+					Client.Local.ViewPosition.Y -= viewMoveSpeed;
 				if (InputManager.KeyDown(Keys.Left))
-					viewPosition.X -= viewMoveSpeed;
+					Client.Local.ViewPosition.X -= viewMoveSpeed;
 				if (InputManager.KeyDown(Keys.Right))
-					viewPosition.X += viewMoveSpeed;
+					Client.Local.ViewPosition.X += viewMoveSpeed;
 				if (InputManager.KeyDown(Keys.Down))
-					viewPosition.Y += viewMoveSpeed;
+					Client.Local.ViewPosition.Y += viewMoveSpeed;
 				if (InputManager.KeyState(Keys.Q) == ButtonState.Pressed && InputManager.IsShiftKeyDown) {
 					Client.Local.LevelUp(gameTime, 0);
 				}
@@ -105,7 +102,7 @@ namespace ArenaClient {
 					Client.Local.SendTeamChat("Well played!");
 				}
 				if (InputManager.KeyState(Keys.Space) == ButtonState.Pressed) {
-					viewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
+					Client.Local.ViewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
 				}
 				if (InputManager.KeyState(Keys.D1) == ButtonState.Pressed) {
 					Client.Local.LevelUp(gameTime, 0);
@@ -124,7 +121,7 @@ namespace ArenaClient {
 		public override void Update(GameTime gameTime) {
 			if (isLocalGame)
 				Server.Local.Update(gameTime);
-			Client.Local.Update(gameTime, viewPosition, viewOrigin);
+			Client.Local.Update(gameTime, Client.Local.ViewPosition, Client.Local.ViewOrigin);
 			HUD.Update(gameTime, Client.Local.LocalPlayer);
 
 			markerAnimationPercent = Math.Min(Math.Max(((double)(markerAnimationDone.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)markerAnimationDuration.TotalMilliseconds), 0), 1);
@@ -135,14 +132,14 @@ namespace ArenaClient {
 			Renderer.Clear(ColorPresets.Gray85);
 			Cairo.Context g = Renderer.Context;
 
-			viewOrigin = new Vector2(Renderer.Width / 10, 0);
-			Vector2 gridOffset = new Vector2((float)(viewPosition.X % Arena.Config.ActorScale), (float)(viewPosition.Y % Arena.Config.ActorScale));
+			Client.Local.ViewOrigin = new Vector2(Renderer.Width / 10, 0);
+			Vector2 gridOffset = new Vector2((float)(Client.Local.ViewPosition.X % Arena.Config.ActorScale), (float)(Client.Local.ViewPosition.Y % Arena.Config.ActorScale));
 			int gridSize = Convert.ToInt32(Arena.Config.ActorScale);
 			int gridWidth = viewportWidth + 2 * gridSize;
 			int gridHeight = Renderer.Height + 2 * gridSize;
 
 			// Minor grid
-			for (int i = 0; i < ((int)Math.Floor((double)gridWidth / (double)gridSize)) * 4; i++) {
+			/*for (int i = 0; i < ((int)Math.Floor((double)gridWidth / (double)gridSize)) * 4; i++) {
 				g.MoveTo((viewOrigin - gridOffset - new Vector2(0, gridSize) + new Vector2(i * gridSize / 4, 0)).ToPointD());
 				g.LineTo((viewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize / 4, Renderer.Height)).ToPointD());
 				Renderer.SetColor(ColorPresets.Gray83);
@@ -153,19 +150,19 @@ namespace ArenaClient {
 				g.LineTo((viewOrigin - gridOffset + new Vector2(gridSize, 0) + new Vector2(viewportWidth, i * gridSize / 4)).ToPointD());
 				Renderer.SetColor(ColorPresets.Gray83);
 				g.Stroke();
-			}
+			}*/
 
 			// Major grid
 			for (int i = 0; i < ((int)Math.Floor((double)gridWidth / (double)gridSize)); i++) {
-				g.MoveTo((viewOrigin - gridOffset - new Vector2(0, gridSize) + new Vector2(i * gridSize, 0)).ToPointD());
-				g.LineTo((viewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize, Renderer.Height)).ToPointD());
-				Renderer.SetColor(ColorPresets.Gray80);
+				g.MoveTo((Client.Local.ViewOrigin - gridOffset - new Vector2(0, gridSize) + new Vector2(i * gridSize, 0)).ToPointD());
+				g.LineTo((Client.Local.ViewOrigin - gridOffset + new Vector2(0, gridSize) + new Vector2(i * gridSize, Renderer.Height)).ToPointD());
+				Renderer.SetColor(ColorPresets.Gray83);
 				g.Stroke();
 			}
 			for (int i = 0; i < ((int)Math.Floor((double)gridHeight / (double)gridSize)); i++) {
-				g.MoveTo((viewOrigin - gridOffset - new Vector2(gridSize, 0) + new Vector2(0, i * gridSize)).ToPointD());
-				g.LineTo((viewOrigin - gridOffset + new Vector2(gridSize, 0) + new Vector2(viewportWidth, i * gridSize)).ToPointD());
-				Renderer.SetColor(ColorPresets.Gray80);
+				g.MoveTo((Client.Local.ViewOrigin - gridOffset - new Vector2(gridSize, 0) + new Vector2(0, i * gridSize)).ToPointD());
+				g.LineTo((Client.Local.ViewOrigin - gridOffset + new Vector2(gridSize, 0) + new Vector2(viewportWidth, i * gridSize)).ToPointD());
+				Renderer.SetColor(ColorPresets.Gray83);
 				g.Stroke();
 			}
 
@@ -177,9 +174,9 @@ namespace ArenaClient {
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null)
-					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(Renderer, Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
+					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(Renderer, Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - Client.Local.ViewPosition + Client.Local.ViewOrigin, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
 				g.MoveTo(Client.Local.LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
-				g.LineTo(Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null ? (Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - viewPosition + viewOrigin).ToPointD() : Client.Local.LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
+				g.LineTo(Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null ? (Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - Client.Local.ViewPosition + Client.Local.ViewOrigin).ToPointD() : Client.Local.LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
 				Renderer.SetColor(new Cairo.Color(0.1, 0.1, 0.1, 0.1));
 				g.Stroke();
 				g.Restore();

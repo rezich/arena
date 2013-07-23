@@ -31,10 +31,16 @@ namespace Arena {
 
 		public double? StartTime = null;
 
+		public Vector2 ViewPosition = Vector2.Zero;
+		public Vector2 ViewOrigin = Vector2.Zero;
+
+		public Pitch Pitch;
+
 		protected NetClient client;
 
 		public Client(Game game, bool isLocalServer) {
 			Game = game;
+			Pitch = new Pitch();
 			IsLocalServer = isLocalServer;
 			if (!IsLocalServer) {
 				NetPeerConfiguration config = new NetPeerConfiguration(Arena.Config.ApplicationID);
@@ -559,6 +565,7 @@ namespace Arena {
 				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
 		}
 		public void Draw(GameTime gameTime) {
+			Pitch.Draw(Game.Renderer, ViewPosition, ViewOrigin);
 			foreach (Actor a in Actors)
 				a.DrawUIBelow(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.BelowActor))

@@ -16,7 +16,8 @@ namespace ArenaClient {
 			List<string> convertedDisplayModes = new List<string>();
 			foreach (Rectangle r in Renderer.Current.Resolutions) {
 				displayModes.Add(r);
-				convertedDisplayModes.Add(r.Width + "x" + r.Height);
+				convertedDisplayModes.Add(r.Width.ToString() + "x" + r.Height.ToString());
+				//Console.WriteLine(r.Width.ToString() + "x" + r.Height.ToString());
 			}
 
 			Entries.Add(new HeadingEntry(this, "PLAYER"));

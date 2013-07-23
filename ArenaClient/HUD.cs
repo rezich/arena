@@ -79,8 +79,8 @@ namespace ArenaClient {
 
 			// health foreground
 			if (player.CurrentUnit != null) {
-				g.MoveTo(new Vector2(0 + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
-				g.LineTo(new Vector2((float)(0 + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.HealthPercent)).ToPointD());
+				g.MoveTo(new Vector2(0 + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.GetHealthPercent())).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.GetHealthPercent())).ToPointD());
 				g.LineTo(new Vector2((float)(0 + Margin + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.LineTo(new Vector2(0 + Margin, Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();
@@ -97,8 +97,8 @@ namespace ArenaClient {
 
 			// energy foreground
 			if (player.CurrentUnit != null) {
-				g.MoveTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
-				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.EnergyPercent)).ToPointD());
+				g.MoveTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.GetEnergyPercent())).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.GetEnergyPercent())).ToPointD());
 				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.LineTo(new Vector2((float)(0 + Margin * 2 + BarWidth), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();
@@ -115,8 +115,8 @@ namespace ArenaClient {
 
 			// experience foreground
 			if (player.CurrentUnit != null) {
-				g.MoveTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
-				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.ExperiencePercent)).ToPointD());
+				g.MoveTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.GetExperiencePercent())).ToPointD());
+				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize - (float)(BarHeight * player.CurrentUnit.GetExperiencePercent())).ToPointD());
 				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 3), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.LineTo(new Vector2((float)(0 + Margin * 3 + BarWidth * 2), Renderer.Height - Margin * 2 - (float)MinimapSize).ToPointD());
 				g.ClosePath();

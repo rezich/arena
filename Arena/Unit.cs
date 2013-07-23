@@ -16,11 +16,10 @@ namespace Arena {
 		Friend,
 		Enemy
 	}
-	public class Unit {
+	public class Unit : Entity {
 		public UnitController Owner;
 		public Actor Actor;
 		public Teams Team;
-
 
 		public double MoveSpeed {
 			get {
@@ -102,6 +101,46 @@ namespace Arena {
 				baseAttackDamage = value;
 			}
 		}
+		public int Health { get; set; }
+		public int Energy { get; set; }
+		public int Level { get; set; }
+		public int Experience { get; set; }
+		public Vector2 Position { get; set; }
+		public Vector2 IntendedPosition { get; set; }
+		public double Direction { get; set; }
+		public double IntendedDirection { get; set; }
+		public Unit AttackTarget { get; set; }
+
+		public bool AutoAttacking = false;
+		public List<Buff> Buffs {
+			get {
+				if (newBuffs.Count == 0)
+					return buffs;
+				List<Buff> total = new List<Buff>(buffs);
+				total.AddRange(newBuffs);
+				return total;
+			}
+		}
+		protected List<Buff> buffs = new List<Buff>();
+		protected List<Buff> newBuffs = new List<Buff>();
+		public TimeSpan NextAutoAttackReady = new TimeSpan();
+		public List<Ability> Abilities = new List<Ability>();
+		public Vector2 LastPosition;
+		private double healthRegenPart = 0;
+		private double energyRegenPart = 0;
+
+		public double GetHealthPercent() {
+			return (double)Health / (double)MaxHealth;
+		}
+		public double GetEnergyPercent() {
+			return (double)Energy / (double)MaxEnergy;
+		}
+		public double GetExperiencePercent() {
+			return (double)(Experience % 100) / 100;
+		}
+		public int ExperienceLeftOver() {
+			return Experience % 100;
+		}
 
 		private double baseMoveSpeed;
 		private double baseTurnSpeed;
@@ -114,63 +153,17 @@ namespace Arena {
 		private int baseAttackRange;
 		private int baseAttackDamage;
 
-		public int Health;
-		public int Energy;
-		public int Level = 0;
-		public int Experience = 0;
-
-		private double healthRegenPart = 0;
-		private double energyRegenPart = 0;
-
-		public Vector2 Position;
-		public Vector2 LastPosition;
-		public Vector2 IntendedPosition;
-		public double Direction = 0;
-		public double IntendedDirection = 0;
-		public List<Ability> Abilities = new List<Ability>();
-		public Unit AttackTarget = null;
-		public TimeSpan NextAutoAttackReady = new TimeSpan();
-		public bool AutoAttacking = false;
-
-		public List<Buff> Buffs {
-			get {
-				if (newBuffs.Count == 0)
-					return buffs;
-				List<Buff> total = new List<Buff>(buffs);
-				total.AddRange(newBuffs);
-				return total;
-			}
-		}
-		protected List<Buff> buffs = new List<Buff>();
-		protected List<Buff> newBuffs = new List<Buff>();
-
-		public double HealthPercent {
-			get {
-				return (double)Health / (double)MaxHealth;
-			}
-		}
-		public double EnergyPercent {
-			get {
-				return (double)Energy / (double)MaxEnergy;
-			}
-		}
-		public double ExperiencePercent {
-			get {
-				return (double)(Experience % 100) / 100;
-			}
-		}
-		public int ExperienceLeftOver {
-			get {
-				return Experience % 100;
-			}
-		}
-
 		public Unit(UnitController owner, int maxHealth, int maxEnergy) {
 			Owner = owner;
 			MaxHealth = maxHealth;
 			MaxEnergy = maxEnergy;
 			Health = MaxHealth;
 			Energy = MaxEnergy;
+			Direction = 0;
+			IntendedDirection = 0;
+			AttackTarget = null;
+			Level = 0;
+			Experience = 0;
 		}
 
 		public void Update(GameTime gameTime) {
