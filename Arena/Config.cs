@@ -25,7 +25,11 @@ namespace Arena {
 	}
 	public static class Config {
 		public static Color HomeColor1, HomeColor2, AwayColor1, AwayColor2, NeutralColor1, NeutralColor2, HealthColor1, HealthColor2, EnemyHealthColor1, EnemyHealthColor2, EnergyColor1, EnergyColor2, HUDBackground, HUDText;
-		public static double ActorScale = 24;
+
+		public const int ActorSize = 5;
+		public const int TowerSize = 7;
+		public const int GridSizeLarge = 10;
+
 		public static Random Random = new Random();
 		public static string ApplicationID {
 			get {
@@ -42,8 +46,8 @@ namespace Arena {
 		public static bool Antialiasing = true;
 		public static VGame.Rectangle Resolution = new VGame.Rectangle(0, 0, 1280, 720);
 
-		public static int ReadyCountdown = 5;
-		public static int PostLoadingCountdown = 5;
+		public static int ReadyCountdown = 1;
+		public static int PostLoadingCountdown = 1;
 
 		public static Dictionary<KeyCommand, Keys> KeyBindings = new Dictionary<KeyCommand, Keys>();
 

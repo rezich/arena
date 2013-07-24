@@ -565,7 +565,7 @@ namespace Arena {
 				IsChattingScale = Math.Max(IsChattingScale - 0.1, 0);
 		}
 		public void Draw(GameTime gameTime) {
-			Pitch.Draw(Game.Renderer, ViewPosition, ViewOrigin);
+			Pitch.Draw(Game.Renderer);
 			foreach (Actor a in Actors)
 				a.DrawUIBelow(gameTime, Game.Renderer, LocalPlayer);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.BelowActor))

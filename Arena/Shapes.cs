@@ -19,7 +19,7 @@ namespace Arena.Shapes {
 			g.LineTo(rear.ToPointD());
 			g.LineTo(leftLeg.ToPointD());
 			g.ClosePath();
-			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
+			renderer.StrokeAndFill(fillColor, strokeColor);
 		}
 	}
 	public class Grappler : VGame.Shape {
@@ -43,7 +43,7 @@ namespace Arena.Shapes {
 			g.LineTo(position.AddLengthDir(armWidth * 2, direction - MathHelper.PiOver2).ToPointD());
 
 			g.ClosePath();
-			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
+			renderer.StrokeAndFill(fillColor, strokeColor);
 		}
 	}
 	public class Tank : VGame.Shape {
@@ -58,7 +58,7 @@ namespace Arena.Shapes {
 			g.LineTo(position.AddLengthDir(scale, direction - back).ToPointD());
 			g.LineTo(position.AddLengthDir(scale, direction - front).ToPointD());
 			g.ClosePath();
-			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
+			renderer.StrokeAndFill(fillColor, strokeColor);
 		}
 	}
 	public class Nuker : VGame.Shape {
@@ -74,7 +74,7 @@ namespace Arena.Shapes {
 			g.LineTo(position.AddLengthDir(scale * 0.35, direction - front).ToPointD());
 			g.LineTo(position.AddLengthDir(scale, direction - front).ToPointD());
 			g.ClosePath();
-			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
+			renderer.StrokeAndFill(fillColor, strokeColor);
 		}
 	}
 	public class Cursor : VGame.Shape {
@@ -84,7 +84,7 @@ namespace Arena.Shapes {
 			g.LineTo(position.AddLengthDir(scale, MathHelper.PiOver2).ToPointD());
 			g.LineTo(position.AddLengthDir(scale, MathHelper.PiOver4 * 9).ToPointD());
 			g.ClosePath();
-			VGame.Util.StrokeAndFill(g, fillColor, strokeColor);
+			renderer.StrokeAndFill(fillColor, strokeColor);
 		}
 	}
 	public class AutoAttackBeam : VGame.Shape {

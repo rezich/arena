@@ -224,7 +224,7 @@ namespace Arena {
 			if (AttackTarget != null) {
 				intendedPosition = AttackTarget.Position;
 				TurnTowards(intendedPosition);
-				if (Vector2.Distance(Position, intendedPosition) <= AttackRange * Arena.Config.ActorScale) {
+				if (Vector2.Distance(Position, intendedPosition) <= AttackRange) {
 					if (Math.Abs(MathHelper.WrapAngle((float)(Direction - IntendedDirection))) < MathHelper.Pi / 8) {
 						// AUTOATTACK
 						AutoAttacking = true;

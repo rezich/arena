@@ -26,7 +26,8 @@ namespace ArenaClient {
 		}
 		Vector2 cursorWorldPosition {
 			get {
-				return cursorPosition + Client.Local.ViewPosition - Client.Local.ViewOrigin;
+				Vector2 pos = cursorPosition + Client.Local.ViewPosition - Client.Local.ViewOrigin;
+				return new Vector2((float)(pos.X / Game.Zoom), (float)(pos.Y / Game.Zoom));
 			}
 		}
 		int viewMoveSpeed = 16;
@@ -56,7 +57,7 @@ namespace ArenaClient {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
 				foreach (Actor a in Client.Local.Actors) {
-					if (Vector2.Distance(cursorPosition, a.Position) < Arena.Config.ActorScale) {
+					if (Vector2.Distance(cursorPosition, a.Position) < Game.Renderer.GetUnitSize(Config.ActorSize)) {
 						if (a.Unit.Owner != Client.Local.LocalPlayer && Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
 							clickedActor = a;
 							break;
@@ -102,7 +103,7 @@ namespace ArenaClient {
 					Client.Local.SendTeamChat("Well played!");
 				}
 				if (InputManager.KeyState(Keys.Space) == ButtonState.Pressed) {
-					Client.Local.ViewPosition = Client.Local.LocalPlayer.CurrentUnit.Position - new Vector2(viewportWidth / 2, viewportHeight / 2);
+					Client.Local.ViewPosition = new Vector2((float)(Client.Local.LocalPlayer.CurrentUnit.Position.X * Game.Zoom), (float)(Client.Local.LocalPlayer.CurrentUnit.Position.Y * Game.Zoom)) - new Vector2(viewportWidth / 2, viewportHeight / 2);
 				}
 				if (InputManager.KeyState(Keys.D1) == ButtonState.Pressed) {
 					Client.Local.LevelUp(gameTime, 0);
@@ -115,6 +116,12 @@ namespace ArenaClient {
 				}
 				if (InputManager.KeyState(Keys.D4) == ButtonState.Pressed) {
 					Client.Local.LevelUp(gameTime, 3);
+				}
+				if (InputManager.KeyDown(Keys.Z)) {
+					Game.Zoom += 0.1;
+				}
+				if (InputManager.KeyDown(Keys.X)) {
+					Game.Zoom = Math.Max(Game.Zoom - 0.05, 0.15);
 				}
 			}
 		}
@@ -133,8 +140,8 @@ namespace ArenaClient {
 			Cairo.Context g = Renderer.Context;
 
 			Client.Local.ViewOrigin = new Vector2(Renderer.Width / 10, 0);
-			Vector2 gridOffset = new Vector2((float)(Client.Local.ViewPosition.X % Arena.Config.ActorScale), (float)(Client.Local.ViewPosition.Y % Arena.Config.ActorScale));
-			int gridSize = Convert.ToInt32(Arena.Config.ActorScale);
+			int gridSize = Convert.ToInt32(Renderer.GetUnitSize(Config.GridSizeLarge));
+			Vector2 gridOffset = new Vector2((float)(Client.Local.ViewPosition.X % gridSize), (float)(Client.Local.ViewPosition.Y % gridSize));
 			int gridWidth = viewportWidth + 2 * gridSize;
 			int gridHeight = Renderer.Height + 2 * gridSize;
 
@@ -170,13 +177,16 @@ namespace ArenaClient {
 
 			HUD.Draw(gameTime, Renderer, Client.Local.LocalPlayer);
 
+			//Renderer.DrawText(Client.Local.ViewOrigin, string.Format("({0}, {1})", Client.Local.LocalPlayer.CurrentUnit.Position.X, Client.Local.LocalPlayer.CurrentUnit.Position.Y), 20, TextAlign.Left, TextAlign.Top, ColorPresets.White, ColorPresets.Black, null, 0, null);
+
 			if (Client.Local.LocalPlayer.CurrentUnit != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition && Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null) {
+				Vector2 intendedPos = new Vector2((float)(Client.Local.LocalPlayer.CurrentUnit.IntendedPosition.X * Renderer.Zoom), (float)(Client.Local.LocalPlayer.CurrentUnit.IntendedPosition.Y * Renderer.Zoom)) - Client.Local.ViewPosition + Client.Local.ViewOrigin;
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
 				if (Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null)
-					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(Renderer, Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - Client.Local.ViewPosition + Client.Local.ViewOrigin, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Arena.Config.ActorScale * (1 + 1 * markerAnimationPercent));
+					Client.Local.LocalPlayer.CurrentUnit.Actor.Shape.Draw(Renderer, intendedPos, Client.Local.LocalPlayer.CurrentUnit.IntendedDirection, null, new Cairo.Color(0.25, 0.25, 0.25, 0.25), Renderer.GetUnitSize((double)Config.ActorSize / 2) * (1 + 1 * markerAnimationPercent));
 				g.MoveTo(Client.Local.LocalPlayer.CurrentUnit.Actor.Position.ToPointD());
-				g.LineTo(Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null ? (Client.Local.LocalPlayer.CurrentUnit.IntendedPosition - Client.Local.ViewPosition + Client.Local.ViewOrigin).ToPointD() : Client.Local.LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
+				g.LineTo(Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null ? (intendedPos).ToPointD() : Client.Local.LocalPlayer.CurrentUnit.AttackTarget.Position.ToPointD());
 				Renderer.SetColor(new Cairo.Color(0.1, 0.1, 0.1, 0.1));
 				g.Stroke();
 				g.Restore();
@@ -187,7 +197,7 @@ namespace ArenaClient {
 			foreach (Actor a in Client.Local.Actors) {
 				if (a == Client.Local.LocalPlayer.CurrentUnit.Actor)
 					continue;
-				if (Vector2.Distance(a.Position, cursorPosition) < Arena.Config.ActorScale) {
+				if (Vector2.Distance(a.Position, cursorPosition) < Renderer.GetUnitSize(Config.ActorSize)) {
 					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy)
 						cursorColor = new Cairo.Color(1, 0, 0);
 					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)

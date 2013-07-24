@@ -54,7 +54,7 @@ namespace Arena {
 		}
 		public override void Draw(GameTime gameTime, Renderer renderer, Player localPlayer) {
 			Context g = renderer.Context;
-			Shape.Draw(renderer, Position, Direction, FillColor, StrokeColor, Arena.Config.ActorScale);
+			Shape.Draw(renderer, Position, Direction, FillColor, StrokeColor, renderer.GetUnitSize());
 		}
 		public void Remove(ref List<Effect> list) {
 			list.Remove(this);

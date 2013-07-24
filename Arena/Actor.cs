@@ -32,8 +32,9 @@ namespace Arena {
 			base.Update(gameTime, viewPosition, viewOrigin);
 		}
 		public override void Draw(GameTime gameTime, Renderer renderer, Player localPlayer) {
+			base.Draw(gameTime, renderer, localPlayer);
 			Context g = renderer.Context;
-			Shape.Draw(renderer, Position, Direction, (Unit.Team == Teams.Home ? Arena.Config.HomeColor1 : Arena.Config.AwayColor1), (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), Arena.Config.ActorScale);
+			Shape.Draw(renderer, Position, Direction, (Unit.Team == Teams.Home ? Arena.Config.HomeColor1 : Arena.Config.AwayColor1), (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), renderer.GetUnitSize((double)Arena.Config.ActorSize / 2));
 			foreach (Ability a in Unit.Abilities)
 				a.Draw(gameTime, g);
 		}
@@ -42,7 +43,7 @@ namespace Arena {
 			if (Unit.Health < 1)
 				return;
 			double percent = (double)Unit.Health / (double)Unit.MaxHealth;
-			double size = Arena.Config.ActorScale + 10;
+			double size = renderer.GetUnitSize((double)Arena.Config.ActorSize / 2) * 1.25;
 			Vector2 start = Position + new Vector2(0, (float)-size);
 			/*Vector2 end = Position + new Vector2((float)(Math.Cos(MathHelper.PiOver2) * size), (float)(Math.Sin(MathHelper.PiOver2) * size));*/
 			g.MoveTo(start.X, start.Y);
@@ -69,7 +70,7 @@ namespace Arena {
 			double ePercent = (double)Unit.Energy / (double)Unit.MaxEnergy;
 			g.MoveTo(Position.X, Position.Y - size);
 			double energy = 3 * MathHelper.PiOver2 - (MathHelper.TwoPi * ePercent);
-			int energySize = 5;
+			double energySize = size / 7;
 			g.ArcNegative(Position.X, Position.Y, size, 3 * MathHelper.PiOver2, energy);
 			g.LineTo(Position.X + Math.Cos(energy) * (energySize + size), Position.Y + Math.Sin(energy) * (size + energySize));
 			g.Arc(Position.X, Position.Y, size + energySize, energy, 3 * MathHelper.PiOver2);
@@ -110,11 +111,11 @@ namespace Arena {
 			}*/
 			Context g = renderer.Context;
 
-			renderer.DrawText(Position, ((Player)Unit.Owner).Number.ToString(), Arena.Config.ActorScale * 0.7, TextAlign.Center, TextAlign.Middle, ColorPresets.White, (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), null, 0, "chunky_aa");
+			renderer.DrawText(Position, ((Player)Unit.Owner).Number.ToString(), renderer.GetUnitSize((double)Arena.Config.ActorSize / 2) * 0.7, TextAlign.Center, TextAlign.Middle, ColorPresets.White, (Unit.Team == Teams.Home ? Arena.Config.HomeColor2 : Arena.Config.AwayColor2), null, 0, "chunky_aa");
 
 			g.Save();
 
-			double rangeRadius = Arena.Config.ActorScale * Unit.AttackRange;
+			double rangeRadius = renderer.GetUnitSize() * Unit.AttackRange;
 			double rangeCircum = 2 * MathHelper.Pi * rangeRadius;
 			double start = gameTime.TotalGameTime.TotalSeconds / MathHelper.TwoPi * 1;
 			double[] dash = new double[] { rangeCircum / 80, rangeCircum / 120 };
@@ -129,7 +130,8 @@ namespace Arena {
 	public abstract class Drawable {
 		public Vector2 Position {
 			get {
-				return WorldPosition - _viewPosition + _viewOrigin;
+				return new Vector2((float)(WorldPosition.X * zoom), (float)(WorldPosition.Y * zoom)) - _viewPosition + _viewOrigin;
+				//return WorldPosition;
 			}
 		}
 		public abstract Vector2 WorldPosition { get; set; }
@@ -137,6 +139,7 @@ namespace Arena {
 		public VGame.Shape Shape;
 		protected Vector2 _viewPosition;
 		protected Vector2 _viewOrigin;
+		protected double zoom;
 		public bool ToBeRemoved;
 
 		public virtual void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
@@ -144,7 +147,9 @@ namespace Arena {
 			_viewOrigin = viewOrigin;
 			Shape.Update(gameTime);
 		}
-		public abstract void Draw(GameTime gameTime, Renderer renderer, Player localPlayer);
+		public virtual void Draw(GameTime gameTime, Renderer renderer, Player localPlayer) {
+			zoom = renderer.Zoom;
+		}
 	}
 }
 

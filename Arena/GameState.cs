@@ -11,6 +11,7 @@ namespace Arena {
 }
 
 // PacketType.GameState
+// (Time)
 // GameStateObject.Unit
 // (int) count
 // (Units)

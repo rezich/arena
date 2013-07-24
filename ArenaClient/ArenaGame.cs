@@ -9,6 +9,7 @@ namespace ArenaClient {
 		public ArenaGame() : base(false) {
 		}
 		protected override void Initialize() {
+			BaseSize = 7;
 			Arena.Commands.Load();
 			ArenaClient.Commands.Load();
 			Role.Initialize();
