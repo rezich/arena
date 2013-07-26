@@ -57,18 +57,26 @@ namespace ArenaClient {
 				markerAnimationDone = gameTime.TotalGameTime + markerAnimationDuration;
 				Actor clickedActor = null;
 				foreach (Actor a in Client.Local.Actors) {
-					if (Vector2.Distance(cursorPosition, a.Position) < Game.Renderer.GetUnitSize(Config.ActorSize)) {
+					/*if (Vector2.Distance(cursorPosition, a.Position) < Game.Renderer.GetUnitSize(Config.ActorSize)) {
 						if (a.Unit.Owner != Client.Local.LocalPlayer && Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Enemy) {
 							clickedActor = a;
 							break;
 						}
-					}
+					}*/
 				}
 				if (clickedActor != null)
 					Client.Local.SendAttackOrder(clickedActor.Unit);
-				else
-					Client.Local.SendMoveOrder(cursorWorldPosition);
-
+				else {
+					bool found = false;
+					/*foreach (Polygon p in Client.Local.Pitch.Terrain) {
+						Polygon sp = p.ScaleAndOffset(Renderer.GetUnitSize(), -Client.Local.ViewPosition + Client.Local.ViewOrigin);
+						if (sp.Contains(new VGame.Point((int)Math.Round(cursorWorldPosition.X), (int)Math.Round(cursorWorldPosition.Y))))
+						    found = true;
+					}*/
+					found = true;
+					if (found)
+						Client.Local.SendMoveOrder(cursorWorldPosition);
+				}
 			}
 
 			if (!Client.Local.HandleChatInput(InputManager)) {
@@ -179,7 +187,7 @@ namespace ArenaClient {
 
 			//Renderer.DrawText(Client.Local.ViewOrigin, string.Format("({0}, {1})", Client.Local.LocalPlayer.CurrentUnit.Position.X, Client.Local.LocalPlayer.CurrentUnit.Position.Y), 20, TextAlign.Left, TextAlign.Top, ColorPresets.White, ColorPresets.Black, null, 0, null);
 
-			if (Client.Local.LocalPlayer.CurrentUnit != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition && Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null) {
+			/*if (Client.Local.LocalPlayer.CurrentUnit != null && Client.Local.LocalPlayer.CurrentUnit.Position != Client.Local.LocalPlayer.CurrentUnit.IntendedPosition && Client.Local.LocalPlayer.CurrentUnit.AttackTarget == null) {
 				Vector2 intendedPos = new Vector2((float)(Client.Local.LocalPlayer.CurrentUnit.IntendedPosition.X * Renderer.Zoom), (float)(Client.Local.LocalPlayer.CurrentUnit.IntendedPosition.Y * Renderer.Zoom)) - Client.Local.ViewPosition + Client.Local.ViewOrigin;
 				g.Save();
 				g.SetDash(new double[] { 4, 4 }, 0);
@@ -190,11 +198,11 @@ namespace ArenaClient {
 				Renderer.SetColor(new Cairo.Color(0.1, 0.1, 0.1, 0.1));
 				g.Stroke();
 				g.Restore();
-			}
+			}*/
 
 			Cairo.Color cursorColor = new Cairo.Color(1, 1, 1);
 
-			foreach (Actor a in Client.Local.Actors) {
+			/*foreach (Actor a in Client.Local.Actors) {
 				if (a == Client.Local.LocalPlayer.CurrentUnit.Actor)
 					continue;
 				if (Vector2.Distance(a.Position, cursorPosition) < Renderer.GetUnitSize(Config.ActorSize)) {
@@ -203,7 +211,7 @@ namespace ArenaClient {
 					if (Client.Local.LocalPlayer.CurrentUnit.AttitudeTowards(a.Unit.Owner) == Attitude.Friend)
 						cursorColor = new Cairo.Color(0, 1, 0);
 				}
-			}
+			}*/
 
 			if (IsLastActiveState) {
 				cursor.Draw(Renderer, cursorPosition, 0, cursorColor, new Cairo.Color(0.1, 0.1, 0.1), 22);

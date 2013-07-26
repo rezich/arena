@@ -27,7 +27,7 @@ namespace ArenaClient {
 
 			Entries.Add(new MenuEntry(this, "SETTINGS"));
 			Entries.Last().Selected += delegate(object sender, EventArgs e) {
-				StateManager.AddState(new SettingsMenu());
+				StateManager.AddState(new SettingsMenu(false));
 			};
 
 			Entries.Add(new MenuEntry(this, "MANUAL"));

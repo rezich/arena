@@ -43,6 +43,7 @@ namespace Arena {
 
 		public static bool Fullscreen = false;
 		public static bool Borderless = false;
+		public static bool DoubleBuffered = false;
 		public static bool Antialiasing = true;
 		public static VGame.Rectangle Resolution = new VGame.Rectangle(0, 0, 1280, 720);
 
@@ -101,6 +102,7 @@ namespace Arena {
 			conf.Add(LastServerAddress);
 			conf.Add(Fullscreen.ToString());
 			conf.Add(Borderless.ToString());
+			conf.Add(DoubleBuffered.ToString());
 			conf.Add(Antialiasing.ToString());
 			conf.Add(Resolution.Width.ToString());
 			conf.Add(Resolution.Height.ToString());
@@ -115,10 +117,11 @@ namespace Arena {
 			LastServerAddress = conf[2];
 			Fullscreen = bool.Parse(conf[3]);
 			Borderless = bool.Parse(conf[4]);
-			Antialiasing = bool.Parse(conf[5]);
+			DoubleBuffered = bool.Parse(conf[5]);
+			Antialiasing = bool.Parse(conf[6]);
 			int w, h;
-			w = int.Parse(conf[6]);
-			h = int.Parse(conf[7]);
+			w = int.Parse(conf[7]);
+			h = int.Parse(conf[8]);
 			Resolution = new VGame.Rectangle(0, 0, w, h);
 		}
 	}

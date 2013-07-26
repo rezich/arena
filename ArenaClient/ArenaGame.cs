@@ -15,7 +15,8 @@ namespace ArenaClient {
 			Role.Initialize();
 			Config.Initialize();
 			Config.Read();
-			ChangeResolution(Config.Resolution, Config.Fullscreen, Config.Borderless);
+			ChangeResolution(Config.Resolution, Config.Fullscreen, Config.Borderless, Config.DoubleBuffered);
+			Renderer.Antialiasing = Config.Antialiasing;
 			HUD.Recalculate(Renderer);
 			CursorVisible = false;
 

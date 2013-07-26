@@ -555,9 +555,9 @@ namespace Arena {
 			foreach (KeyValuePair<int, Unit> kvp in Units)
 				kvp.Value.Update(gameTime);
 			foreach (Actor a in Actors)
-				a.Update(gameTime, viewPosition, viewOrigin);
+				a.Update(gameTime);
 			foreach (Effect e in Effects)
-				e.Update(gameTime, viewPosition, viewOrigin);
+				e.Update(gameTime);
 			Effect.Cleanup(ref Effects);
 			if (Client.Local.IsChatting)
 				IsChattingScale = Math.Min(IsChattingScale + 0.4, 1);
@@ -567,15 +567,15 @@ namespace Arena {
 		public void Draw(GameTime gameTime) {
 			Pitch.Draw(Game.Renderer);
 			foreach (Actor a in Actors)
-				a.DrawUIBelow(gameTime, Game.Renderer, LocalPlayer);
+				a.DrawUIBelow(gameTime, Game.Renderer, LocalPlayer, -ViewPosition + ViewOrigin);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.BelowActor))
-				e.Draw(gameTime, Game.Renderer, LocalPlayer);
+				e.Draw(gameTime, Game.Renderer, LocalPlayer, -ViewPosition + ViewOrigin);
 			foreach (Actor a in Actors)
-				a.Draw(gameTime, Game.Renderer, LocalPlayer);
+				a.Draw(gameTime, Game.Renderer, LocalPlayer, -ViewPosition + ViewOrigin);
 			foreach (Actor a in Actors)
-				a.DrawUIAbove(gameTime, Game.Renderer, LocalPlayer);
+				a.DrawUIAbove(gameTime, Game.Renderer, LocalPlayer, -ViewPosition + ViewOrigin);
 			foreach (Effect e in Effects.Where(x => x.Height == EffectPosition.AboveActor))
-				e.Draw(gameTime, Game.Renderer, LocalPlayer);
+				e.Draw(gameTime, Game.Renderer, LocalPlayer, -ViewPosition + ViewOrigin);
 		}
 	}
 }

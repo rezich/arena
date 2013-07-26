@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Arena {
 	public class GameState {
@@ -6,7 +7,8 @@ namespace Arena {
 		}
 	}
 	public enum GameStateObject {
-		Unit
+		Unit,
+		Player
 	}
 }
 
@@ -15,3 +17,6 @@ namespace Arena {
 // GameStateObject.Unit
 // (int) count
 // (Units)
+// GameStateObject.Player
+// (int) count
+// (Players)

@@ -10,9 +10,10 @@ namespace ArenaClient {
 		List<Rectangle> displayModes = new List<Rectangle>();
 		SelectManyEntry resolutionEntry;
 		SelectManyEntry fullscreenEntry;
+		SelectManyEntry doubleBufferedEntry;
 		SelectManyEntry antialiasingEntry;
 		MenuEntry saveEntry;
-		public SettingsMenu() : base("SETTINGS") {
+		public SettingsMenu(bool inGame) : base("SETTINGS") {
 			List<string> convertedDisplayModes = new List<string>();
 			foreach (Rectangle r in Renderer.Current.Resolutions) {
 				displayModes.Add(r);
@@ -27,12 +28,16 @@ namespace ArenaClient {
 				newName = e.Text;
 				CheckForChanges(sender, e);
 			};
+			if (inGame)
+				Entries.Last().Enabled = false;
 
 			Entries.Add(new NumberInputEntry(this, "NUMBER", Arena.Config.PlayerNumber));
 			Entries.Last().TextChanged += delegate(object sender, TextChangeArgs e) {
 				newNumber = int.Parse(e.Text);
 				CheckForChanges(sender, e);
 			};
+			if (inGame)
+				Entries.Last().Enabled = false;
 
 			Entries.Add(new SpacerEntry(this));
 
@@ -56,8 +61,15 @@ namespace ArenaClient {
 			fullscreenEntry.Selected += CheckForChanges;
 			Entries.Add(fullscreenEntry);
 
-			Entries.Add(new TextInputEntry(this, "VSYNC", "OFF"));
-			Entries.Last().Enabled = false;
+			doubleBufferedEntry = new SelectManyEntry(this, "DOUBLE-BUFFERING", new List<string>() { "OFF", "ON" });
+			if (Arena.Config.DoubleBuffered)
+				doubleBufferedEntry.SelectedIndex = 1;
+			doubleBufferedEntry.SwipeLeft += CheckForChanges;
+			doubleBufferedEntry.SwipeRight += CheckForChanges;
+			doubleBufferedEntry.Selected += CheckForChanges;
+			Entries.Add(doubleBufferedEntry);
+
+
 			antialiasingEntry = new SelectManyEntry(this, "ANTIALIASING", new List<string>() { "OFF", "ON" });
 			antialiasingEntry.SelectedIndex = Arena.Config.Antialiasing ? 1 : 0;
 			antialiasingEntry.SwipeLeft += CheckForChanges;
@@ -74,11 +86,12 @@ namespace ArenaClient {
 				Arena.Config.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
 				Renderer.Antialiasing = (antialiasingEntry.SelectedIndex == 1) ;
 
-				if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2)) {
+				if (Arena.Config.Resolution != displayModes[resolutionEntry.SelectedIndex] || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2) || Arena.Config.DoubleBuffered != (doubleBufferedEntry.SelectedIndex == 1)) {
 					Arena.Config.Resolution = displayModes[resolutionEntry.SelectedIndex];
 					Arena.Config.Fullscreen = (fullscreenEntry.SelectedIndex == 1);
 					Arena.Config.Borderless = (fullscreenEntry.SelectedIndex == 2);
-					StateManager.Game.ChangeResolution(displayModes[resolutionEntry.SelectedIndex], Arena.Config.Fullscreen, Arena.Config.Borderless);
+					Arena.Config.DoubleBuffered = (doubleBufferedEntry.SelectedIndex == 1);
+					StateManager.Game.ChangeResolution(displayModes[resolutionEntry.SelectedIndex], Arena.Config.Fullscreen, Arena.Config.Borderless, Arena.Config.DoubleBuffered);
 				}
 				Arena.Config.Write();
 				Exit();
@@ -90,7 +103,7 @@ namespace ArenaClient {
 
 		}
 		protected void CheckForChanges(object sender, EventArgs e) {
-			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || (antialiasingEntry.SelectedIndex == 1) != Arena.Config.Antialiasing || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2));
+			saveEntry.Enabled = (newName != Arena.Config.PlayerName || newNumber != Arena.Config.PlayerNumber || (antialiasingEntry.SelectedIndex == 1) != Arena.Config.Antialiasing || displayModes[resolutionEntry.SelectedIndex] != Arena.Config.Resolution || Arena.Config.Fullscreen != (fullscreenEntry.SelectedIndex == 1) || Arena.Config.Borderless != (fullscreenEntry.SelectedIndex == 2) || Arena.Config.DoubleBuffered != (doubleBufferedEntry.SelectedIndex == 1));
 		}
 		protected override void OnCancel() {
 			Exit();

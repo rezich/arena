@@ -45,16 +45,16 @@ namespace Arena {
 
 		public abstract void OnUpdate(GameTime gameTime);
 
-		public override void Update(GameTime gameTime, Vector2 viewPosition, Vector2 viewOrigin) {
-			base.Update(gameTime, viewPosition, viewOrigin);
+		public override void Update(GameTime gameTime) {
+			base.Update(gameTime);
 			LifePercent = (double)(ExpirationTime.TotalMilliseconds - gameTime.TotalGameTime.TotalMilliseconds) / (double)Duration.TotalMilliseconds;
 			OnUpdate(gameTime);
 			if (gameTime.TotalGameTime >= ExpirationTime)
 				ToBeRemoved = true;
 		}
-		public override void Draw(GameTime gameTime, Renderer renderer, Player localPlayer) {
+		public override void Draw(GameTime gameTime, Renderer renderer, Player localPlayer, Vector2 offset) {
 			Context g = renderer.Context;
-			Shape.Draw(renderer, Position, Direction, FillColor, StrokeColor, renderer.GetUnitSize());
+			Shape.Draw(renderer, WorldPosition + offset, Direction, FillColor, StrokeColor, renderer.GetUnitSize());
 		}
 		public void Remove(ref List<Effect> list) {
 			list.Remove(this);
